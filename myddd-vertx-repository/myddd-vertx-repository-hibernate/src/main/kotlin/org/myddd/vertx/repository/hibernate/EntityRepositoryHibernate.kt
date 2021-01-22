@@ -7,10 +7,7 @@ import org.hibernate.reactive.mutiny.Mutiny
 import org.myddd.vertx.domain.Entity
 import org.myddd.vertx.repository.api.EntityRepository
 import java.io.Serializable
-import java.lang.RuntimeException
 import javax.persistence.Persistence
-
-
 
 
 open class EntityRepositoryHibernate : EntityRepository {
