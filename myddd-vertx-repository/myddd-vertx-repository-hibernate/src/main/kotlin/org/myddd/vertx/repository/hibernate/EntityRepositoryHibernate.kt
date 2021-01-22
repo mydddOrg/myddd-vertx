@@ -5,6 +5,7 @@ import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import org.hibernate.reactive.mutiny.Mutiny
 import org.myddd.vertx.domain.Entity
+import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.EntityRepository
 import java.io.Serializable
 import javax.persistence.Persistence
@@ -12,8 +13,7 @@ import javax.persistence.Persistence
 
 open class EntityRepositoryHibernate : EntityRepository {
 
-    protected val sessionFactory: Mutiny.SessionFactory by lazy { Persistence.createEntityManagerFactory("default")
-        .unwrap(Mutiny.SessionFactory::class.java) }
+    private val sessionFactory: Mutiny.SessionFactory by lazy { InstanceFactory.getInstance(Mutiny.SessionFactory::class.java) }
 
     override fun <T : Entity> save(entity: T): Future<T> {
         val future = PromiseImpl<T>()

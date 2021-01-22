@@ -1,19 +1,38 @@
 package org.myddd.vertx.repository.hibernate
 
+import com.google.inject.AbstractModule
+import com.google.inject.Guice
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.hibernate.reactive.mutiny.Mutiny
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import java.lang.Exception
+import javax.persistence.Persistence
 
 @ExtendWith(VertxExtension::class)
 class TestEntityRepositoryHibernate {
 
+    private val sessionFactory: Mutiny.SessionFactory by lazy { Persistence.createEntityManagerFactory("default")
+        .unwrap(Mutiny.SessionFactory::class.java) }
+
     private val repository:EntityRepositoryHibernate = EntityRepositoryHibernate()
+
+    @BeforeEach
+    fun beforeEach(){
+        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
+            override fun configure() {
+                bind(Mutiny.SessionFactory::class.java).toInstance(sessionFactory)
+            }
+        })))
+    }
 
     @Test
     fun testAdd(vertx:Vertx, testContext: VertxTestContext){
