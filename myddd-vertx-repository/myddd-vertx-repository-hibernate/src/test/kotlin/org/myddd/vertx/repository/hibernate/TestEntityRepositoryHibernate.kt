@@ -6,7 +6,6 @@ import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -31,8 +30,10 @@ class TestEntityRepositoryHibernate {
             val createdUser =  entityRepository.save(user).await()
             var queryUser =entityRepository.get(User::class.java,createdUser.id).await()
 
-            if(queryUser != null)testContext.completeNow() else testContext.failed()
-            testContext.completeNow()
+            if(queryUser == null)testContext.failed()
+
+            var notExistsUser = entityRepository.get(User::class.java,Long.MAX_VALUE).await()
+            if(notExistsUser != null)testContext.failed() else testContext.completeNow()
         }
     }
 
