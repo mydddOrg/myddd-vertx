@@ -6,7 +6,6 @@ import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.lang.Exception
@@ -78,12 +77,7 @@ class TestEntityRepositoryHibernate {
     @Test
     fun testDelete(vertx:Vertx, testContext: VertxTestContext){
         GlobalScope.launch {
-            try {
-                repository.delete(User::class.java,Long.MAX_VALUE).onFailure { exception -> println(exception) }.await()
-            }catch (e:Exception){
-
-            }
-
+            repository.delete(User::class.java,Long.MAX_VALUE).await()
 
             val user =  User(username = "lingen",age = 35)
             val createdUser =  repository.save(user).await()

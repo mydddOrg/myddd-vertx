@@ -1,5 +1,6 @@
 package org.myddd.vertx.repository.hibernate
 
+import io.smallrye.mutiny.Uni
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import org.hibernate.reactive.mutiny.Mutiny
@@ -78,8 +79,8 @@ open class EntityRepositoryHibernate : EntityRepository {
                 if(findObj!= null) {
                     session.remove(findObj).eventually { future.onSuccess(true) }
                 }else{
-                    future.complete()
-                    throw RuntimeException("Entity not found")
+                    future.onSuccess(false)
+                    Uni.createFrom().nullItem()
                 }
             }
         }.await().indefinitely()
