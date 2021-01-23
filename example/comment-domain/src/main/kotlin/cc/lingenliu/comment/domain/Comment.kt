@@ -1,42 +1,60 @@
 package cc.lingenliu.comment.domain
 
+import org.myddd.vertx.domain.BaseEntity
+import org.myddd.vertx.ioc.InstanceFactory
 import io.vertx.core.Future
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Table
 
-class Comment {
+@Entity
+@Table(name = "comment")
+class Comment : BaseEntity() {
 
-    private var id:Long = 0
+    /**
+     * 关联文章
+     */
+    @Column(name = "comment_id")
+    lateinit var commentId:String
 
-    private lateinit var commentId:String
+    /**
+     * 关联评论根ID
+     */
+    @Column(name = "root_comment_id")
+    var rootCommentId:Long = 0
 
-    private var author:String? = null
+    /**
+     * 关联回复评论ID
+     */
+    @Column(name = "parent_comment_id")
+    var parentCommentId:Long = 0
 
-    private var email:String? = null
+    /**
+     * 昵称
+     */
+    var author:String? = null
 
-    private var content:String? = null
+    /**
+     * 邮箱
+     */
+    var email:String? = null
 
-    private lateinit var rootId:String
-
-    private lateinit var parentId:String
+    /**
+     * 内容(Markdown格式)
+     */
+    lateinit var content:String
 
     companion object {
-        private var repository:CommentRepository
-            get() {
-                TODO()
-            }
-            set(value) {}
+        val repository:CommentRepository by lazy { InstanceFactory.getInstance(CommentRepository::class.java) }
     }
 
-    /**
-     * 新增一个评论
-     */
-    fun createComment(): Future<Comment>? {
-        return repository.addComment(this)
+    suspend fun createComment():Future<Comment> {
+        return repository.createComment(this)
     }
 
-    /**
-     * 回复一个评论
-     */
-    fun replayComment(comment: Comment):Future<Comment>? {
-        return repository.replyComment(comment,this)
+    suspend fun createReplyComment(parentComment: Comment):Future<Comment> {
+        return repository.createReplyComment(parentComment,this)
     }
+
+
 }

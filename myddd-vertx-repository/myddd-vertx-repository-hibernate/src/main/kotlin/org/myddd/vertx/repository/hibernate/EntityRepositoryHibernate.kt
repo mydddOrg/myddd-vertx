@@ -15,7 +15,7 @@ open class EntityRepositoryHibernate : EntityRepository {
 
     private val sessionFactory: Mutiny.SessionFactory by lazy { InstanceFactory.getInstance(Mutiny.SessionFactory::class.java) }
 
-    override fun <T : Entity> save(entity: T): Future<T> {
+    override suspend fun <T : Entity> save(entity: T): Future<T> {
         val future = PromiseImpl<T>()
         exists(entity::class.java,entity.getId()).onSuccess { exists ->
             if(exists) {
@@ -27,7 +27,7 @@ open class EntityRepositoryHibernate : EntityRepository {
 
             }else{
                 sessionFactory.withTransaction { session, _ ->
-                    session.persist(entity).eventually {
+                    session.persist(entity).eventually() {
                         future.onSuccess(entity)
                     }
                 }.await().indefinitely()
@@ -38,7 +38,7 @@ open class EntityRepositoryHibernate : EntityRepository {
         return future
     }
 
-    override fun <T : Entity> get(clazz: Class<T>?, id: Serializable?): Future<T?> {
+    override suspend fun <T : Entity> get(clazz: Class<T>?, id: Serializable?): Future<T?> {
         val future = PromiseImpl<T>()
         sessionFactory.withSession { session ->
             session.find(clazz,id).invoke {
@@ -48,7 +48,7 @@ open class EntityRepositoryHibernate : EntityRepository {
         return future
     }
 
-    override fun <T : Entity> exists(clazz: Class<T>?, id: Serializable?): Future<Boolean> {
+    override suspend fun <T : Entity> exists(clazz: Class<T>?, id: Serializable?): Future<Boolean> {
         val future = PromiseImpl<Boolean>()
         sessionFactory.withSession { session ->
             session.find(clazz,id).invoke {
@@ -58,7 +58,7 @@ open class EntityRepositoryHibernate : EntityRepository {
         return future
     }
 
-    override fun <T : Entity> batchSave(entityList:Array<T>): Future<Boolean> {
+    override suspend fun <T : Entity> batchSave(entityList:Array<T>): Future<Boolean> {
         val future = PromiseImpl<Boolean>()
         sessionFactory.withTransaction { session, _ ->
             session.persistAll(*entityList).eventually {
@@ -68,7 +68,7 @@ open class EntityRepositoryHibernate : EntityRepository {
         return future
     }
 
-    override fun <T : Entity> delete(clazz: Class<T>?, id: Serializable?): Future<Boolean> {
+    override suspend fun <T : Entity> delete(clazz: Class<T>?, id: Serializable?): Future<Boolean> {
         val future = PromiseImpl<Boolean>()
         sessionFactory.withTransaction { session, _ ->
             session.find(clazz,id).chain {

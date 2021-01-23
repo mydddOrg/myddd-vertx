@@ -9,6 +9,7 @@ import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.hibernate.reactive.mutiny.Mutiny
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -20,39 +21,48 @@ import javax.persistence.Persistence
 @ExtendWith(VertxExtension::class)
 class TestEntityRepositoryHibernate {
 
-    private val sessionFactory: Mutiny.SessionFactory by lazy { Persistence.createEntityManagerFactory("default")
-        .unwrap(Mutiny.SessionFactory::class.java) }
-
     private val repository:EntityRepositoryHibernate = EntityRepositoryHibernate()
 
-    @BeforeEach
-    fun beforeEach(){
+    init {
         InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
             override fun configure() {
-                bind(Mutiny.SessionFactory::class.java).toInstance(sessionFactory)
+                bind(Mutiny.SessionFactory::class.java).toInstance(Persistence.createEntityManagerFactory("default")
+                    .unwrap(Mutiny.SessionFactory::class.java))
             }
         })))
     }
 
     @Test
     fun testAdd(vertx:Vertx, testContext: VertxTestContext){
-        val user =  User(username = "lingen",age = 35)
-        repository.save(user).onSuccess {
-            user -> if(user.id > 0) testContext.completeNow() else testContext.failed()
+        GlobalScope.launch {
+            try {
+                val user =  User(username = "lingen",age = 35)
+                val created = repository.save(user).await()
+                Assertions.assertTrue(created.id > 0)
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
         }
+
     }
 
     @Test
     fun testUpdate(vertx:Vertx, testContext: VertxTestContext){
         GlobalScope.launch {
-            val user =  User(username = "lingen",age = 35)
-            val createdUser =  repository.save(user).await()
-            createdUser.age = 36
+            try {
+                val user =  User(username = "lingen",age = 35)
+                val createdUser =  repository.save(user).await()
+                createdUser.age = 36
 
-            repository.save(createdUser).await()
+                repository.save(createdUser).await()
 
-            var queryUser = repository.get(User::class.java,createdUser.id).await()
-            if(queryUser?.age == 36) testContext.completeNow() else testContext.failed()
+                var queryUser = repository.get(User::class.java,createdUser.id).await()
+                Assertions.assertEquals(queryUser?.age,36)
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
         }
     }
 
@@ -60,52 +70,79 @@ class TestEntityRepositoryHibernate {
     fun testFind(vertx:Vertx, testContext: VertxTestContext){
 
         GlobalScope.launch {
-            val user =  User(username = "lingen",age = 35)
-            val createdUser =  repository.save(user).await()
-            var queryUser = repository.get(User::class.java,createdUser.id).await()
+            try {
+                val user =  User(username = "lingen",age = 35)
+                val createdUser =  repository.save(user).await()
+                var queryUser = repository.get(User::class.java,createdUser.id).await()
 
-            if(queryUser == null)testContext.failed()
+                if(queryUser == null)testContext.failed()
 
-            var notExistsUser = repository.get(User::class.java,Long.MAX_VALUE).await()
-            if(notExistsUser != null)testContext.failed() else testContext.completeNow()
+                var notExistsUser = repository.get(User::class.java,Long.MAX_VALUE).await()
+                Assertions.assertFalse(notExistsUser != null)
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+
         }
     }
 
     @Test
     fun testExists(vertx:Vertx, testContext: VertxTestContext){
         GlobalScope.launch {
-            val user =  User(username = "lingen",age = 35)
-            val createdUser =  repository.save(user).await()
-            var exists =repository.exists(User::class.java,createdUser.id).await()
+            try {
+                val user =  User(username = "lingen",age = 35)
+                val createdUser =  repository.save(user).await()
+                var exists =repository.exists(User::class.java,createdUser.id).await()
+                Assertions.assertTrue(exists)
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
 
-            if(exists)testContext.completeNow() else testContext.failed()
         }
     }
 
     @Test
     fun testBatchAdd(vertx:Vertx, testContext: VertxTestContext){
-        val users = ArrayList<User>()
-        for (i in 1..10){
-            users.add(User(username = "lingen_${i}",age = 35 + i))
+        GlobalScope.launch {
+            try {
+                val users = ArrayList<User>()
+                for (i in 1..10){
+                    users.add(User(username = "lingen_${i}",age = 35 + i))
+                }
+
+                val userArray:Array<User> = users.toTypedArray()
+                val success = repository.batchSave(userArray).await();
+                Assertions.assertTrue(success)
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+
         }
 
-        val userArray:Array<User> = users.toTypedArray()
-        repository.batchSave(userArray).onSuccess { success -> if (success) testContext.completeNow() else testContext.failed() }
     }
 
     @Test
     fun testDelete(vertx:Vertx, testContext: VertxTestContext){
         GlobalScope.launch {
-            repository.delete(User::class.java,Long.MAX_VALUE).await()
+            try {
+                repository.delete(User::class.java,Long.MAX_VALUE).await()
 
-            val user =  User(username = "lingen",age = 35)
-            val createdUser =  repository.save(user).await()
-            var exists = repository.exists(User::class.java,createdUser.id).await()
-            if(!exists)testContext.failed()
+                val user =  User(username = "lingen",age = 35)
+                val createdUser =  repository.save(user).await()
+                var exists = repository.exists(User::class.java,createdUser.id).await()
+                if(!exists)testContext.failed()
 
-            repository.delete(User::class.java,createdUser.id).await()
-            exists = repository.exists(User::class.java,createdUser.id).await()
-            if(!exists)testContext.completeNow() else testContext.failed()
+                repository.delete(User::class.java,createdUser.id).await()
+                exists = repository.exists(User::class.java,createdUser.id).await()
+                Assertions.assertFalse(exists)
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+
 
         }
     }
