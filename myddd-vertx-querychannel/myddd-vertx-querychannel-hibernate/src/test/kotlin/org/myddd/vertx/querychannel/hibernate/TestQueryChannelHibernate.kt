@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.querychannel.api.PageParam
-import org.myddd.vertx.querychannel.api.PageQuery
 import org.myddd.vertx.querychannel.api.QueryParam
 import org.myddd.vertx.repository.hibernate.EntityRepositoryHibernate
 import javax.persistence.Persistence
