@@ -5,14 +5,18 @@ import com.google.inject.Guice
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
+import io.vertx.kotlin.coroutines.await
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.hibernate.reactive.mutiny.Mutiny
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.querychannel.api.PageParam
 import org.myddd.vertx.querychannel.api.PageQuery
+import org.myddd.vertx.querychannel.api.QueryParam
 import org.myddd.vertx.repository.hibernate.EntityRepositoryHibernate
 import javax.persistence.Persistence
 
@@ -33,31 +37,46 @@ class TestQueryChannelHibernate {
         })))
     }
 
-    @BeforeEach
-    fun beforeEach(){
+    private suspend fun prepareData(){
         val users = ArrayList<User>()
         for (i in 1..10){
             users.add(User(username = "lingen_${i}",age = 35 + i))
         }
 
         val userArray:Array<User> = users.toTypedArray()
-        repository.batchSave(userArray).onSuccess { success ->
-            require(success)
-        }
+        val success = repository.batchSave(userArray).await()
+        Assertions.assertTrue(success)
     }
 
     @Test
     fun testPageQuery(vertx: Vertx, testContext: VertxTestContext) {
-        queryChannel.pageQuery(PageQuery(clazz = User::class.java,sql = "from User")).onSuccess { pageResult ->
-            if(pageResult.totalCount > 0 && pageResult.dataList.isNotEmpty()) testContext.completeNow() else testContext.failNow("分页查询出错")
+        GlobalScope.launch {
+            try{
+                prepareData()
+
+                val pageResult = queryChannel.pageQuery(
+                    QueryParam(clazz = User::class.java,sql = "from User where username like :username",params = mapOf("username" to "%lingen%")),
+                    PageParam(pageSize = 10)
+                ).await()
+                Assertions.assertTrue(pageResult.totalCount > 0)
+                Assertions.assertTrue(pageResult.dataList.isNotEmpty())
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+
         }
     }
 
 
     @Test
     fun testListQuery(vertx: Vertx, testContext: VertxTestContext){
-        queryChannel.queryList(User::class.java,"from User").onSuccess { list ->
-            if(list.isNotEmpty()) testContext.completeNow() else testContext.failNow("没有数据")
+        GlobalScope.launch {
+            prepareData()
+
+            val list = queryChannel.queryList(QueryParam(clazz = User::class.java,sql ="from User")).await()
+            Assertions.assertTrue(list.isNotEmpty())
+            testContext.completeNow()
         }
     }
 
