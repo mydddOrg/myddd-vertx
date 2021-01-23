@@ -27,4 +27,6 @@ dependencies {
 
     api("io.smallrye.reactive:mutiny:0.13.0")
     api("com.ibm.async:asyncutil:0.1.0")
+
+    implementation("org.apache.logging.log4j:log4j-core:2.14.0")
 }
