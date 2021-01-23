@@ -13,7 +13,7 @@ import javax.persistence.Persistence
 
 open class EntityRepositoryHibernate : EntityRepository {
 
-    private val sessionFactory: Mutiny.SessionFactory by lazy { InstanceFactory.getInstance(Mutiny.SessionFactory::class.java) }
+    protected val sessionFactory: Mutiny.SessionFactory by lazy { InstanceFactory.getInstance(Mutiny.SessionFactory::class.java) }
 
     override suspend fun <T : Entity> save(entity: T): Future<T> {
         val future = PromiseImpl<T>()

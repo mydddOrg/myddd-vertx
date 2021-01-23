@@ -14,5 +14,9 @@ interface CommentRepository {
      */
     suspend fun createReplyComment(parentComment: Comment,replyComment:Comment):Future<Comment>
 
+    /**
+     * 按时间倒序查询最近20条评论
+     */
+    suspend fun queryLatestComments(commentId:String):Future<List<Comment>>
 
 }

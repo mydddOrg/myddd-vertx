@@ -31,7 +31,7 @@ class CommentRepositoryHibernate : EntityRepositoryHibernate(),CommentRepository
             replyComment.parentCommentId = parentComment.id
             replyComment.rootCommentId = parentComment.rootCommentId
             replyComment.created = System.currentTimeMillis()
-
+            replyComment.level = parentComment.level + 1
             val created =  save(replyComment).await()
             future.onSuccess(created)
         }catch (e:Exception){
@@ -40,6 +40,19 @@ class CommentRepositoryHibernate : EntityRepositoryHibernate(),CommentRepository
         }
         return future
 
+    }
+
+    override suspend fun queryLatestComments(commentId: String): Future<List<Comment>> {
+        val future = PromiseImpl<List<Comment>>()
+        sessionFactory.withSession { session ->
+            session.createQuery<Comment>("from Comment where commentId = :commentId and level = 0 order by created desc")
+                .setParameter("commentId",commentId)
+                .setMaxResults(20)
+                .resultList.invoke { list ->
+                    future.onSuccess(list)
+                }
+        }.await().indefinitely()
+        return future
     }
 
 }

@@ -38,7 +38,9 @@ class TestEntityRepositoryHibernate {
             try {
                 val user =  User(username = "lingen",age = 35)
                 val created = repository.save(user).await()
-                Assertions.assertTrue(created.id > 0)
+                testContext.verify {
+                    Assertions.assertTrue(created.id > 0)
+                }
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -58,7 +60,9 @@ class TestEntityRepositoryHibernate {
                 repository.save(createdUser).await()
 
                 var queryUser = repository.get(User::class.java,createdUser.id).await()
-                Assertions.assertEquals(queryUser?.age,36)
+                testContext.verify {
+                    Assertions.assertEquals(queryUser?.age,36)
+                }
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -78,7 +82,9 @@ class TestEntityRepositoryHibernate {
                 if(queryUser == null)testContext.failed()
 
                 var notExistsUser = repository.get(User::class.java,Long.MAX_VALUE).await()
-                Assertions.assertFalse(notExistsUser != null)
+                testContext.verify {
+                    Assertions.assertFalse(notExistsUser != null)
+                }
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -94,7 +100,9 @@ class TestEntityRepositoryHibernate {
                 val user =  User(username = "lingen",age = 35)
                 val createdUser =  repository.save(user).await()
                 var exists =repository.exists(User::class.java,createdUser.id).await()
-                Assertions.assertTrue(exists)
+                testContext.verify {
+                    Assertions.assertTrue(exists)
+                }
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -114,7 +122,9 @@ class TestEntityRepositoryHibernate {
 
                 val userArray:Array<User> = users.toTypedArray()
                 val success = repository.batchSave(userArray).await();
-                Assertions.assertTrue(success)
+                testContext.verify {
+                    Assertions.assertTrue(success)
+                }
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -137,7 +147,9 @@ class TestEntityRepositoryHibernate {
 
                 repository.delete(User::class.java,createdUser.id).await()
                 exists = repository.exists(User::class.java,createdUser.id).await()
-                Assertions.assertFalse(exists)
+                testContext.verify {
+                    Assertions.assertFalse(exists)
+                }
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)

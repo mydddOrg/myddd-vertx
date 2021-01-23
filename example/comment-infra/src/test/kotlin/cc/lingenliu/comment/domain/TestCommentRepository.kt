@@ -38,8 +38,12 @@ class TestCommentRepository : AbstractTest() {
             try {
                 val comment = createComment()
                 val created = commentRepository.createComment(comment).await()
-                Assertions.assertTrue(created.id > 0)
-                Assertions.assertEquals(created.id,created.rootCommentId)
+                testContext.verify {
+                    Assertions.assertTrue(created.id > 0)
+                    Assertions.assertEquals(created.id,created.rootCommentId)
+                    Assertions.assertEquals(created.level,0)
+                }
+
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -55,13 +59,35 @@ class TestCommentRepository : AbstractTest() {
                 val created = commentRepository.createComment(comment).await()
                 var replyComment = createReplyComment()
                 val createdReplyComment = commentRepository.createReplyComment(created,replyComment).await()
-                Assertions.assertTrue(createdReplyComment.id > 0)
-                Assertions.assertEquals(createdReplyComment.rootCommentId,created.rootCommentId)
-                Assertions.assertEquals(createdReplyComment.parentCommentId,created.id)
+
+                testContext.verify {
+                    Assertions.assertTrue(createdReplyComment.id > 0)
+                    Assertions.assertEquals(createdReplyComment.rootCommentId,created.rootCommentId)
+                    Assertions.assertEquals(createdReplyComment.parentCommentId,created.id)
+                    Assertions.assertEquals(created.level,created.level  + 1)
+                }
+
                 testContext.completeNow()
             }catch (e:Exception) {
                 testContext.failNow(e)
             }
+        }
+    }
+
+    @Test
+    fun testQueryLatestComments(vertx: Vertx, testContext: VertxTestContext){
+        GlobalScope.launch {
+            val comment = createComment()
+            val created = commentRepository.createComment(comment).await()
+            Assertions.assertNotNull(created)
+
+            var list = commentRepository.queryLatestComments(created.commentId).await()
+
+            testContext.verify {
+                Assertions.assertTrue(list.isNotEmpty())
+            }
+
+            testContext.completeNow()
         }
     }
 }

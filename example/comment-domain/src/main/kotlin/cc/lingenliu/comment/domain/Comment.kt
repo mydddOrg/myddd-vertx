@@ -5,10 +5,14 @@ import org.myddd.vertx.ioc.InstanceFactory
 import io.vertx.core.Future
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.Index
 import javax.persistence.Table
 
 @Entity
-@Table(name = "comment")
+@Table(name = "comment",
+    indexes = [Index(name = "index_comment_id",columnList = "comment_id"),
+        Index(name = "index_root_comment_id",columnList = "root_comment_id"),
+    ])
 class Comment : BaseEntity() {
 
     /**
@@ -29,6 +33,9 @@ class Comment : BaseEntity() {
     @Column(name = "parent_comment_id")
     var parentCommentId:Long = 0
 
+    @Column(name = "level")
+    var level:Int = 0
+
     /**
      * 昵称
      */
@@ -40,7 +47,7 @@ class Comment : BaseEntity() {
     var email:String? = null
 
     /**
-     * 内容(Markdown格式)
+     * 回复内容
      */
     lateinit var content:String
 

@@ -36,7 +36,7 @@ class TestQueryChannelHibernate {
         })))
     }
 
-    private suspend fun prepareData(){
+    private suspend fun prepareData(testContext: VertxTestContext){
         val users = ArrayList<User>()
         for (i in 1..10){
             users.add(User(username = "lingen_${i}",age = 35 + i))
@@ -44,21 +44,25 @@ class TestQueryChannelHibernate {
 
         val userArray:Array<User> = users.toTypedArray()
         val success = repository.batchSave(userArray).await()
-        Assertions.assertTrue(success)
+        testContext.verify {
+            Assertions.assertTrue(success)
+        }
     }
 
     @Test
     fun testPageQuery(vertx: Vertx, testContext: VertxTestContext) {
         GlobalScope.launch {
             try{
-                prepareData()
+                prepareData(testContext)
 
                 val pageResult = queryChannel.pageQuery(
                     QueryParam(clazz = User::class.java,sql = "from User where username like :username",params = mapOf("username" to "%lingen%")),
                     PageParam(pageSize = 10)
                 ).await()
-                Assertions.assertTrue(pageResult.totalCount > 0)
-                Assertions.assertTrue(pageResult.dataList.isNotEmpty())
+                testContext.verify {
+                    Assertions.assertTrue(pageResult.totalCount > 0)
+                    Assertions.assertTrue(pageResult.dataList.isNotEmpty())
+                }
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -71,10 +75,12 @@ class TestQueryChannelHibernate {
     @Test
     fun testListQuery(vertx: Vertx, testContext: VertxTestContext){
         GlobalScope.launch {
-            prepareData()
+            prepareData(testContext)
 
             val list = queryChannel.queryList(QueryParam(clazz = User::class.java,sql ="from User")).await()
-            Assertions.assertTrue(list.isNotEmpty())
+            testContext.verify {
+                Assertions.assertTrue(list.isNotEmpty())
+            }
             testContext.completeNow()
         }
     }
