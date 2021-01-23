@@ -30,3 +30,7 @@ dependencies {
 
     implementation("org.apache.logging.log4j:log4j-core:2.14.0")
 }
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+}

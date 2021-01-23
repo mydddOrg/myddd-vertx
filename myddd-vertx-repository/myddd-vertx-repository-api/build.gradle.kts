@@ -5,6 +5,7 @@ plugins {
 
 group = "cc.lingenliu"
 version = rootProject.extra["version"]!!
+val mySkipTests = true
 
 dependencies {
     implementation(kotlin("stdlib"))

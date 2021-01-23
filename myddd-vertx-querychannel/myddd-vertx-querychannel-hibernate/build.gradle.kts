@@ -6,6 +6,10 @@ plugins {
 group = "cc.lingenliu"
 version = rootProject.extra["version"]!!
 
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
 

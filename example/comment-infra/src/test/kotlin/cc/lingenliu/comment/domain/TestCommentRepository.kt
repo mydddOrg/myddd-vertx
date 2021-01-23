@@ -64,7 +64,7 @@ class TestCommentRepository : AbstractTest() {
                     Assertions.assertTrue(createdReplyComment.id > 0)
                     Assertions.assertEquals(createdReplyComment.rootCommentId,created.rootCommentId)
                     Assertions.assertEquals(createdReplyComment.parentCommentId,created.id)
-                    Assertions.assertEquals(created.level,created.level  + 1)
+                    Assertions.assertEquals(replyComment.level,created.level  + 1)
                 }
 
                 testContext.completeNow()

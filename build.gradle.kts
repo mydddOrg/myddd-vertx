@@ -3,6 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     java
     kotlin("jvm") version "1.4.21"
+    id("jacoco")
+    id("org.sonarqube") version "3.0"
 }
 
 extra["version"] = "1.0-SNAPSHOT"
@@ -11,14 +13,19 @@ extra["vertx_version"] = "4.0.0"
 group = "cc.lingenliu"
 version = project.extra["version"]!!
 
+subprojects {
+    apply(plugin = "jacoco")
+    apply(plugin = "org.sonarqube")
+}
+
 allprojects {
     repositories {
-    maven {
-        setUrl("https://maven.aliyun.com/repository/public/")
-    }
-    maven {
-        setUrl("https://maven.aliyun.com/repository/spring/")
-    }
+        maven {
+            setUrl("https://maven.aliyun.com/repository/public/")
+        }
+        maven {
+            setUrl("https://maven.aliyun.com/repository/spring/")
+        }
         mavenCentral()
     }
 
