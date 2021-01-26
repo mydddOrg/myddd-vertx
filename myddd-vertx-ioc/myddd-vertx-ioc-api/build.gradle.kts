@@ -6,6 +6,7 @@ plugins {
 group = "cc.lingenliu"
 version = rootProject.extra["version"]!!
 
+
 dependencies {
     implementation(kotlin("stdlib"))
 

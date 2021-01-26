@@ -18,6 +18,15 @@ subprojects {
     apply(plugin = "org.sonarqube")
 }
 
+
+
+sonarqube {
+    properties {
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.sources", "src")
+    }
+}
+
 allprojects {
     repositories {
         maven {
