@@ -10,6 +10,12 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+    }
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(project(":example:comment-domain"))

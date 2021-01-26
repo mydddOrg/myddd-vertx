@@ -6,6 +6,12 @@ plugins {
 group = "cc.lingenliu"
 version = rootProject.extra["version"]!!
 
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+    }
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
 
