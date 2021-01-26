@@ -15,19 +15,21 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.repository.api.EntityRepository
 import java.lang.Exception
 import javax.persistence.Persistence
 
 @ExtendWith(VertxExtension::class)
 class TestEntityRepositoryHibernate {
 
-    private val repository:EntityRepositoryHibernate = EntityRepositoryHibernate()
+    private val repository:EntityRepository by lazy { InstanceFactory.getInstance(EntityRepository::class.java) }
 
     init {
         InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
             override fun configure() {
                 bind(Mutiny.SessionFactory::class.java).toInstance(Persistence.createEntityManagerFactory("default")
                     .unwrap(Mutiny.SessionFactory::class.java))
+                bind(EntityRepository::class.java).to(EntityRepositoryHibernate::class.java)
             }
         })))
     }
@@ -154,8 +156,6 @@ class TestEntityRepositoryHibernate {
             }catch (e:Exception){
                 testContext.failNow(e)
             }
-
-
         }
     }
 
