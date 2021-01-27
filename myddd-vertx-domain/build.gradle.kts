@@ -3,7 +3,7 @@ plugins {
     kotlin("jvm")
 }
 
-group = "cc.lingenliu"
+group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
 
 dependencies {
