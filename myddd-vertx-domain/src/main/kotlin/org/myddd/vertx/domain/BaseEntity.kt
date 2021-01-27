@@ -20,7 +20,7 @@ abstract class BaseEntity : Entity {
 
     var updated:Long = 0
 
-    override fun getId(): Serializable {
+    override fun getId(): Long {
         return id
     }
 }
