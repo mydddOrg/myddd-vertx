@@ -50,5 +50,4 @@ class OAuth2Client:BaseEntity() {
         this.clientSecret = UUID.randomUUID().toString()
         return repository.save(this)
     }
-
 }

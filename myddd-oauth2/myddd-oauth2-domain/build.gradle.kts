@@ -10,7 +10,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     //添加领域层的依赖
-    implementation(project(":myddd-vertx-domain"))
+    api(project(":myddd-vertx-domain"))
     implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     implementation(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
 
