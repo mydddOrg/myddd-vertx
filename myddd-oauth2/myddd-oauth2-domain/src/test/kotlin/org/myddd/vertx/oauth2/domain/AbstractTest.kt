@@ -3,6 +3,9 @@ package org.myddd.vertx.oauth2.domain
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.vertx.junit5.VertxExtension
+import io.vertx.junit5.VertxTestContext
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
@@ -21,8 +24,18 @@ abstract class AbstractTest {
                     .unwrap(Mutiny.SessionFactory::class.java))
 
                 bind(OAuth2ClientRepository::class.java).to(OAuth2ClientRepositoryHibernate::class.java)
+                bind(OAuth2ClientService::class.java)
             }
         })))
+    }
+
+    protected fun executeWithTryCatch(testContext: VertxTestContext, execute:() -> Unit){
+        try {
+            execute()
+        }catch (e:Exception){
+            e.printStackTrace()
+            testContext.failNow(e)
+        }
     }
 
 }
