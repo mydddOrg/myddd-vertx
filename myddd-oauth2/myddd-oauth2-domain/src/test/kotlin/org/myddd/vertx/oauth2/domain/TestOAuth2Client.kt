@@ -11,7 +11,6 @@ class TestOAuth2Client : AbstractTest() {
 
     @Test
     fun testCreateClientWithoutName(testContext: VertxTestContext){
-
         val client = OAuth2Client()
         GlobalScope.launch {
             try {

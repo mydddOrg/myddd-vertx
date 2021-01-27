@@ -1,8 +1,6 @@
 package org.myddd.vertx.oauth2.domain
 
 import io.vertx.core.Future
-import io.vertx.core.impl.future.PromiseImpl
-import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.BaseEntity
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
