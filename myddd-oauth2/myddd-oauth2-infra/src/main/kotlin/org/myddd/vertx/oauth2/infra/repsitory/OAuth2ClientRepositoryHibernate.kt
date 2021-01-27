@@ -9,15 +9,6 @@ import org.myddd.vertx.repository.hibernate.EntityRepositoryHibernate
 class OAuth2ClientRepositoryHibernate :EntityRepositoryHibernate(), OAuth2ClientRepository{
 
     override suspend fun queryClientByClientId(clientId: String): Future<OAuth2Client?> {
-        val future = PromiseImpl<OAuth2Client?>()
-        sessionFactory.withSession { session ->
-            session.createQuery("from OAuth2Client where clientId = :clientId",OAuth2Client::class.java)
-                .setParameter("clientId",clientId)
-                .singleResult
-                .invoke { client ->
-                    future.onSuccess(client)
-                }
-        }.await().indefinitely()
-        return future
+        return singleQuery(OAuth2Client::class.java,"from OAuth2Client where clientId = :clientId", mapOf("clientId" to clientId))
     }
 }

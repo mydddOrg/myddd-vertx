@@ -84,4 +84,29 @@ open class EntityRepositoryHibernate : EntityRepository {
         return future
     }
 
+    override suspend fun <T : Entity> listQuery(clazz: Class<T>?,sql: String,params: Map<String, Any>
+    ): Future<List<T>> {
+        val future = PromiseImpl<List<T>>()
+        sessionFactory.withSession { session ->
+            val query = session.createQuery(sql,clazz)
+            params.forEach { (key, value) -> query.setParameter(key,value)  }
+            query.resultList.invoke { list ->
+                future.onSuccess(list)
+            }
+        }.await().indefinitely()
+        return future
+    }
+
+    override suspend fun <T : Entity> singleQuery(clazz: Class<T>?, sql: String, params: Map<String, Any>): Future<T?> {
+        val future = PromiseImpl<T?>()
+        sessionFactory.withSession { session ->
+            val query = session.createQuery(sql,clazz)
+            params.forEach { (key, value) -> query.setParameter(key,value)  }
+            query.singleResultOrNull.invoke { singleObj ->
+                future.onSuccess(singleObj)
+            }
+        }.await().indefinitely()
+        return future
+    }
+
 }

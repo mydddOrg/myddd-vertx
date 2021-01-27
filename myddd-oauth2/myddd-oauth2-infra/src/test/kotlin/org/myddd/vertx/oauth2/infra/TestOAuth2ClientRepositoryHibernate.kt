@@ -19,10 +19,13 @@ class TestOAuth2ClientRepositoryHibernate : AbstractTest() {
     fun testQueryClientByClientIdFailed(testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-                repository.queryClientByClientId(UUID.randomUUID().toString()).await()
-                testContext.failNow("不可能查得到才对啊")
-            }catch (e:Exception){
+                val empty  = repository.queryClientByClientId(UUID.randomUUID().toString()).await()
+                testContext.verify {
+                    Assertions.assertNull(empty)
+                }
                 testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
             }
         }
     }

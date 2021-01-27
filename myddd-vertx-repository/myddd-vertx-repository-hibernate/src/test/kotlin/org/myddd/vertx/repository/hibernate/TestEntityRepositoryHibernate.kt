@@ -8,6 +8,7 @@ import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.bytebuddy.implementation.bytecode.constant.TextConstant
 import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -17,7 +18,9 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.repository.api.EntityRepository
 import java.lang.Exception
+import java.util.*
 import javax.persistence.Persistence
+import kotlin.collections.ArrayList
 
 @ExtendWith(VertxExtension::class)
 class TestEntityRepositoryHibernate {
@@ -158,5 +161,67 @@ class TestEntityRepositoryHibernate {
             }
         }
     }
+
+    @Test
+    fun testQueryList(testContext: VertxTestContext){
+        GlobalScope.launch {
+            try {
+                val user =  User(username = "lingen",age = 35)
+                repository.save(user).await()
+
+                var list = repository.listQuery(User::class.java,"from User").await()
+                testContext.verify {
+                    Assertions.assertTrue(list.isNotEmpty())
+                }
+
+                list = repository.listQuery(User::class.java,"from User where username = :username", mapOf("username" to "lingen")).await()
+                testContext.verify {
+                    Assertions.assertTrue(list.isNotEmpty())
+                }
+
+                list = repository.listQuery(User::class.java,"from User where username = :username", mapOf("username" to UUID.randomUUID().toString())).await()
+                testContext.verify {
+                    Assertions.assertTrue(list.isEmpty())
+                }
+
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+
+        }
+    }
+
+    @Test
+    fun testSingleQuery(testContext: VertxTestContext){
+        GlobalScope.launch {
+            try {
+
+                val user =  User(username = "lingen",age = 35)
+                repository.save(user).await()
+
+                var query = repository.singleQuery(User::class.java,"from User").await()
+                testContext.verify {
+                    Assertions.assertNotNull(query)
+                }
+
+                query = repository.singleQuery(User::class.java,"from User where username = :username", mapOf("username" to "lingen")).await()
+                testContext.verify {
+                    Assertions.assertNotNull(query)
+                }
+
+                query = repository.singleQuery(User::class.java,"from User where username = :username", mapOf("username" to UUID.randomUUID().toString())).await()
+                testContext.verify {
+                    Assertions.assertNull(query)
+                }
+
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+        }
+    }
+
+
 
 }
