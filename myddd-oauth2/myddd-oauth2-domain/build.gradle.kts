@@ -6,6 +6,16 @@ plugins {
 group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
 
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+    }
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
 
