@@ -38,7 +38,7 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testAdd(vertx:Vertx, testContext: VertxTestContext){
+    fun testAdd(testContext: VertxTestContext){
         GlobalScope.launch {
             try {
                 val user =  User(username = "lingen",age = 35)
@@ -55,7 +55,7 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testUpdate(vertx:Vertx, testContext: VertxTestContext){
+    fun testUpdate(testContext: VertxTestContext){
         GlobalScope.launch {
             try {
                 val user =  User(username = "lingen",age = 35)
@@ -76,7 +76,7 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testFind(vertx:Vertx, testContext: VertxTestContext){
+    fun testFind(testContext: VertxTestContext){
 
         GlobalScope.launch {
             try {
@@ -99,7 +99,7 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testExists(vertx:Vertx, testContext: VertxTestContext){
+    fun testExists(testContext: VertxTestContext){
         GlobalScope.launch {
             try {
                 val user =  User(username = "lingen",age = 35)
@@ -117,7 +117,7 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testBatchAdd(vertx:Vertx, testContext: VertxTestContext){
+    fun testBatchAdd(testContext: VertxTestContext){
         GlobalScope.launch {
             try {
                 val users = ArrayList<User>()
@@ -140,7 +140,7 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testDelete(vertx:Vertx, testContext: VertxTestContext){
+    fun testDelete(testContext: VertxTestContext){
         GlobalScope.launch {
             try {
                 repository.delete(User::class.java,Long.MAX_VALUE).await()

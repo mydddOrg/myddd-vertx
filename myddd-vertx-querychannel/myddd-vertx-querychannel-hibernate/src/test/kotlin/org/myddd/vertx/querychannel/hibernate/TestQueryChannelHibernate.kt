@@ -50,7 +50,7 @@ class TestQueryChannelHibernate {
     }
 
     @Test
-    fun testPageQuery(vertx: Vertx, testContext: VertxTestContext) {
+    fun testPageQuery(testContext: VertxTestContext) {
         GlobalScope.launch {
             try{
                 prepareData(testContext)

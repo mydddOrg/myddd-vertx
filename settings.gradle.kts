@@ -16,5 +16,8 @@ include("example:comment-domain")
 include("example:comment-infra")
 
 //oauth2.0的实现
-include("myddd-oauth2:myddd-oauth2-domain")
-include("myddd-oauth2:myddd-oauth2-infra")
+include("myddd-vertx-oauth2:myddd-vertx-oauth2-domain")
+include("myddd-vertx-oauth2:myddd-vertx-oauth2-infra")
+include("myddd-vertx-oauth2:myddd-vertx-oauth2-provider")
+include("myddd-vertx-oauth2:myddd-vertx-oauth2-api")
+include("myddd-vertx-oauth2:myddd-vertx-oauth2-application")

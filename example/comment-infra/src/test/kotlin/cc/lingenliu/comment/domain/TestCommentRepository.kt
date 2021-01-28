@@ -33,7 +33,7 @@ class TestCommentRepository : AbstractTest() {
     }
 
     @Test
-    fun testAddComment(vertx: Vertx, testContext: VertxTestContext){
+    fun testAddComment(testContext: VertxTestContext){
         GlobalScope.launch {
             try {
                 val comment = createComment()
@@ -52,7 +52,7 @@ class TestCommentRepository : AbstractTest() {
     }
 
     @Test
-    fun testReplyComment(vertx: Vertx, testContext: VertxTestContext){
+    fun testReplyComment(testContext: VertxTestContext){
         GlobalScope.launch {
             try{
                 val comment = createComment()
@@ -75,7 +75,7 @@ class TestCommentRepository : AbstractTest() {
     }
 
     @Test
-    fun testQueryLatestComments(vertx: Vertx, testContext: VertxTestContext){
+    fun testQueryLatestComments(testContext: VertxTestContext){
         GlobalScope.launch {
             val comment = createComment()
             val created = commentRepository.createComment(comment).await()

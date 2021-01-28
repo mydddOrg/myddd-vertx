@@ -1,0 +1,54 @@
+package org.myddd.vertx.oauth2.application
+
+import io.vertx.core.Future
+import io.vertx.core.impl.future.PromiseImpl
+import io.vertx.kotlin.coroutines.await
+import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.oauth2.api.DatabaseOAuth2Application
+import org.myddd.vertx.oauth2.api.OAuth2UserDTO
+import org.myddd.vertx.oauth2.domain.OAuth2ClientService
+import java.util.*
+
+class DatabaseOAuth2ApplicationImpl : DatabaseOAuth2Application {
+
+    private val clientService:OAuth2ClientService by lazy { InstanceFactory.getInstance(OAuth2ClientService::class.java) }
+
+    override suspend fun validateClientUser(clientId: String, clientSecret: String): Future<OAuth2UserDTO?> {
+        val promise = PromiseImpl<OAuth2UserDTO?>()
+        val user = clientService.queryClientByClientId(clientId).await()
+        check(Objects.nonNull(user)){
+            "CLIENT_NOT_FOUND"
+        }
+        check((user?.clientSecret == clientSecret)){
+            "CLIENT_SECRET_NOT_MATCH"
+        }
+        val token = clientService.generateClientToken(user!!).await()
+        promise.onSuccess(toOAuth2UserDTO(user!!,token))
+        return promise.future()
+    }
+
+    override suspend fun refreshUserToken(clientId: String, refreshToken: String): Future<OAuth2UserDTO?> {
+        val promise = PromiseImpl<OAuth2UserDTO?>()
+
+        val queryUser = clientService.queryClientByClientId(clientId).await()
+        check(Objects.nonNull(queryUser)){
+            "CLIENT_NOT_FOUND"
+        }
+        val token = clientService.refreshUserToken(queryUser!!,refreshToken).await()
+        promise.onSuccess(toOAuth2UserDTO(queryUser!!,token))
+        return promise.future()
+    }
+
+    override suspend fun revokeUserToken(clientId: String): Future<Boolean> {
+        val promise = PromiseImpl<Boolean>()
+
+        val queryUser = clientService.queryClientByClientId(clientId).await()
+        check(Objects.nonNull(queryUser)){
+            "CLIENT_NOT_FOUND"
+        }
+
+        clientService.revokeUserToken(queryUser!!).await()
+        promise.onSuccess(true)
+        return promise.future()
+    }
+}

@@ -1,6 +1,5 @@
 package org.myddd.vertx.repository.hibernate
 
-import io.smallrye.mutiny.Uni
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import org.hibernate.reactive.mutiny.Mutiny
@@ -9,7 +8,6 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.EntityRepository
 import java.io.Serializable
 import java.util.*
-import javax.persistence.Persistence
 
 
 open class EntityRepositoryHibernate : EntityRepository {
@@ -22,16 +20,19 @@ open class EntityRepositoryHibernate : EntityRepository {
             if(exists) {
                 sessionFactory.withTransaction { session, _ ->
                     session.merge(entity)
-                }.subscribe().with { merge ->
-                    future.onSuccess(merge)
-                }
-
+                }.subscribe().with({
+                    future.onSuccess(it)
+                },{
+                    future.fail(it)
+                })
             }else{
                 sessionFactory.withTransaction { session, _ ->
                     session.persist(entity)
-                }.subscribe().with{
+                }.subscribe().with({
                     future.onSuccess(entity)
-                }
+                }, {
+                    future.fail(it)
+                })
             }
         }
 
@@ -43,7 +44,11 @@ open class EntityRepositoryHibernate : EntityRepository {
         val future = PromiseImpl<T>()
         sessionFactory.withSession { session ->
             session.find(clazz,id)
-        }.subscribe().with { findObj -> future.onSuccess(findObj) }
+        }.subscribe().with({
+            future.onSuccess(it)
+        },{
+            future.fail(it)
+        })
         return future
     }
 
@@ -51,7 +56,12 @@ open class EntityRepositoryHibernate : EntityRepository {
         val future = PromiseImpl<Boolean>()
         sessionFactory.withSession { session ->
             session.find(clazz,id)
-        }.subscribe().with { findObj -> if(findObj != null) future.onSuccess(true) else future.onSuccess(false) }
+        }.subscribe().with({
+                findObj -> if(findObj != null) future.onSuccess(true) else future.onSuccess(false)
+                           },
+            {
+                future.fail(it)
+            })
         return future
     }
 
@@ -59,7 +69,7 @@ open class EntityRepositoryHibernate : EntityRepository {
         val future = PromiseImpl<Boolean>()
         sessionFactory.withTransaction { session, _ ->
             session.persistAll(*entityList)
-        }.subscribe().with { future.onSuccess(true) }
+        }.subscribe().with({future.onSuccess(true)},{future.fail(it)})
         return future
     }
 
@@ -67,16 +77,15 @@ open class EntityRepositoryHibernate : EntityRepository {
         val future = PromiseImpl<Boolean>()
         sessionFactory.withSession { session ->
             session.find(clazz,id)
-        }.subscribe().with { findObj ->
-            if(Objects.nonNull(findObj))
+        }.subscribe().with({
+            if(Objects.nonNull(it))
                 sessionFactory.withTransaction { session, _ ->
-                    session.merge(findObj).chain { merge ->
+                    session.merge(it).chain { merge ->
                         session.remove(merge)
                     }
-            }.subscribe().with { future.onSuccess(true) }
-
+                }.subscribe().with { future.onSuccess(true) }
             else future.onSuccess(false)
-        }
+        },{future.fail(it)})
         return future
     }
 
@@ -86,9 +95,11 @@ open class EntityRepositoryHibernate : EntityRepository {
             val query = session.createQuery(sql,clazz)
             params.forEach { (key, value) -> query.setParameter(key,value)  }
             query.resultList
-        }.subscribe().with{
-            list -> future.onSuccess(list)
-        }
+        }.subscribe().with({
+            future.onSuccess(it)
+        },{
+            future.fail(it)
+        })
         return future
     }
 
@@ -98,9 +109,11 @@ open class EntityRepositoryHibernate : EntityRepository {
             val query = session.createQuery(sql,clazz)
             params.forEach { (key, value) -> query.setParameter(key,value)  }
             query.singleResultOrNull
-        }.subscribe().with {
-            item -> future.onSuccess(item)
-        }
+        }.subscribe().with({
+            future.onSuccess(it)
+        },{
+            future.fail(it)
+        })
         return future
     }
 
