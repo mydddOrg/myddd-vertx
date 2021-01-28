@@ -12,9 +12,6 @@ include("myddd-vertx-repository:myddd-vertx-repository-hibernate")
 include("myddd-vertx-querychannel:myddd-vertx-querychannel-api")
 include("myddd-vertx-querychannel:myddd-vertx-querychannel-hibernate")
 
-include("example:comment-domain")
-include("example:comment-infra")
-
 //oauth2.0的实现
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-domain")
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-infra")
