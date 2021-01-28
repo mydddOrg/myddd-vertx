@@ -25,10 +25,8 @@ class QueryChannelHibernate : QueryChannel {
         sessionFactory.withSession { session ->
             val query = session.createQuery<Long>(queryParam.countSQL())
             queryParam.params.forEach { (key, value) -> query.setParameter(key,value)  }
-            query.singleResult.invoke { count ->
-                future.onSuccess(count)
-            }
-        }.await().indefinitely()
+            query.singleResult
+        }.subscribe().with { count -> future.onSuccess(count) }
         return future
     }
 
@@ -38,10 +36,8 @@ class QueryChannelHibernate : QueryChannel {
             val query = session.createQuery(queryParam.sql,queryParam.clazz)
             queryParam.params.forEach { (key, value) -> query.setParameter(key,value)  }
 
-            query.setFirstResult(pageParam.page * pageParam.pageSize).setMaxResults(pageParam.pageSize).resultList.invoke { list ->
-                future.onSuccess(list)
-            }
-        }.await().indefinitely()
+            query.setFirstResult(pageParam.page * pageParam.pageSize).setMaxResults(pageParam.pageSize).resultList
+        }.subscribe().with { list -> future.onSuccess(list) }
         return future
     }
 
@@ -50,11 +46,8 @@ class QueryChannelHibernate : QueryChannel {
         sessionFactory.withSession { session ->
             val query = session.createQuery(queryParam.sql,queryParam.clazz)
             queryParam.params.forEach { (key, value) -> query.setParameter(key,value)  }
-
-            query.resultList.invoke {
-                list -> future.onSuccess(list)
-            }
-        }.await().indefinitely()
+            query.resultList
+        }.subscribe().with { list -> future.onSuccess(list) }
         return future
     }
 }

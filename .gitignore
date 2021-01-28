@@ -3,3 +3,5 @@
 .idea
 **/*.class
 build
+example/comment-infra/out
+**/*/out

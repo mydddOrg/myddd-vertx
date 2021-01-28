@@ -8,6 +8,7 @@ import org.myddd.vertx.domain.Entity
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.EntityRepository
 import java.io.Serializable
+import java.util.*
 import javax.persistence.Persistence
 
 
@@ -20,17 +21,17 @@ open class EntityRepositoryHibernate : EntityRepository {
         exists(entity::class.java,entity.getId()).onSuccess { exists ->
             if(exists) {
                 sessionFactory.withTransaction { session, _ ->
-                    session.merge(entity).invoke { merge ->
-                        future.onSuccess(merge)
-                    }
-                }.await().indefinitely()
+                    session.merge(entity)
+                }.subscribe().with { merge ->
+                    future.onSuccess(merge)
+                }
 
             }else{
                 sessionFactory.withTransaction { session, _ ->
-                    session.persist(entity).eventually() {
-                        future.onSuccess(entity)
-                    }
-                }.await().indefinitely()
+                    session.persist(entity)
+                }.subscribe().with{
+                    future.onSuccess(entity)
+                }
             }
         }
 
@@ -41,46 +42,41 @@ open class EntityRepositoryHibernate : EntityRepository {
     override suspend fun <T : Entity> get(clazz: Class<T>?, id: Serializable?): Future<T?> {
         val future = PromiseImpl<T>()
         sessionFactory.withSession { session ->
-            session.find(clazz,id).invoke {
-                    findObj -> future.onSuccess(findObj)
-            }
-        }.await().indefinitely()
+            session.find(clazz,id)
+        }.subscribe().with { findObj -> future.onSuccess(findObj) }
         return future
     }
 
     override suspend fun <T : Entity> exists(clazz: Class<T>?, id: Serializable?): Future<Boolean> {
         val future = PromiseImpl<Boolean>()
         sessionFactory.withSession { session ->
-            session.find(clazz,id).invoke {
-                    findObj -> if(findObj != null) future.onSuccess(true) else future.onSuccess(false)
-            }
-        }.await().indefinitely()
+            session.find(clazz,id)
+        }.subscribe().with { findObj -> if(findObj != null) future.onSuccess(true) else future.onSuccess(false) }
         return future
     }
 
     override suspend fun <T : Entity> batchSave(entityList:Array<T>): Future<Boolean> {
         val future = PromiseImpl<Boolean>()
         sessionFactory.withTransaction { session, _ ->
-            session.persistAll(*entityList).eventually {
-                future.onSuccess(true)
-            }
-        }.await().indefinitely()
+            session.persistAll(*entityList)
+        }.subscribe().with { future.onSuccess(true) }
         return future
     }
 
     override suspend fun <T : Entity> delete(clazz: Class<T>?, id: Serializable?): Future<Boolean> {
         val future = PromiseImpl<Boolean>()
-        sessionFactory.withTransaction { session, _ ->
-            session.find(clazz,id).chain {
-                findObj ->
-                if(findObj!= null) {
-                    session.remove(findObj).eventually { future.onSuccess(true) }
-                }else{
-                    future.onSuccess(false)
-                    Uni.createFrom().nullItem()
-                }
-            }
-        }.await().indefinitely()
+        sessionFactory.withSession { session ->
+            session.find(clazz,id)
+        }.subscribe().with { findObj ->
+            if(Objects.nonNull(findObj))
+                sessionFactory.withTransaction { session, _ ->
+                    session.merge(findObj).chain { merge ->
+                        session.remove(merge)
+                    }
+            }.subscribe().with { future.onSuccess(true) }
+
+            else future.onSuccess(false)
+        }
         return future
     }
 

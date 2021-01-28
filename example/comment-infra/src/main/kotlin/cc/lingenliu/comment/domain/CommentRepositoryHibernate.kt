@@ -48,10 +48,8 @@ class CommentRepositoryHibernate : EntityRepositoryHibernate(),CommentRepository
             session.createQuery<Comment>("from Comment where commentId = :commentId and level = 0 order by created desc")
                 .setParameter("commentId",commentId)
                 .setMaxResults(20)
-                .resultList.invoke { list ->
-                    future.onSuccess(list)
-                }
-        }.await().indefinitely()
+                .resultList
+        }.subscribe().with { list -> future.onSuccess(list) }
         return future
     }
 
