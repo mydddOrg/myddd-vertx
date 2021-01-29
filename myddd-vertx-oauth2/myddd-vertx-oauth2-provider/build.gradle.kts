@@ -25,4 +25,17 @@ dependencies {
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
 
+    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-domain"))
+    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-api"))
+
+    implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
+
+    testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
+
+    implementation(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
+
+
+    testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-infra"))
+    testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-application"))
+
 }

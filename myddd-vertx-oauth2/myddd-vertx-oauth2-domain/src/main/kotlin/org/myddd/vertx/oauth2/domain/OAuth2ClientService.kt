@@ -11,6 +11,13 @@ class OAuth2ClientService {
     @Inject
     private lateinit var repository:OAuth2ClientRepository
 
+    suspend fun queryUserToken(clientId:String):Future<OAuth2Token?> {
+        val future = PromiseImpl<OAuth2Token>()
+        var token = repository.singleQuery(OAuth2Token::class.java,"from OAuth2Token where clientId = :clientId", mapOf("clientId" to clientId)).await()
+        future.onSuccess(token)
+        return future
+    }
+
     suspend fun queryClientByClientId(clientId:String):Future<OAuth2Client?> {
         return repository.queryClientByClientId(clientId)
     }
@@ -31,14 +38,14 @@ class OAuth2ClientService {
             "TOKEN_NOT_EXISTS"
         }
 
-        check(token!!.refreshToken == refreshToken){
+        check(token.refreshToken == refreshToken){
             "REFRESH_TOKEN_NOT_MATCH"
         }
 
         token = if(Objects.isNull(token)) {
             OAuth2Token.createTokenFromClient(client).await()
         }else{
-            token!!.refreshToken().await()
+            token.refreshToken().await()
         }
         future.onSuccess(token)
         return future

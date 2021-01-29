@@ -99,4 +99,55 @@ class TestDatabaseOAuth2Application : AbstractTest() {
             }
         }
     }
+
+    @Test
+    fun testLoadUserToken(testContext: VertxTestContext){
+        executeWithTryCatch(testContext){
+            GlobalScope.launch {
+
+                try {
+                    databaseOAuth2Application.loadUserToken(UUID.randomUUID().toString()).await()
+                    testContext.failNow("没有当前用户，不可能查出相关TOKEN")
+                }catch (e:Exception){
+                    testContext.verify { Assertions.assertNotNull(e) }
+                }
+
+                val client = OAuth2Client()
+                client.name = UUID.randomUUID().toString()
+                val created = client.createClient().await()
+
+                try {
+                    databaseOAuth2Application.loadUserToken(created.clientId).await()
+                    testContext.failNow("当前用户没有请求过TOKEN，不可能查出相关TOKEN")
+                }catch (e:Exception){
+                    testContext.verify { Assertions.assertNotNull(e) }
+                }
+
+                val userDTO = databaseOAuth2Application.validateClientUser(created.clientId,created.clientSecret).await()
+                testContext.verify {
+                    Assertions.assertNotNull(userDTO)
+                    Assertions.assertFalse(userDTO!!.expired())
+                }
+
+                var queryUserDTO = databaseOAuth2Application.loadUserToken(created.clientId).await()
+                testContext.verify {
+                    Assertions.assertNotNull(queryUserDTO)
+                }
+
+                databaseOAuth2Application.revokeUserToken(created.clientId).await()
+
+                try {
+                    databaseOAuth2Application.loadUserToken(created.clientId).await()
+                    testContext.failNow("当前用户没有请求过TOKEN，不可能查出相关TOKEN")
+                }catch (e:Exception){
+                    testContext.verify { Assertions.assertNotNull(e) }
+                }
+
+                testContext.completeNow()
+
+
+
+            }
+        }
+    }
 }

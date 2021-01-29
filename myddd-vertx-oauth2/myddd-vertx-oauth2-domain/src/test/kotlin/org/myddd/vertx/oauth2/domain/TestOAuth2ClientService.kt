@@ -109,4 +109,24 @@ class TestOAuth2ClientService : AbstractTest() {
         }
     }
 
+    @Test
+    fun testQueryUserToken(testContext: VertxTestContext){
+        executeWithTryCatch(testContext){
+            GlobalScope.launch {
+                val client = OAuth2Client()
+                client.name = UUID.randomUUID().toString()
+                val created = client.createClient().await()
+                val token = oAuth2ClientService.generateClientToken(created).await()
+
+                val queryToken = oAuth2ClientService.queryUserToken(client.clientId).await()
+
+                testContext.verify {
+                    Assertions.assertNotNull(queryToken)
+                    Assertions.assertEquals(token.accessToken,queryToken!!.accessToken)
+                }
+                testContext.completeNow()
+            }
+        }
+    }
+
 }

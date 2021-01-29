@@ -19,4 +19,9 @@ interface DatabaseOAuth2Application {
      */
     suspend fun revokeUserToken(clientId: String):Future<Boolean>
 
+    /**
+     * 加载当前用户最新的TOKEN信息
+     */
+    suspend fun loadUserToken(clientId: String):Future<OAuth2UserDTO?>
+
 }
