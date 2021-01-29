@@ -3,28 +3,33 @@ package org.myddd.vertx.querychannel.hibernate
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.kotlin.coroutines.await
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import org.hibernate.reactive.mutiny.Mutiny
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.querychannel.api.*
+import org.myddd.vertx.querychannel.api.Page
+import org.myddd.vertx.querychannel.api.PageParam
+import org.myddd.vertx.querychannel.api.QueryChannel
+import org.myddd.vertx.querychannel.api.QueryParam
 
 class QueryChannelHibernate : QueryChannel {
 
     private val sessionFactory: Mutiny.SessionFactory by lazy { InstanceFactory.getInstance(Mutiny.SessionFactory::class.java) }
 
     override suspend fun  <T> pageQuery(queryParam: QueryParam<T>, pageParam: PageParam):Future<Page<T>> {
+
         val future = PromiseImpl<Page<T>>()
 
-        val queryResult =  GlobalScope.async {
-            pageQueryResult(queryParam,pageParam)
-        }.await()
-
-        var queryCount = GlobalScope.async {
-            pageQueryCount(queryParam)
-        }.await()
-
-        future.onSuccess(Page(dataList = queryResult.await(),totalCount = queryCount.await(),page = pageParam.page,pageSize = pageParam.pageSize))
+        coroutineScope {
+            val queryResult = withContext(Dispatchers.Default) {
+                pageQueryResult(queryParam, pageParam)
+            }
+            var queryCount = withContext(Dispatchers.Default) {
+                pageQueryCount(queryParam)
+            }
+            future.onSuccess(Page(dataList = queryResult.await(),totalCount = queryCount.await(),page = pageParam.page,pageSize = pageParam.pageSize))
+        }
         return future
     }
 

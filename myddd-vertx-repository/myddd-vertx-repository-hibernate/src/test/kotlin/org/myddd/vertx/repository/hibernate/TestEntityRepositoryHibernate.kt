@@ -2,24 +2,21 @@ package org.myddd.vertx.repository.hibernate
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
-import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.bytebuddy.implementation.bytecode.constant.TextConstant
 import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.repository.api.EntityRepository
-import java.lang.Exception
 import java.util.*
 import javax.persistence.Persistence
+import kotlin.Exception
 import kotlin.collections.ArrayList
 
 @ExtendWith(VertxExtension::class)
@@ -223,5 +220,30 @@ class TestEntityRepositoryHibernate {
     }
 
 
+    @Test
+    fun testExecuteUpdate(testContext: VertxTestContext){
+        GlobalScope.launch {
+            try {
+                val user =  User(username = "lingen",age = 35)
+                repository.save(user).await()
+
+                val updated = repository.executeUpdate("update User set age = :age", mapOf("age" to 40)).await()
+                testContext.verify {
+                    Assertions.assertTrue(updated!! > 0L)
+                }
+
+                val queryUser = repository.singleQuery(User::class.java,"from User where username = :username", mapOf("username" to "lingen")).await()
+                testContext.verify {
+                    Assertions.assertNotNull(queryUser)
+                    Assertions.assertEquals(queryUser!!.age,40)
+                }
+
+                testContext.completeNow()
+
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+        }
+    }
 
 }

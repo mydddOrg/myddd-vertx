@@ -46,4 +46,9 @@ interface EntityRepository {
      */
     suspend fun <T:Entity> singleQuery(clazz: Class<T>?,sql:String,params:Map<String,Any> = HashMap()):Future<T?>
 
+    /**
+     * 执行一个更新操作
+     */
+    suspend fun executeUpdate(sql:String,params:Map<String,Any> = HashMap()):Future<Int?>
+
 }
