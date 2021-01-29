@@ -2,6 +2,9 @@ package org.myddd.vertx.querychannel.hibernate
 
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
+import io.vertx.kotlin.coroutines.await
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import org.hibernate.reactive.mutiny.Mutiny
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.querychannel.api.*
@@ -12,11 +15,16 @@ class QueryChannelHibernate : QueryChannel {
 
     override suspend fun  <T> pageQuery(queryParam: QueryParam<T>, pageParam: PageParam):Future<Page<T>> {
         val future = PromiseImpl<Page<T>>()
-        this.pageQueryResult(queryParam,pageParam).onSuccess { list ->
-            this.pageQueryCount(queryParam).onSuccess { totalCount ->
-                future.onSuccess(Page(dataList = list,totalCount = totalCount,page = pageParam.page,pageSize = pageParam.pageSize))
-            }
-        }
+
+        val queryResult =  GlobalScope.async {
+            pageQueryResult(queryParam,pageParam)
+        }.await()
+
+        var queryCount = GlobalScope.async {
+            pageQueryCount(queryParam)
+        }.await()
+
+        future.onSuccess(Page(dataList = queryResult.await(),totalCount = queryCount.await(),page = pageParam.page,pageSize = pageParam.pageSize))
         return future
     }
 
