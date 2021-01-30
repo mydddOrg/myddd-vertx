@@ -39,4 +39,7 @@ dependencies {
 
     implementation("javax.inject:javax.inject:1")
     implementation("org.eclipse.persistence:javax.persistence:2.2.1")
+
+    testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
+
 }

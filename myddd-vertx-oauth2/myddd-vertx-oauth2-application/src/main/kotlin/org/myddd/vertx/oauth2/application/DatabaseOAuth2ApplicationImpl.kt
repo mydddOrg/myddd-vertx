@@ -17,21 +17,22 @@ class DatabaseOAuth2ApplicationImpl : DatabaseOAuth2Application {
     private val clientService:OAuth2ClientService by lazy { InstanceFactory.getInstance(OAuth2ClientService::class.java) }
 
     override suspend fun validateClientUser(clientId: String, clientSecret: String): Future<OAuth2UserDTO?> {
-        val promise = PromiseImpl<OAuth2UserDTO?>()
-        try {
+        return try {
             val user = clientService.queryClientByClientId(clientId).await()
-            checkNotNull(Objects.nonNull(user)){
-                RuntimeException("CLIENT_NOT_FOUND")
+            checkNotNull(user){
+                "CLIENT_NOT_FOUND"
             }
             check((user?.clientSecret == clientSecret)){
-                RuntimeException("CLIENT_SECRET_NOT_MATCH")
+                "CLIENT_SECRET_NOT_MATCH"
             }
-            val token = clientService.generateClientToken(user!!).await()
-            promise.onSuccess(toOAuth2UserDTO(user,token))
+            check(!user!!.disabled){
+                "CLIENT_DISABLED"
+            }
+            val token = clientService.generateClientToken(user).await()
+            Future.succeededFuture(toOAuth2UserDTO(user,token))
         }catch (e:Exception){
-            promise.fail(e)
+            Future.failedFuture(e)
         }
-        return promise.future()
     }
 
     override suspend fun refreshUserToken(clientId: String, refreshToken: String): Future<OAuth2UserDTO?> {
@@ -57,7 +58,7 @@ class DatabaseOAuth2ApplicationImpl : DatabaseOAuth2Application {
         try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
             check(Objects.nonNull(queryUser)){
-                RuntimeException("CLIENT_NOT_FOUND")
+                "CLIENT_NOT_FOUND"
             }
 
             clientService.revokeUserToken(queryUser!!).await()
@@ -74,11 +75,11 @@ class DatabaseOAuth2ApplicationImpl : DatabaseOAuth2Application {
         try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
             if(Objects.isNull(queryUser)){
-                promise.fail(RuntimeException("CLIENT_ID_NOT_FOUND"))
+                "CLIENT_ID_NOT_FOUND"
             }
             val queryToken = clientService.queryUserToken(clientId).await()
             if(Objects.isNull(queryToken)){
-                promise.fail(RuntimeException("CLIENT_TOKEN_NOT_FOUND"))
+                "CLIENT_TOKEN_NOT_FOUND"
             }
             promise.onSuccess(toOAuth2UserDTO(queryUser!!,queryToken!!))
         }catch (e:Exception){

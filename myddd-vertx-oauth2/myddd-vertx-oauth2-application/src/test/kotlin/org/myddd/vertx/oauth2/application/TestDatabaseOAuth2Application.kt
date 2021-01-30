@@ -19,16 +19,56 @@ class TestDatabaseOAuth2Application : AbstractTest() {
     fun testValidateClientUser(testContext: VertxTestContext){
         executeWithTryCatch(testContext){
             GlobalScope.launch {
-                val client = OAuth2Client()
-                client.name = UUID.randomUUID().toString()
-                val created = client.createClient().await()
+                try {
 
-                val userDTO = databaseOAuth2Application.validateClientUser(created.clientId,created.clientSecret).await()
-                testContext.verify {
-                    Assertions.assertNotNull(userDTO)
-                    Assertions.assertFalse(userDTO!!.expired())
+                    try {
+                        databaseOAuth2Application.validateClientUser(UUID.randomUUID().toString(),UUID.randomUUID().toString()).await()
+                        testContext.failNow("不存在的ClientId不可能验证通过")
+                    }catch (e:Exception){
+                        testContext.verify { Assertions.assertNotNull(e) }
+                    }
+
+                    val client = OAuth2Client()
+                    client.name = UUID.randomUUID().toString()
+                    val created = client.createClient().await()
+
+                    try {
+                        databaseOAuth2Application.validateClientUser(created.clientId,UUID.randomUUID().toString()).await()
+                        testContext.failNow("不正确的密码不可能验证通过")
+                    }catch (e:Exception){
+                        testContext.verify { Assertions.assertNotNull(e) }
+                    }
+
+
+                    var userDTO = databaseOAuth2Application.validateClientUser(created.clientId,created.clientSecret).await()
+                    testContext.verify {
+                        Assertions.assertNotNull(userDTO)
+                        Assertions.assertFalse(userDTO!!.expired())
+                    }
+
+                    val disabled = client.disable().await()
+
+                    try {
+                        databaseOAuth2Application.validateClientUser(disabled.clientId,disabled.clientSecret).await()
+                        testContext.failNow("被禁用的不可能通过验证")
+                    }catch (e:Exception){
+                        testContext.verify { Assertions.assertNotNull(e) }
+                    }
+
+                    val enabled = disabled.enable().await()
+
+                    userDTO = databaseOAuth2Application.validateClientUser(enabled.clientId,enabled.clientSecret).await()
+                    testContext.verify {
+                        Assertions.assertNotNull(userDTO)
+                        Assertions.assertFalse(userDTO!!.expired())
+                    }
+
+                    testContext.completeNow()
+
+                }catch (e:Exception){
+                    testContext.failNow(e)
                 }
-                testContext.completeNow()
+
             }
         }
     }

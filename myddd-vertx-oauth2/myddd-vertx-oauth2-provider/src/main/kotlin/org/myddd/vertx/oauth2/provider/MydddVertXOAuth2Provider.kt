@@ -21,12 +21,16 @@ class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {
 
     private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(DatabaseOAuth2Application::class.java) }
 
+    companion object {
+        const val CLIENT_ID = "clientId"
+        const val CLIENT_SECRET = "clientSecret"
+    }
     override fun authenticate(credentials: JsonObject?, resultHandler: Handler<AsyncResult<User>>?) {
-        require(Objects.nonNull(credentials)){
+        check(Objects.nonNull(credentials?.getString(CLIENT_ID)) && Objects.nonNull(credentials?.getString(CLIENT_SECRET))){
             "请指定client id以及client secret"
         }
         GlobalScope.launch {
-            databaseOAuth2Application.validateClientUser(credentials!!.getString("clientId"),credentials!!.getString("clientSecret"))
+            databaseOAuth2Application.validateClientUser(credentials!!.getString(CLIENT_ID),credentials!!.getString(CLIENT_SECRET))
                 .onSuccess {
                     resultHandler?.handle(Future.succeededFuture(it))
                 }.onFailure {
@@ -56,17 +60,18 @@ class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {
     }
 
     override fun revoke(user: User?, tokenType: String?, handler: Handler<AsyncResult<Void>>?): OAuth2Auth {
-        if(Objects.nonNull(user)){
+        check(Objects.nonNull(user) && Objects.nonNull((user as OAuth2UserDTO).clientId)){
+            "CLIENT_ID_NULL"
+        }
+        GlobalScope.launch {
             val auth2User = user as OAuth2UserDTO
-            GlobalScope.launch {
-                databaseOAuth2Application.revokeUserToken(auth2User.clientId).onSuccess {
-                    handler?.handle(Future.succeededFuture())
-                }.onFailure {
-                    handler?.handle(Future.failedFuture(it))
-                }
+
+            databaseOAuth2Application.revokeUserToken(auth2User.clientId).onSuccess {
+                handler?.handle(Future.succeededFuture())
+            }.onFailure {
+                handler?.handle(Future.failedFuture(it))
             }
         }
-        handler?.handle(Future.succeededFuture())
         return this
     }
 }

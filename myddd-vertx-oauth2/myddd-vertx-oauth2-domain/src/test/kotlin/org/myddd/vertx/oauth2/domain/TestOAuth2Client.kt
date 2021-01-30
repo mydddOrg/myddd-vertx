@@ -73,6 +73,55 @@ class TestOAuth2Client : AbstractTest() {
         }
     }
 
+    @Test
+    fun testDisable(testContext: VertxTestContext){
+        GlobalScope.launch {
+            try {
+                val client = createClient()
+                val created = client.createClient().await()
+                testContext.verify {
+                    Assertions.assertFalse(created.disabled)
+                }
+                val disabled = created.disable().await()
+                testContext.verify {
+                    Assertions.assertNotNull(disabled)
+                    Assertions.assertTrue(disabled.disabled)
+                }
+
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+        }
+    }
+
+    @Test
+    fun testEnable(testContext: VertxTestContext){
+        GlobalScope.launch {
+            try {
+                val client = createClient()
+                val created = client.createClient().await()
+                testContext.verify {
+                    Assertions.assertFalse(created.disabled)
+                }
+
+                var disabled = created.disable().await()
+                testContext.verify {
+                    Assertions.assertNotNull(disabled)
+                }
+
+                val enabled = disabled.enable().await()
+                testContext.verify {
+                    Assertions.assertNotNull(enabled)
+                    Assertions.assertFalse(enabled.disabled)
+                }
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+        }
+    }
+
     private fun createClient():OAuth2Client {
         val client = OAuth2Client()
         client.name = "TEST_A"

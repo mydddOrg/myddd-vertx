@@ -1,6 +1,7 @@
 package org.myddd.vertx.oauth2.domain
 
 import io.vertx.core.Future
+import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.BaseEntity
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
@@ -23,6 +24,8 @@ class OAuth2Client:BaseEntity() {
 
     @Column(nullable = false)
     var name:String = ""
+
+    var disabled:Boolean = false
 
     @Column(name = "display_name")
     var displayName:String? = null
@@ -49,4 +52,25 @@ class OAuth2Client:BaseEntity() {
         this.clientSecret = UUID.randomUUID().toString()
         return repository.save(this)
     }
+
+    suspend fun disable():Future<OAuth2Client>{
+        return try {
+            this.disabled = true
+            val disabled  =repository.save(this).await()
+            Future.succeededFuture(disabled)
+        }catch (e:Exception){
+            Future.failedFuture(e)
+        }
+    }
+
+    suspend fun enable():Future<OAuth2Client>{
+        return try {
+            this.disabled = false
+            val enabled = repository.save(this).await()
+            Future.succeededFuture(enabled)
+        }catch (e:Exception){
+            Future.failedFuture(e)
+        }
+    }
+
 }
