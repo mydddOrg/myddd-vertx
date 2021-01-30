@@ -13,7 +13,7 @@ class OAuth2ClientService {
 
     suspend fun queryUserToken(clientId:String):Future<OAuth2Token?> {
         val future = PromiseImpl<OAuth2Token>()
-        var token = repository.singleQuery(OAuth2Token::class.java,"from OAuth2Token where clientId = :clientId", mapOf("clientId" to clientId)).await()
+        var token = queryClientToken(clientId)
         future.onSuccess(token)
         return future
     }
@@ -24,7 +24,7 @@ class OAuth2ClientService {
 
     suspend fun generateClientToken(client:OAuth2Client):Future<OAuth2Token>{
         val future = PromiseImpl<OAuth2Token>()
-        var token = repository.singleQuery(OAuth2Token::class.java,"from OAuth2Token where clientId = :clientId", mapOf("clientId" to client.clientId)).await()
+        var token = queryClientToken(client.clientId)
         if(Objects.isNull(token)) token = OAuth2Token.createTokenFromClient(client).await()
         future.onSuccess(token)
         return future
@@ -32,7 +32,7 @@ class OAuth2ClientService {
 
     suspend fun refreshUserToken(client: OAuth2Client,refreshToken:String):Future<OAuth2Token>{
         val future = PromiseImpl<OAuth2Token>()
-        var token = repository.singleQuery(OAuth2Token::class.java,"from OAuth2Token where clientId = :clientId", mapOf("clientId" to client.clientId)).await()
+        var token = queryClientToken(client.clientId)
 
         check(token!=null){
             "TOKEN_NOT_EXISTS"
@@ -53,11 +53,19 @@ class OAuth2ClientService {
 
     suspend fun revokeUserToken(client: OAuth2Client):Future<Boolean>{
         val future = PromiseImpl<Boolean>()
-        var token = repository.singleQuery(OAuth2Token::class.java,"from OAuth2Token where clientId = :clientId", mapOf("clientId" to client.clientId)).await()
+        var token = queryClientToken(client.clientId)
         if(Objects.nonNull(token)){
             repository.delete(OAuth2Token::class.java,token!!.id).await()
         }
         future.onSuccess(true)
         return future
+    }
+
+    private suspend fun queryClientToken(clientId: String): OAuth2Token? {
+        return repository.singleQuery(
+            OAuth2Token::class.java,
+            "from OAuth2Token where clientId = :clientId",
+            mapOf("clientId" to clientId)
+        ).await()
     }
 }

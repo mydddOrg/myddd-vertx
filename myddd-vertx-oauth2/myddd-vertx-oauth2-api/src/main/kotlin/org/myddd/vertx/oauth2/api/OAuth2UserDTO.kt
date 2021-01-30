@@ -21,18 +21,18 @@ class OAuth2UserDTO : User {
     }
 
     override fun attributes(): JsonObject {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException()
     }
 
     override fun isAuthorized(authority: Authorization?, resultHandler: Handler<AsyncResult<Boolean>>?): User {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException()
     }
 
     override fun principal(): JsonObject {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException()
     }
 
     override fun setAuthProvider(authProvider: AuthProvider?) {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException()
     }
 }
