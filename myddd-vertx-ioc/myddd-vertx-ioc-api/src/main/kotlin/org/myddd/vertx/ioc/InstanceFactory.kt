@@ -1,6 +1,6 @@
 package org.myddd.vertx.ioc
 
-class InstanceFactory {
+class InstanceFactory private constructor(){
 
     companion object {
         private var instanceProvider: InstanceProvider? = null

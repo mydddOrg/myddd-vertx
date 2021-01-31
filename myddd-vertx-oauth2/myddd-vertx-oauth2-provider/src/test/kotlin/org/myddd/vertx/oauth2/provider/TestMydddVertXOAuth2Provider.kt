@@ -60,23 +60,25 @@ class TestMydddVertXOAuth2Provider : AbstractTest() {
     fun testRefresh(testContext: VertxTestContext){
         executeWithTryCatch(testContext){
             GlobalScope.launch {
-                val createdClient = createClient().createClient().await()
-                val user = oAuth2Auth.authenticate(JsonObject().put("clientId",createdClient.clientId)
-                    .put("clientSecret",createdClient.clientSecret)).await()
+
 
                 try {
-                    oAuth2Auth.refresh(null)
+                    oAuth2Auth.refresh(null).await()
                     testContext.failNow("空用户不能刷新TOKEN")
                 }catch (e:Exception){
                     testContext.verify { Assertions.assertNotNull(e) }
                 }
 
                 try {
-                    oAuth2Auth.refresh(OAuth2UserDTO())
+                    oAuth2Auth.refresh(OAuth2UserDTO()).await()
                     testContext.failNow("不正确的User不能刷新TOKEN")
                 }catch (e:Exception){
                     testContext.verify { Assertions.assertNotNull(e) }
                 }
+
+                val createdClient = createClient().createClient().await()
+                val user = oAuth2Auth.authenticate(JsonObject().put("clientId",createdClient.clientId)
+                    .put("clientSecret",createdClient.clientSecret)).await()
 
                 val token = oAuth2Auth.refresh(user).await()
                 testContext.verify {
@@ -87,11 +89,10 @@ class TestMydddVertXOAuth2Provider : AbstractTest() {
                     val oauthUser = user as OAuth2UserDTO
                     oauthUser.tokenDTO?.refreshToken = UUID.randomUUID().toString()
                     oAuth2Auth.refresh(oauthUser).await()
-                    testContext.failNow("不正确的client Id不能revoke")
+                    testContext.failNow("不正确的refreshToken不能刷新Token")
                 }catch (e:Exception){
                     testContext.verify { Assertions.assertNotNull(e) }
                 }
-
 
                 testContext.completeNow()
             }
