@@ -1,19 +1,44 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.api.tasks.testing.logging.TestLogEvent.*
+
 plugins {
     java
+    application
     kotlin("jvm")
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
+
 
 group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
 
+val mainVerticleName = "org.myddd.vertx.oauth2.start.MydddOAuth2Verticle"
+val launcherClassName = "io.vertx.core.Launcher"
+
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    testLogging {
+        events = setOf(PASSED, SKIPPED, FAILED)
+    }
 }
 
 tasks.jacocoTestReport {
     reports {
         xml.isEnabled = true
     }
+}
+
+application {
+    mainClassName = launcherClassName
+}
+
+tasks.withType<ShadowJar> {
+    archiveClassifier.set("fat")
+    manifest {
+        attributes(mapOf("Main-Verticle" to mainVerticleName))
+    }
+    mergeServiceFiles()
 }
 
 dependencies {
