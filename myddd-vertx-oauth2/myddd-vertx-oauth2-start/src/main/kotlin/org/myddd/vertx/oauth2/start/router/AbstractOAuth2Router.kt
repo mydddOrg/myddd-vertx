@@ -16,6 +16,8 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
 
     val vertx:Vertx = vertx
 
+    val version = "v1"
+
     private val bodyHandler = BodyHandler.create()
 
     companion object {

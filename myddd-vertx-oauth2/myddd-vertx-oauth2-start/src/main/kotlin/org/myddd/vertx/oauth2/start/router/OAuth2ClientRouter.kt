@@ -22,12 +22,14 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2
 
     private val oAuth2ClientApplication:OAuth2ClientApplication by lazy { InstanceFactory.getInstance(OAuth2ClientApplication::class.java) }
 
+    private val basePath = "oauth2"
+
     init {
         createClientRoute()
     }
 
     private fun createClientRoute(){
-        createRoute(HttpMethod.POST,"/v1/oauth2/clients"){
+        createRoute(HttpMethod.POST,"/$version/$basePath/clients"){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
                     val body = it.bodyAsJson
