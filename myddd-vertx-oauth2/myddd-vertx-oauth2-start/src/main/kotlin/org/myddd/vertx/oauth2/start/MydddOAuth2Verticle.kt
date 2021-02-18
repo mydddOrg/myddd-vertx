@@ -9,6 +9,7 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.oauth2.start.router.MydddOAuth2Router
+import org.myddd.vertx.oauth2.start.router.OAuth2ClientRouter
 
 class MydddOAuth2Verticle : CoroutineVerticle() {
 
@@ -29,6 +30,7 @@ class MydddOAuth2Verticle : CoroutineVerticle() {
             }
 
             MydddOAuth2Router(router)
+            OAuth2ClientRouter(router,vertx)
 
             server.requestHandler(router).listen(8080)
             println("listen to 8080")

@@ -12,4 +12,7 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
     api("io.vertx:vertx-auth-common:${rootProject.extra["vertx_version"]}")
+
+    implementation("com.fasterxml.jackson.core:jackson-annotations:${rootProject.extra["jackson_version"]}")
+
 }

@@ -7,13 +7,13 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.oauth2.api.DatabaseOAuth2Application
+import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.domain.OAuth2Client
 import java.util.*
 
-class TestDatabaseOAuth2Application : AbstractTest() {
+class TestOAuth2Application : AbstractTest() {
 
-    private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(DatabaseOAuth2Application::class.java)}
+    private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java)}
 
     @Test
     fun testValidateClientUser(testContext: VertxTestContext){

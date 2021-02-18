@@ -9,8 +9,8 @@ import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
-import org.myddd.vertx.oauth2.api.DatabaseOAuth2Application
-import org.myddd.vertx.oauth2.application.DatabaseOAuth2ApplicationImpl
+import org.myddd.vertx.oauth2.api.OAuth2Application
+import org.myddd.vertx.oauth2.application.OAuth2ApplicationJPA
 import org.myddd.vertx.oauth2.domain.OAuth2ClientRepository
 import org.myddd.vertx.oauth2.domain.OAuth2ClientService
 import org.myddd.vertx.oauth2.domain.OAuth2TokenRepository
@@ -35,7 +35,7 @@ abstract class AbstractTest {
 
                 bind(OAuth2ClientRepository::class.java).to((OAuth2ClientRepositoryHibernate::class.java))
                 bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
-                bind(DatabaseOAuth2Application::class.java).to(DatabaseOAuth2ApplicationImpl::class.java)
+                bind(OAuth2Application::class.java).to(OAuth2ApplicationJPA::class.java)
 
                 bind(OAuth2Auth::class.java).to(MydddVertXOAuth2Provider::class.java)
             }

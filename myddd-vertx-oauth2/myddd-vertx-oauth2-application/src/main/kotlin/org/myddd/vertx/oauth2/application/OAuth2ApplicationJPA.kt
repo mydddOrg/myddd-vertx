@@ -4,15 +4,14 @@ import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.oauth2.api.DatabaseOAuth2Application
+import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2UserDTO
 import org.myddd.vertx.oauth2.domain.OAuth2ClientService
-import org.myddd.vertx.oauth2.domain.OAuth2Token
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.*
 
-class DatabaseOAuth2ApplicationImpl : DatabaseOAuth2Application {
+class OAuth2ApplicationJPA : OAuth2Application {
 
     private val clientService:OAuth2ClientService by lazy { InstanceFactory.getInstance(OAuth2ClientService::class.java) }
 

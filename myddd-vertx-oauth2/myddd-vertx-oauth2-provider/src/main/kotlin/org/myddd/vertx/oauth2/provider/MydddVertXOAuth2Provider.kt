@@ -3,23 +3,20 @@ package org.myddd.vertx.oauth2.provider
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
-import io.vertx.core.Promise
-import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.User
 import io.vertx.ext.auth.oauth2.OAuth2Auth
-import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.oauth2.api.DatabaseOAuth2Application
+import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2UserDTO
 import java.lang.RuntimeException
 import java.util.*
 
 class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {
 
-    private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(DatabaseOAuth2Application::class.java) }
+    private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }
 
     companion object {
         const val CLIENT_ID = "clientId"

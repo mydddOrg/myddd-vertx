@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(VertxExtension::class)
 class TestMydddOAuth2Verticle  {
 
+
     @Test
     fun testStart(vertx:Vertx,testContext: VertxTestContext){
         GlobalScope.launch {

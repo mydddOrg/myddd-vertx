@@ -2,8 +2,10 @@ package org.myddd.vertx.oauth2.start
 
 import com.google.inject.AbstractModule
 import org.hibernate.reactive.mutiny.Mutiny
-import org.myddd.vertx.oauth2.api.DatabaseOAuth2Application
-import org.myddd.vertx.oauth2.application.DatabaseOAuth2ApplicationImpl
+import org.myddd.vertx.oauth2.api.OAuth2Application
+import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
+import org.myddd.vertx.oauth2.application.OAuth2ApplicationJPA
+import org.myddd.vertx.oauth2.application.OAuth2ClientApplicationJPA
 import org.myddd.vertx.oauth2.domain.OAuth2ClientRepository
 import org.myddd.vertx.oauth2.domain.OAuth2ClientService
 import org.myddd.vertx.oauth2.domain.OAuth2TokenRepository
@@ -28,6 +30,8 @@ class MydddGuiceModule : AbstractModule() {
         bind(OAuth2ClientService::class.java)
         bind(OAuth2ClientRepository::class.java).to((OAuth2ClientRepositoryHibernate::class.java))
         bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
-        bind(DatabaseOAuth2Application::class.java).to(DatabaseOAuth2ApplicationImpl::class.java)
+        bind(OAuth2Application::class.java).to(OAuth2ApplicationJPA::class.java)
+
+        bind(OAuth2ClientApplication::class.java).to(OAuth2ClientApplicationJPA::class.java)
     }
 }
