@@ -23,8 +23,8 @@ fun toOAuth2Client(clientDTO: OAuth2ClientDTO):OAuth2Client {
     val oAuth2Client = OAuth2Client()
     clientDTO.id?.also { oAuth2Client.id = it!! }
     clientDTO.version?.also { oAuth2Client.version = it!! }
-    oAuth2Client.clientId = clientDTO.clientId
-    oAuth2Client.name = clientDTO.name
+    clientDTO.clientId?.also { oAuth2Client.clientId = clientDTO.clientId!!}
+    clientDTO.name?.also { oAuth2Client.name = clientDTO.name!! }
     clientDTO.clientSecret?.also { oAuth2Client.clientSecret = it!! }
     oAuth2Client.disabled = clientDTO.disabled
     return oAuth2Client
