@@ -8,7 +8,7 @@ plugins {
 }
 
 extra["version"] = "1.0-SNAPSHOT"
-extra["vertx_version"] = "4.0.0"
+extra["vertx_version"] = "4.0.2"
 
 group = "cc.lingenliu"
 version = project.extra["version"]!!
