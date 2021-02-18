@@ -12,7 +12,6 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.domain.BusinessLogicException
-import org.myddd.vertx.domain.ErrorCode
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
 import org.myddd.vertx.oauth2.api.OAuth2ClientDTO
@@ -28,14 +27,10 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2
     }
 
     private fun createClientRoute(){
-
-        val handlers = ArrayList<Handler<RoutingContext>>()
-
-        handlers.add(Handler<RoutingContext>{
+        createRoute(HttpMethod.POST,"/v1/oauth2/clients"){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
                     val body = it.bodyAsJson
-
                     if(body.getString("clientId").isNullOrEmpty() || body.getString("name").isNullOrEmpty()){
                         it.fail(BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_CREATE_CLIENT))
                     }
@@ -49,9 +44,7 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2
                     it.fail(400, e)
                 }
             }
-        })
-
-        createRoute(HttpMethod.POST,"/v1/oauth2/clients",handlers)
+        }
     }
 
 }

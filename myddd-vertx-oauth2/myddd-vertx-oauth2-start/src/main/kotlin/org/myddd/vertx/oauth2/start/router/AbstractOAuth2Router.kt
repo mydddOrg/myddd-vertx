@@ -24,6 +24,10 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
         const val OTHER_ERROR = "other error"
     }
 
+    protected fun createRoute(httpMethod:HttpMethod,path:String,handle: Handler<RoutingContext>):Route {
+        val handles = listOf(handle)
+        return createRoute(httpMethod,path,handles)
+    }
 
     protected fun createRoute(httpMethod:HttpMethod,path:String,handlers: List<Handler<RoutingContext>>):Route {
         val route = router.route(httpMethod,path).consumes("application/json").produces("application/json")
