@@ -9,7 +9,6 @@ plugins {
 
 extra["version"] = "1.0-SNAPSHOT"
 extra["vertx_version"] = "4.0.2"
-extra["jackson_version"] = "2.12.1"
 
 group = "cc.lingenliu"
 version = project.extra["version"]!!
@@ -17,6 +16,11 @@ version = project.extra["version"]!!
 subprojects {
     apply(plugin = "jacoco")
     apply(plugin = "org.sonarqube")
+
+    extra["log4j_version"] = "2.14.0"
+    extra["jackson_version"] = "2.12.1"
+    extra["javax_persistence_version"] = "2.2.1"
+
 }
 
 

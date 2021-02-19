@@ -15,5 +15,5 @@ dependencies {
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    api("org.eclipse.persistence:javax.persistence:2.2.1")
+    api("org.eclipse.persistence:javax.persistence:${extra["javax_persistence_version"]}")
 }

@@ -32,7 +32,7 @@ dependencies {
     implementation("org.hibernate:hibernate-core:5.4.27.Final")
 
     testImplementation("javax.inject:javax.inject:1")
-    testImplementation("org.eclipse.persistence:javax.persistence:2.2.1")
+    testImplementation("org.eclipse.persistence:javax.persistence:${extra["javax_persistence_version"]}")
 
     implementation("io.smallrye.reactive:mutiny:0.13.0")
     implementation("com.ibm.async:asyncutil:0.1.0")
