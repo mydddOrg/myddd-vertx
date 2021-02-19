@@ -1,5 +1,6 @@
 package org.myddd.vertx.oauth2.start.router
 
+import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.json.JsonObject
@@ -10,49 +11,41 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.myddd.vertx.domain.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
 import org.myddd.vertx.oauth2.api.OAuth2ClientDTO
+import org.myddd.vertx.oauth2.start.OAuth2WebErrorCode
 import java.lang.Exception
 
-class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) {
-
-    private val router:Router = router
-
-    private val vertx:Vertx = vertx
+class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2Router(router,vertx) {
 
     private val oAuth2ClientApplication:OAuth2ClientApplication by lazy { InstanceFactory.getInstance(OAuth2ClientApplication::class.java) }
+
+    private val basePath = "oauth2"
 
     init {
         createClientRoute()
     }
 
     private fun createClientRoute(){
-        val route = router.route(HttpMethod.POST,"/v1/oauth2/clients").consumes("application/json").produces("application/json")
-
-        route.handler(BodyHandler.create());
-
-        route.handler {
+        createRoute(HttpMethod.POST,"/$version/$basePath/clients"){
             GlobalScope.launch(vertx.dispatcher()) {
-                createClientRouteExecutor(it)
+                try {
+                    val body = it.bodyAsJson
+                    if(body.getString("clientId").isNullOrEmpty() || body.getString("name").isNullOrEmpty()){
+                        it.fail(BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_CREATE_CLIENT))
+                    }
+
+                    val createClientDTO = body.mapTo(OAuth2ClientDTO::class.java)
+
+                    val created = oAuth2ClientApplication.createClient(createClientDTO).await()
+                    val createdJson = JsonObject.mapFrom(created)
+                    it.end(createdJson.toBuffer())
+                } catch (e: Exception) {
+                    it.fail(400, e)
+                }
             }
-        }
-
-        route.failureHandler {
-            it.end()
-        }
-    }
-
-    private suspend fun createClientRouteExecutor(it: RoutingContext) {
-        try {
-            val body = it.bodyAsJson
-            val createClientDTO = body.mapTo(OAuth2ClientDTO::class.java)
-
-            val created = oAuth2ClientApplication.createClient(createClientDTO).await()
-            val createdJson = JsonObject.mapFrom(created)
-            it.end(createdJson.toBuffer())
-        } catch (e: Exception) {
-            it.fail(400, e)
         }
     }
 

@@ -8,7 +8,6 @@ import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
-import org.myddd.vertx.oauth2.start.router.MydddOAuth2Router
 import org.myddd.vertx.oauth2.start.router.OAuth2ClientRouter
 
 class MydddOAuth2Verticle : CoroutineVerticle() {
@@ -29,7 +28,6 @@ class MydddOAuth2Verticle : CoroutineVerticle() {
                 Future.succeededFuture(JsonObject().put("error", "API调用错误，请检查API规范"))
             }
 
-            MydddOAuth2Router(router)
             OAuth2ClientRouter(router,vertx)
 
             server.requestHandler(router).listen(8080)

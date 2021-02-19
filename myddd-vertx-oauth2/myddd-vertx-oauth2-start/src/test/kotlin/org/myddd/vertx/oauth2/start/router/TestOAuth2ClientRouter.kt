@@ -33,9 +33,20 @@ class TestOAuth2ClientRouter : AbstractWebTest() {
                 }
 
                 //error
-                val errorResponse = webClient.post(port,host,"/v1/oauth2/clients")
+                var errorResponse = webClient.post(port,host,"/v1/oauth2/clients")
                     .sendJsonObject(JsonObject("{\"clientId\":\"AAA\",\"name\":\"AAA\"}")).await()
                 testContext.verify { errorResponse.statusCode() == 400 }
+
+
+                var errorBody = errorResponse.bodyAsString()
+                println("error,$errorBody")
+
+                errorResponse = webClient.post(port,host,"/v1/oauth2/clients")
+                    .sendJsonObject(JsonObject("{\"clientId\":\"BBB\"}")).await()
+
+                testContext.verify { errorResponse.statusCode() == 400 }
+                errorBody = errorResponse.bodyAsString()
+                println("error,$errorBody")
 
                 testContext.completeNow()
             }catch (e:Exception){
