@@ -1,12 +1,14 @@
 package org.myddd.vertx.domain
 
+import java.util.*
+
 interface ErrorCode {
 
     fun errorCode():String {
         return this.toString()
     }
 
-    fun errorMsg(language:String = "zh_CN"):String? {
+    fun errorMsg(locale :Locale = Locale.CHINESE):String? {
         return null
     }
 }

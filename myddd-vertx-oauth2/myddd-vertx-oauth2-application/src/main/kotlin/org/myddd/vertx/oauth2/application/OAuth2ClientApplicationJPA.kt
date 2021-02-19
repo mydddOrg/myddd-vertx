@@ -23,7 +23,7 @@ class OAuth2ClientApplicationJPA : OAuth2ClientApplication {
     override suspend fun queryClient(clientId: String): Future<OAuth2ClientDTO?> {
         val query = oAuth2ClientService.queryClientByClientId(clientId).await()
         query?.also {
-            return Future.succeededFuture(toOAuth2ClientDTO(it!!))
+            return Future.succeededFuture(toOAuth2ClientDTO(it))
         }
         return Future.succeededFuture(null)
     }

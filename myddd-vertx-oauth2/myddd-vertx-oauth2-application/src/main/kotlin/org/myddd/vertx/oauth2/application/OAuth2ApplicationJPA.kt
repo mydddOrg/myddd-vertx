@@ -21,10 +21,10 @@ class OAuth2ApplicationJPA : OAuth2Application {
             checkNotNull(user){
                 "CLIENT_NOT_FOUND"
             }
-            check((user?.clientSecret == clientSecret)){
+            check((user.clientSecret == clientSecret)){
                 "CLIENT_SECRET_NOT_MATCH"
             }
-            check(!user!!.disabled){
+            check(!user.disabled){
                 "CLIENT_DISABLED"
             }
             val token = clientService.generateClientToken(user).await()
@@ -73,14 +73,14 @@ class OAuth2ApplicationJPA : OAuth2Application {
         val promise = PromiseImpl<OAuth2UserDTO?>()
         try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
-            if(Objects.isNull(queryUser)){
+            checkNotNull(queryUser){
                 "CLIENT_ID_NOT_FOUND"
             }
             val queryToken = clientService.queryUserToken(clientId).await()
-            if(Objects.isNull(queryToken)){
+            checkNotNull(queryToken){
                 "CLIENT_TOKEN_NOT_FOUND"
             }
-            promise.onSuccess(toOAuth2UserDTO(queryUser!!,queryToken!!))
+            promise.onSuccess(toOAuth2UserDTO(queryUser,queryToken))
         }catch (e:Exception){
             promise.fail(e)
         }

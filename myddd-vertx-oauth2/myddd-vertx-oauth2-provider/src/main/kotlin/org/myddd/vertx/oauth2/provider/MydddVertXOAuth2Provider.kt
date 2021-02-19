@@ -27,7 +27,7 @@ class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {
             "请指定client id以及client secret"
         }
         GlobalScope.launch {
-            databaseOAuth2Application.validateClientUser(credentials!!.getString(CLIENT_ID),credentials!!.getString(CLIENT_SECRET))
+            databaseOAuth2Application.validateClientUser(credentials!!.getString(CLIENT_ID),credentials.getString(CLIENT_SECRET))
                 .onSuccess {
                     resultHandler?.handle(Future.succeededFuture(it))
                 }.onFailure {
@@ -47,7 +47,7 @@ class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {
         }
 
         GlobalScope.launch {
-            databaseOAuth2Application.refreshUserToken(auth2User.clientId, auth2User!!.tokenDTO!!.refreshToken).onSuccess {
+            databaseOAuth2Application.refreshUserToken(auth2User.clientId, auth2User.tokenDTO!!.refreshToken).onSuccess {
                 handler?.handle(Future.succeededFuture(it))
             }.onFailure {
                 handler?.handle(Future.failedFuture(it))

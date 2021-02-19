@@ -24,6 +24,8 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
         const val ERROR_CODE = "errorCode"
         const val ERROR_MSG = "errorMsg"
         const val OTHER_ERROR = "other error"
+
+        const val HTTP_400_RESPONSE = 400
     }
 
     protected fun createRoute(httpMethod:HttpMethod,path:String,handle: Handler<RoutingContext>):Route {
@@ -51,7 +53,7 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
                     .put(ERROR_MSG,failure.localizedMessage)
             }
 
-            it.end(responseJson.toBuffer())
+            it.response().setStatusCode(400).end(responseJson.toBuffer())
         }
 
         return route

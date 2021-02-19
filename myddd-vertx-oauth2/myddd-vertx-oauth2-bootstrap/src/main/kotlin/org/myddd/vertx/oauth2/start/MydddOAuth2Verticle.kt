@@ -24,8 +24,10 @@ class MydddOAuth2Verticle : CoroutineVerticle() {
             router.route().order(Int.MAX_VALUE).respond { ctx ->
                 val response = ctx.response()
                 response.putHeader("content-type","application/json")
-                response.statusCode = 403
-                Future.succeededFuture(JsonObject().put("error", "API调用错误，请检查API规范"))
+                response.statusCode = 404
+                Future.succeededFuture(JsonObject()
+                    .put("errorCode", "NO_SUCH_API")
+                    .put("errorMsg","调用的API不存在"))
             }
 
             OAuth2ClientRouter(router,vertx)

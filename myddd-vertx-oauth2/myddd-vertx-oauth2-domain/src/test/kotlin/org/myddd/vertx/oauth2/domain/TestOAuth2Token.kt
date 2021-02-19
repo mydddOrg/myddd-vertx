@@ -15,6 +15,7 @@ class TestOAuth2Token : AbstractTest() {
         executeWithTryCatch(testContext){
             GlobalScope.launch {
                 val client = createClient()
+                client.clientId = UUID.randomUUID().toString()
                 val createdClient = client.createClient().await()
                 val token = OAuth2Token.createTokenFromClient(createdClient).await()
                 testContext.verify {
@@ -31,6 +32,8 @@ class TestOAuth2Token : AbstractTest() {
         executeWithTryCatch(testContext){
             GlobalScope.launch {
                 val client = createClient()
+                client.clientId = UUID.randomUUID().toString()
+
                 val createdClient = client.createClient().await()
                 val token = OAuth2Token.createTokenFromClient(createdClient).await()
                 testContext.verify {

@@ -134,6 +134,7 @@ class TestMydddVertXOAuth2Provider : AbstractTest() {
 
     private fun createClient(): OAuth2Client {
         val client = OAuth2Client()
+        client.clientId = UUID.randomUUID().toString()
         client.name = "TEST_A"
         client.displayName = "测试应用"
         client.description = "这是一个测试应用"

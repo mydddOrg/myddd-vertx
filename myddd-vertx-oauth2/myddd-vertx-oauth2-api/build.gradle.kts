@@ -13,6 +13,6 @@ dependencies {
 
     api("io.vertx:vertx-auth-common:${rootProject.extra["vertx_version"]}")
 
-    implementation("com.fasterxml.jackson.core:jackson-annotations:${extra["jackson_version"]}")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:${rootProject.extra["jackson_version"]}")
 
 }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class TestOAuth2Client : AbstractTest() {
 
@@ -124,6 +125,7 @@ class TestOAuth2Client : AbstractTest() {
 
     private fun createClient():OAuth2Client {
         val client = OAuth2Client()
+        client.clientId = UUID.randomUUID().toString()
         client.name = "TEST_A"
         client.displayName = "测试应用"
         client.description = "这是一个测试应用"

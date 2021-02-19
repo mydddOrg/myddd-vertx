@@ -20,6 +20,7 @@ class TestOAuth2ClientService : AbstractTest() {
         executeWithTryCatch(testContext){
             GlobalScope.launch {
                 val client = OAuth2Client()
+                client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
                 val created = client.createClient().await()
                 var query = oAuth2ClientService.queryClientByClientId(created.clientId).await()
@@ -40,6 +41,7 @@ class TestOAuth2ClientService : AbstractTest() {
         executeWithTryCatch(testContext){
             GlobalScope.launch {
                 val client = OAuth2Client()
+                client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
                 val created = client.createClient().await()
 
@@ -58,6 +60,7 @@ class TestOAuth2ClientService : AbstractTest() {
         executeWithTryCatch(testContext){
             GlobalScope.launch {
                 val client = OAuth2Client()
+                client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
                 val created = client.createClient().await()
 
@@ -91,6 +94,7 @@ class TestOAuth2ClientService : AbstractTest() {
         executeWithTryCatch(testContext){
             GlobalScope.launch {
                 val client = OAuth2Client()
+                client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
                 val created = client.createClient().await()
                 val token = oAuth2ClientService.generateClientToken(created).await()
@@ -114,6 +118,7 @@ class TestOAuth2ClientService : AbstractTest() {
         executeWithTryCatch(testContext){
             GlobalScope.launch {
                 val client = OAuth2Client()
+                client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
                 val created = client.createClient().await()
                 val token = oAuth2ClientService.generateClientToken(created).await()

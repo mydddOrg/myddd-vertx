@@ -35,6 +35,7 @@ class TestOAuth2ClientRepositoryHibernate : AbstractTest() {
         GlobalScope.launch {
             try {
                 val client = OAuth2Client()
+                client.clientId = UUID.randomUUID().toString()
                 client.name = "TEST_CLIENT"
                 val created = client.createClient().await()
                 val query = repository.queryClientByClientId(created.clientId).await()
