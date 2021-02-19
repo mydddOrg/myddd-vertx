@@ -28,13 +28,13 @@ class OAuth2ClientApplicationJPA : OAuth2ClientApplication {
         return Future.succeededFuture(null)
     }
 
-    override suspend fun resetClientSecret(clientId: String): Future<Boolean> {
+    override suspend fun resetClientSecret(clientId: String): Future<String> {
         val query = oAuth2ClientService.queryClientByClientId(clientId).await()
         checkNotNull(query){
             "CLIENT_ID_NOT_EXISTS"
         }
-        query.renewClientSecret().await()
-        return Future.succeededFuture(true)
+        val reset = query.renewClientSecret().await()
+        return Future.succeededFuture(reset.clientSecret)
     }
 
     override suspend fun enableClient(clientId: String): Future<Boolean> {

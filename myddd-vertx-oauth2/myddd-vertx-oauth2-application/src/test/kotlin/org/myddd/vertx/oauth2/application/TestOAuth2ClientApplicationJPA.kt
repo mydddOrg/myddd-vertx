@@ -95,7 +95,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
                 }
 
                 val reset = oAuth2ClientApplication.resetClientSecret(created.clientId).await()
-                testContext.verify { Assertions.assertTrue(reset) }
+                testContext.verify { Assertions.assertNotNull(reset) }
 
                 val queryReset = oAuth2ClientApplication.queryClient(created.clientId).await()
                 testContext.verify {

@@ -34,8 +34,12 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
     }
 
     protected fun createRoute(httpMethod:HttpMethod,path:String,handlers: List<Handler<RoutingContext>>):Route {
-        val route = router.route(httpMethod,path).consumes("application/json").produces("application/json")
-        route.handler(bodyHandler)
+        val route = router.route(httpMethod,path)
+
+        if(httpMethod != HttpMethod.DELETE && httpMethod != HttpMethod.GET){
+            route.handler(bodyHandler)
+            route.consumes("application/json").produces("application/json")
+        }
 
         handlers.forEach {
             route.handler(it)

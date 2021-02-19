@@ -60,8 +60,12 @@ class TestOAuth2ClientRouter : AbstractWebTest() {
                 val resetSecretResponse = webClient.patch(port,host,"/v1/oauth2/clients/${created.clientId}/clientSecret")
                     .sendJsonObject(JsonObject("{\"clientSecret\":\"${created.clientSecret}\"}")).await()
 
-                testContext.verify { Assertions.assertEquals(204,resetSecretResponse.statusCode()) }
+                val resetSecret = resetSecretResponse.bodyAsJsonObject().getString("clientSecret")
 
+                testContext.verify {
+                    Assertions.assertEquals(200,resetSecretResponse.statusCode())
+                    Assertions.assertNotNull(resetSecret)
+                }
 
                 //error 不正确的clientId
                 var errorResponse = webClient.patch(port,host,"/v1/oauth2/clients/${UUID.randomUUID()}/clientSecret")

@@ -67,9 +67,9 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2
                         throw BusinessLogicException(OAuth2WebErrorCode.CLIENT_SECRET_NOT_MATCH)
                     }
 
-                    oAuth2ClientApplication.resetClientSecret(clientId).await()
+                    val resetSecret = oAuth2ClientApplication.resetClientSecret(clientId).await()
 
-                    it.response().setStatusCode(204).end()
+                    it.end(JsonObject().put("clientSecret",resetSecret).toBuffer())
 
                 }catch (e:Exception){
                     it.fail(HTTP_400_RESPONSE,e)

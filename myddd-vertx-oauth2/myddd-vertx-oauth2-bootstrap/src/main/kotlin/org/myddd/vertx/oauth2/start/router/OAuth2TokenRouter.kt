@@ -73,12 +73,11 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractOAuth2Router(vert
     }
 
     private fun revokeClientTokenRoute(){
-        createRoute(HttpMethod.DELETE,"/$version/$basePath/token"){
+        createRoute(HttpMethod.DELETE,"/$version/$basePath/clients/:clientId/token/:accessToken"){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
-                    val bodyJson = it.bodyAsJson
-                    val clientId = bodyJson.getString("clientId")
-                    val accessToken = bodyJson.getString("accessToken")
+                    val clientId = it.pathParam("clientId")
+                    val accessToken = it.pathParam("accessToken")
 
                     if(clientId.isNullOrEmpty() || accessToken.isNullOrEmpty()) throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REVOKE_TOKEN)
 

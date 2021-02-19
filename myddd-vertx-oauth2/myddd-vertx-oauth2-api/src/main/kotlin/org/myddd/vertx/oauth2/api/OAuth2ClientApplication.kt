@@ -16,7 +16,7 @@ interface OAuth2ClientApplication {
     /**
      * 重置OAUTH2 Client的secret
      */
-    suspend fun resetClientSecret(clientId:String):Future<Boolean>
+    suspend fun resetClientSecret(clientId:String):Future<String>
 
     /**
      * 标记一个OAUTH2 Client为可用状态

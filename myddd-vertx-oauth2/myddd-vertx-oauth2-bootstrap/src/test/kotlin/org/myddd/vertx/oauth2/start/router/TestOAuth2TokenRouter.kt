@@ -126,8 +126,8 @@ class TestOAuth2TokenRouter : AbstractWebTest() {
                 testContext.verify { Assertions.assertEquals(200,requestResponse.statusCode()) }
                 val token = requestResponse.bodyAsJsonObject()
 
-                val revokeResponse = webClient.delete(port,host,"/v1/oauth2/token")
-                    .sendJson(JsonObject("{\"clientId\":\"${created.clientId}\",\"accessToken\":\"${token.getString("accessToken")}\"}"))
+                val revokeResponse = webClient.delete(port,host,"/v1/oauth2/clients/${created.clientId}/token/${token.getString("accessToken")}")
+                    .send()
                     .await()
 
                 testContext.verify { Assertions.assertEquals(204,revokeResponse.statusCode()) }
@@ -135,21 +135,22 @@ class TestOAuth2TokenRouter : AbstractWebTest() {
 
                 //error 不正确的clientId或accessToken
 
-                var errorResponse = webClient.delete(port,host,"/v1/oauth2/token")
-                    .sendJson(JsonObject("{\"clientId\":\"${UUID.randomUUID()}\",\"accessToken\":\"${token.getString("accessToken")}\"}"))
+                var errorResponse = webClient.delete(port,host,"/v1/oauth2/clients/${UUID.randomUUID()}/token/${token.getString("accessToken")}")
+                    .send()
                     .await()
+
                 testContext.verify { Assertions.assertEquals(400,errorResponse.statusCode()) }
 
-                errorResponse = webClient.delete(port,host,"/v1/oauth2/token")
+                errorResponse = webClient.delete(port,host,"/v1/oauth2/clients/${created.clientId}/token/${UUID.randomUUID()}")
                     .sendJson(JsonObject("{\"clientId\":\"${created.clientId}\",\"accessToken\":\"${UUID.randomUUID()}\"}"))
                     .await()
                 testContext.verify { Assertions.assertEquals(400,errorResponse.statusCode()) }
 
                 //error 参数不齐全
-                errorResponse = webClient.delete(port,host,"/v1/oauth2/token")
-                    .sendJson(JsonObject("{\"clientId\":\"${created.clientId}\"}"))
+                errorResponse = webClient.delete(port,host,"/v1/oauth2/clients/${created.clientId}/token/")
+                    .send()
                     .await()
-                testContext.verify { Assertions.assertEquals(400,errorResponse.statusCode()) }
+                testContext.verify { Assertions.assertEquals(404,errorResponse.statusCode()) }
 
                 testContext.completeNow()
             }catch (e:Exception){
