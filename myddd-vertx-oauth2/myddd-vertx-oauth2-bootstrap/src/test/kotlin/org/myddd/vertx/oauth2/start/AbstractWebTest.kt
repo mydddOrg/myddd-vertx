@@ -1,13 +1,17 @@
 package org.myddd.vertx.oauth2.start
 
 import io.vertx.core.Vertx
+import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(VertxExtension::class)
@@ -24,7 +28,7 @@ open class AbstractWebTest {
         @JvmStatic
         fun beforeClass(vertx: Vertx, testContext: VertxTestContext){
             GlobalScope.launch {
-                deployId = vertx.deployVerticle(MydddOAuth2Verticle()).await()
+                deployId = vertx.deployVerticle(OAuth2Verticle()).await()
                 testContext.completeNow()
             }
         }
@@ -35,6 +39,20 @@ open class AbstractWebTest {
             GlobalScope.launch {
                 vertx.undeploy(deployId).await()
                 testContext.completeNow()
+            }
+        }
+    }
+
+    @Test
+    fun testNoExistsRequest(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val webClient:WebClient = WebClient.create(vertx)
+                val response = webClient.get(port,host,"/v1/notExistsRequest").send().await()
+                testContext.verify { Assertions.assertEquals(404,response.statusCode()) }
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
             }
         }
     }

@@ -15,5 +15,17 @@ enum class OAuth2ErrorCode : ErrorCode{
         override fun errorMsg(locale: Locale): String? {
             return "Client Name不能为空"
         }
+    },
+
+    ACCESS_TOKEN_NOT_EXISTS {
+        override fun errorMsg(locale: Locale): String? {
+            return "accessToken不存在"
+        }
+    },
+
+    REFRESH_TOKEN_NOT_MATCH {
+        override fun errorMsg(locale: Locale): String? {
+            return "refreshToken不匹配"
+        }
     }
 }

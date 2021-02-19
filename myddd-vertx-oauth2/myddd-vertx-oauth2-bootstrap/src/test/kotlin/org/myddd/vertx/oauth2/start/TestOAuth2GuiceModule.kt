@@ -7,11 +7,11 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.repository.api.EntityRepository
 
-class TestMydddGuiceModule {
+class TestOAuth2GuiceModule {
 
     @Test
     fun test(){
-        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(MydddGuiceModule())))
+        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(OAuth2GuiceModule())))
         Assertions.assertNotNull(InstanceFactory.getInstance(EntityRepository::class.java))
     }
 }

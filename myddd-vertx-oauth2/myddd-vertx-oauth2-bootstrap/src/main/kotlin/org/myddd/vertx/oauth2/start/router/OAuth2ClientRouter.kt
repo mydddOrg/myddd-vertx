@@ -42,7 +42,7 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2
                     val createdJson = JsonObject.mapFrom(created)
                     it.end(createdJson.toBuffer())
                 } catch (e: Exception) {
-                    it.fail(400, e)
+                    it.fail(HTTP_400_RESPONSE, e)
                 }
             }
         }
@@ -72,7 +72,7 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2
                     it.response().setStatusCode(204).end()
 
                 }catch (e:Exception){
-                    it.fail(400,e)
+                    it.fail(HTTP_400_RESPONSE,e)
                 }
             }
         }

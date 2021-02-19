@@ -53,7 +53,7 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
                     .put(ERROR_MSG,failure.localizedMessage)
             }
 
-            it.response().setStatusCode(400).end(responseJson.toBuffer())
+            it.response().setStatusCode(HTTP_400_RESPONSE).end(responseJson.toBuffer())
         }
 
         return route

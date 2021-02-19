@@ -28,5 +28,23 @@ enum class OAuth2WebErrorCode :ErrorCode  {
         override fun errorMsg(locale: Locale): String? {
             return "找不到对应的Client"
         }
+    },
+
+    NOT_SUPPORT_OAUTH2_GRANT_TYPE {
+        override fun errorMsg(locale: Locale): String? {
+            return "不支持的grantType,当前仅支持client_credentials模式"
+        }
+    },
+
+    ILLEGAL_PARAMETER_FOR_REFRESH_TOKEN {
+        override fun errorMsg(locale: Locale): String? {
+            return "参数非法，clientId或refreshToken不能为空"
+        }
+    },
+
+    ILLEGAL_PARAMETER_FOR_REVOKE_TOKEN {
+        override fun errorMsg(locale: Locale): String? {
+            return "参数非法，clientId或accessToken不能为空"
+        }
     }
 }

@@ -9,8 +9,9 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.oauth2.start.router.OAuth2ClientRouter
+import org.myddd.vertx.oauth2.start.router.OAuth2TokenRouter
 
-class MydddOAuth2Verticle : CoroutineVerticle() {
+class OAuth2Verticle : CoroutineVerticle() {
 
 
     override fun start(startFuture: Promise<Void>?) {
@@ -30,15 +31,15 @@ class MydddOAuth2Verticle : CoroutineVerticle() {
                     .put("errorMsg","调用的API不存在"))
             }
 
-            OAuth2ClientRouter(router,vertx)
+            OAuth2ClientRouter(router = router,vertx = vertx)
+            OAuth2TokenRouter(router = router,vertx = vertx)
 
             server.requestHandler(router).listen(8080)
-            println("listen to 8080")
             startFuture?.complete();
         }
     }
 
     private fun initIOC(){
-        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(MydddGuiceModule())))
+        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(OAuth2GuiceModule())))
     }
 }

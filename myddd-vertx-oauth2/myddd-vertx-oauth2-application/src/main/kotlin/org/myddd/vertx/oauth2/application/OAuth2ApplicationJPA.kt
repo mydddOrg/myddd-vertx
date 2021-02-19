@@ -3,6 +3,7 @@ package org.myddd.vertx.oauth2.application
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.kotlin.coroutines.await
+import org.myddd.vertx.domain.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2UserDTO
@@ -15,18 +16,15 @@ class OAuth2ApplicationJPA : OAuth2Application {
 
     private val clientService:OAuth2ClientService by lazy { InstanceFactory.getInstance(OAuth2ClientService::class.java) }
 
-    override suspend fun validateClientUser(clientId: String, clientSecret: String): Future<OAuth2UserDTO?> {
+    override suspend fun requestClientToken(clientId: String, clientSecret: String): Future<OAuth2UserDTO?> {
         return try {
             val user = clientService.queryClientByClientId(clientId).await()
-            checkNotNull(user){
-                "CLIENT_NOT_FOUND"
-            }
-            check((user.clientSecret == clientSecret)){
-                "CLIENT_SECRET_NOT_MATCH"
-            }
-            check(!user.disabled){
-                "CLIENT_DISABLED"
-            }
+            if(Objects.isNull(user)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
+
+            if(user?.clientSecret != clientSecret) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_SECRET_NOT_MATCH)
+
+            if(user.disabled) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_DISABLED)
+
             val token = clientService.generateClientToken(user).await()
             Future.succeededFuture(toOAuth2UserDTO(user,token))
         }catch (e:Exception){
@@ -39,9 +37,9 @@ class OAuth2ApplicationJPA : OAuth2Application {
 
         try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
-            check(Objects.nonNull(queryUser)){
-                RuntimeException("CLIENT_NOT_FOUND")
-            }
+
+            if(Objects.isNull(queryUser)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
+
             val token = clientService.refreshUserToken(queryUser!!,refreshToken).await()
             promise.onSuccess(toOAuth2UserDTO(queryUser,token))
         }catch (e:Exception){
@@ -51,14 +49,17 @@ class OAuth2ApplicationJPA : OAuth2Application {
         return promise.future()
     }
 
-    override suspend fun revokeUserToken(clientId: String): Future<Boolean> {
+    override suspend fun revokeUserToken(clientId: String,accessToken:String): Future<Boolean> {
         val promise = PromiseImpl<Boolean>()
 
         try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
-            check(Objects.nonNull(queryUser)){
-                "CLIENT_NOT_FOUND"
-            }
+            if(Objects.isNull(queryUser)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
+
+            val queryToken = clientService.queryUserToken(clientId).await()
+            if(Objects.isNull(queryToken)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_TOKEN_NOT_FOUND)
+
+            if(queryToken?.accessToken != accessToken) throw BusinessLogicException(OAuth2ApiErrorCode.ACCESS_TOKEN_NOT_MATCH)
 
             clientService.revokeUserToken(queryUser!!).await()
             promise.onSuccess(true)
@@ -73,14 +74,14 @@ class OAuth2ApplicationJPA : OAuth2Application {
         val promise = PromiseImpl<OAuth2UserDTO?>()
         try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
-            checkNotNull(queryUser){
-                "CLIENT_ID_NOT_FOUND"
-            }
+            if(Objects.isNull(queryUser)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
+
             val queryToken = clientService.queryUserToken(clientId).await()
-            checkNotNull(queryToken){
-                "CLIENT_TOKEN_NOT_FOUND"
-            }
-            promise.onSuccess(toOAuth2UserDTO(queryUser,queryToken))
+
+            if(Objects.isNull(queryToken)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_TOKEN_NOT_FOUND)
+
+
+            promise.onSuccess(toOAuth2UserDTO(queryUser!!,queryToken!!))
         }catch (e:Exception){
             promise.fail(e)
         }

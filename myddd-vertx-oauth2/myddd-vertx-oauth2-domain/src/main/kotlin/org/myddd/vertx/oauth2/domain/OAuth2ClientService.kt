@@ -3,6 +3,7 @@ package org.myddd.vertx.oauth2.domain
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.kotlin.coroutines.await
+import org.myddd.vertx.domain.BusinessLogicException
 import java.util.*
 import javax.inject.Inject
 
@@ -34,19 +35,12 @@ class OAuth2ClientService {
         val future = PromiseImpl<OAuth2Token>()
         var token = queryClientToken(client.clientId)
 
-        check(token!=null){
-            "TOKEN_NOT_EXISTS"
-        }
+        if(Objects.isNull(token)) throw BusinessLogicException(OAuth2ErrorCode.ACCESS_TOKEN_NOT_EXISTS)
 
-        check(token.refreshToken == refreshToken){
-            "REFRESH_TOKEN_NOT_MATCH"
-        }
+        if(token?.refreshToken != refreshToken) throw  BusinessLogicException(OAuth2ErrorCode.REFRESH_TOKEN_NOT_MATCH)
 
-        token = if(Objects.isNull(token)) {
-            OAuth2Token.createTokenFromClient(client).await()
-        }else{
-            token.refreshToken().await()
-        }
+        token.refreshToken().await()
+
         future.onSuccess(token)
         return future
     }

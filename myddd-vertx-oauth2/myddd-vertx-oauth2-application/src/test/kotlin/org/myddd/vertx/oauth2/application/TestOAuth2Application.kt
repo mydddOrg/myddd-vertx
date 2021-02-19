@@ -16,13 +16,13 @@ class TestOAuth2Application : AbstractTest() {
     private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java)}
 
     @Test
-    fun testValidateClientUser(testContext: VertxTestContext){
+    fun testRequestClientToken(testContext: VertxTestContext){
         executeWithTryCatch(testContext){
             GlobalScope.launch {
                 try {
 
                     try {
-                        databaseOAuth2Application.validateClientUser(UUID.randomUUID().toString(),UUID.randomUUID().toString()).await()
+                        databaseOAuth2Application.requestClientToken(UUID.randomUUID().toString(),UUID.randomUUID().toString()).await()
                         testContext.failNow("不存在的ClientId不可能验证通过")
                     }catch (e:Exception){
                         testContext.verify { Assertions.assertNotNull(e) }
@@ -34,14 +34,14 @@ class TestOAuth2Application : AbstractTest() {
                     val created = client.createClient().await()
 
                     try {
-                        databaseOAuth2Application.validateClientUser(created.clientId,UUID.randomUUID().toString()).await()
+                        databaseOAuth2Application.requestClientToken(created.clientId,UUID.randomUUID().toString()).await()
                         testContext.failNow("不正确的密码不可能验证通过")
                     }catch (e:Exception){
                         testContext.verify { Assertions.assertNotNull(e) }
                     }
 
 
-                    var userDTO = databaseOAuth2Application.validateClientUser(created.clientId,created.clientSecret).await()
+                    var userDTO = databaseOAuth2Application.requestClientToken(created.clientId,created.clientSecret).await()
                     testContext.verify {
                         Assertions.assertNotNull(userDTO)
                         Assertions.assertFalse(userDTO!!.expired())
@@ -50,7 +50,7 @@ class TestOAuth2Application : AbstractTest() {
                     val disabled = client.disable().await()
 
                     try {
-                        databaseOAuth2Application.validateClientUser(disabled.clientId,disabled.clientSecret).await()
+                        databaseOAuth2Application.requestClientToken(disabled.clientId,disabled.clientSecret).await()
                         testContext.failNow("被禁用的不可能通过验证")
                     }catch (e:Exception){
                         testContext.verify { Assertions.assertNotNull(e) }
@@ -58,7 +58,7 @@ class TestOAuth2Application : AbstractTest() {
 
                     val enabled = disabled.enable().await()
 
-                    userDTO = databaseOAuth2Application.validateClientUser(enabled.clientId,enabled.clientSecret).await()
+                    userDTO = databaseOAuth2Application.requestClientToken(enabled.clientId,enabled.clientSecret).await()
                     testContext.verify {
                         Assertions.assertNotNull(userDTO)
                         Assertions.assertFalse(userDTO!!.expired())
@@ -83,7 +83,7 @@ class TestOAuth2Application : AbstractTest() {
                 client.name = UUID.randomUUID().toString()
                 val created = client.createClient().await()
 
-                val userDTO = databaseOAuth2Application.validateClientUser(created.clientId,created.clientSecret).await()
+                val userDTO = databaseOAuth2Application.requestClientToken(created.clientId,created.clientSecret).await()
 
                 try {
                     databaseOAuth2Application.refreshUserToken(UUID.randomUUID().toString(),UUID.randomUUID().toString()).await()
@@ -116,6 +116,8 @@ class TestOAuth2Application : AbstractTest() {
         }
     }
 
+
+
     @Test
     fun testRevokeUserToken(testContext: VertxTestContext){
         executeWithTryCatch(testContext){
@@ -128,14 +130,17 @@ class TestOAuth2Application : AbstractTest() {
 
 
                 try{
-                    databaseOAuth2Application.revokeUserToken(UUID.randomUUID().toString()).await()
+                    databaseOAuth2Application.revokeUserToken(UUID.randomUUID().toString(),UUID.randomUUID().toString()).await()
                 }catch (e:Exception){
                     testContext.verify { Assertions.assertNotNull(e) }
                 }
 
-                databaseOAuth2Application.validateClientUser(created.clientId,created.clientSecret).await()
-
-                val success = databaseOAuth2Application.revokeUserToken(created.clientId).await()
+                val token = databaseOAuth2Application.requestClientToken(created.clientId,created.clientSecret).await()
+                testContext.verify {
+                    Assertions.assertNotNull(token)
+                    Assertions.assertNotNull(token!!.tokenDTO)
+                }
+                val success = databaseOAuth2Application.revokeUserToken(created.clientId,token!!.tokenDTO!!.accessToken).await()
                 testContext.verify { Assertions.assertTrue(success) }
 
                 testContext.completeNow()
@@ -167,7 +172,7 @@ class TestOAuth2Application : AbstractTest() {
                         testContext.verify { Assertions.assertNotNull(e) }
                     }
 
-                    val userDTO = databaseOAuth2Application.validateClientUser(created.clientId,created.clientSecret).await()
+                    val userDTO = databaseOAuth2Application.requestClientToken(created.clientId,created.clientSecret).await()
                     testContext.verify {
                         Assertions.assertNotNull(userDTO)
                         Assertions.assertFalse(userDTO!!.expired())
@@ -178,7 +183,7 @@ class TestOAuth2Application : AbstractTest() {
                         Assertions.assertNotNull(queryUserDTO)
                     }
 
-                    databaseOAuth2Application.revokeUserToken(created.clientId).await()
+                    databaseOAuth2Application.revokeUserToken(created.clientId,userDTO!!.tokenDTO!!.accessToken).await()
 
                     try {
                         databaseOAuth2Application.loadUserToken(created.clientId).await()

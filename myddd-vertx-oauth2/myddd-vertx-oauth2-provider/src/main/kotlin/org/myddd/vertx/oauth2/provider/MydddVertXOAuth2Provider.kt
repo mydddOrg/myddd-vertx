@@ -27,7 +27,7 @@ class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {
             "请指定client id以及client secret"
         }
         GlobalScope.launch {
-            databaseOAuth2Application.validateClientUser(credentials!!.getString(CLIENT_ID),credentials.getString(CLIENT_SECRET))
+            databaseOAuth2Application.requestClientToken(credentials!!.getString(CLIENT_ID),credentials.getString(CLIENT_SECRET))
                 .onSuccess {
                     resultHandler?.handle(Future.succeededFuture(it))
                 }.onFailure {
@@ -57,13 +57,13 @@ class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {
     }
 
     override fun revoke(user: User?, tokenType: String?, handler: Handler<AsyncResult<Void>>?): OAuth2Auth {
-        check(Objects.nonNull(user) && Objects.nonNull((user as OAuth2UserDTO).clientId)){
+        check(Objects.nonNull(user) && Objects.nonNull((user as OAuth2UserDTO).clientId) && Objects.nonNull((user as OAuth2UserDTO).tokenDTO)){
             "CLIENT_ID_NULL"
         }
         GlobalScope.launch {
             val auth2User = user as OAuth2UserDTO
 
-            databaseOAuth2Application.revokeUserToken(auth2User.clientId).onSuccess {
+            databaseOAuth2Application.revokeUserToken(auth2User.clientId,auth2User.tokenDTO!!.accessToken).onSuccess {
                 handler?.handle(Future.succeededFuture())
             }.onFailure {
                 handler?.handle(Future.failedFuture(it))

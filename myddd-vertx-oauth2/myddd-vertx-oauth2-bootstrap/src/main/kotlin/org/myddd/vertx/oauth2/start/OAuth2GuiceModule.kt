@@ -17,7 +17,7 @@ import org.myddd.vertx.repository.api.EntityRepository
 import org.myddd.vertx.repository.hibernate.EntityRepositoryHibernate
 import javax.persistence.Persistence
 
-class MydddGuiceModule : AbstractModule() {
+class OAuth2GuiceModule : AbstractModule() {
 
     override fun configure() {
         bind(Mutiny.SessionFactory::class.java).toInstance(
