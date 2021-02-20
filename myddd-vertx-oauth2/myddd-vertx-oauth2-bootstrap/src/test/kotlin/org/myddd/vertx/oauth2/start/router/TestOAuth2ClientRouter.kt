@@ -113,7 +113,6 @@ class TestOAuth2ClientRouter : AbstractWebTest() {
             }catch (e:Exception){
                 testContext.failNow(e)
             }
-
         }
     }
 
