@@ -1,0 +1,274 @@
+openapi: "3.0.2"
+info:
+  title: ISV 网关
+  version: "1.0"
+servers:
+  - url: http://127.0.0.1:8080/v1
+    description: 本地服务器
+paths:
+  /oauth2/clients:
+    post:
+      tags:
+        - "OAuth2"
+      summary: 请求创建一个新的OAuth2 Client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: clientId，全局唯一，只支持字母，数字以及下划线
+                name:
+                  type: string
+                  description: client的名字
+                description:
+                  type: string
+                  description: client的详细描述
+              required:
+                - "clientId"
+                - "name"
+              example:
+                clientId: MY_CLIENT_ID
+                name: 测试应用
+
+      responses:
+        "200":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                clientId: MY_CLIENT_ID
+                name: 测试应用
+                clientSecret: c886a300-72b7-11eb-9439-0242ac130002
+                description: 这是一个示例应用的详细说明，你在这里可以描述更多应用的信息
+
+        "400":
+          $ref: "#/components/responses/errorResponse"
+        "403":
+          description: 没有权限执行此操作
+
+  /oauth2/clients/clientSecret:
+    patch:
+      tags:
+        - "OAuth2"
+      summary: 重置一个client的secret
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: 需要重置的clientId
+                clientSecret:
+                  type: string
+                  description: 原clientSecret
+              required:
+                - "clientId"
+                - "clientSecret"
+              example:
+                clientId: MY_CLIENT_ID
+                clientSecret: c886a300-72b7-11eb-9439-0242ac130002
+
+      responses:
+        "200":
+          description: 重置成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clientSecret:
+                    type: string
+                    description: 重置后新生成的clientSecret
+                example:
+                  clientSecret: c886a300-72b7-11eb-9439-0242ac130002
+                  
+        "400":
+          $ref: "#/components/responses/errorResponse"
+
+  /oauth2/clients/{clientId}/disabledStatus:
+    patch:
+      tags:
+        - "OAuth2"
+      summary: 启用或禁用一个clientId
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: 需要修改状态的clientId
+          schema:
+            type: string
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: 需要修改状态的clientId
+                disabled:
+                  type: boolean
+                  description: 状态值,true表示禁用，false表示启用
+      responses:
+        "204":
+          description: OK
+        "400":
+          $ref: "#/components/responses/errorResponse"
+
+  /oauth2/token:
+    post:
+      tags:
+        - "OAuth2"
+      summary: 申请accessToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: 需要申请token的clientId
+                clientSecret:
+                  type: string
+                  description: 需要申请token的clientSecret
+                grantType:
+                  type: string
+                  default: "client_credentials"
+                  description: 当前只支持client_credentials一种方式，取固定值
+              required:
+                - "clientId"
+                - "clientSecret"
+                - "grantType"
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenResponse"
+
+        "400":
+          $ref: "#/components/responses/errorResponse"
+
+  # 刷新TOKEN
+  /oauth2/refreshToken:
+    post:
+      tags:
+        - "OAuth2"
+      summary: 刷新accessToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: 需刷新token的clientId
+                refreshToken:
+                  type: string
+                  description: 刷新token
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenResponse"
+        "400":
+          $ref: "#/components/responses/errorResponse"
+  # 注销一个TOKEN
+  /oauth2/clients/{clientId}/token/{accessToken}:
+    delete:
+      tags:
+        - "OAuth2"
+      summary: 请求注销一个accessToken
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: 需要注销的clientId
+          schema:
+            type: string
+        - name: accessToken
+          in: path
+          required: true
+          description: 需要注销的clientId
+          schema:
+            type: string
+
+      responses:
+        "204":
+          description: OK
+        "400":
+          $ref: "#/components/responses/errorResponse"
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: string
+          description: 错误码
+        errorMsg:
+          type: string
+          description: 错误详细描述
+    client:
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: clientId，全局唯一，只支持字母，数字以及下划线
+        clientSecret:
+          type: string
+          description: 系统生成的clientSecret
+        name:
+          type: string
+          description: client的名字
+        description:
+          type: string
+          description: client的详细描述
+    tokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: 生成的access token
+        refreshToken:
+          type: string
+          description: 刷新token,用来刷新access token
+        accessExpiredIn:
+          type: integer
+          description: accessToken过期时间，单位（豪秒)
+        refreshExpiredIn:
+          type: integer
+          description: refreshToken过期时间,单位 (豪秒)
+
+  responses:
+    errorResponse:
+      description: 操作失败
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: INVALID_PARAMETERS
+            errorMsg: 非法参数
+
