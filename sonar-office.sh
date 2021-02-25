@@ -4,4 +4,4 @@
 ./gradlew sonarqube \
   -Dsonar.projectKey=myddd-vertx \
   -Dsonar.host.url=http://localhost:9000 \
-  -Dsonar.login=3591ce64e0bb1ebe59dbf751fc9492c771782918
+  -Dsonar.login=7731f2c2a08483888c254595c15ea5ff99ba704a
