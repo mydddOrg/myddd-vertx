@@ -28,6 +28,8 @@ dependencies {
     api("io.vertx:vertx-web:${rootProject.extra["vertx_version"]}")
     api("io.vertx:vertx-config:${rootProject.extra["vertx_version"]}")
 
+    implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
+
     //api
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     api(project(":myddd-vertx-i18n:myddd-vertx-i18n-api"))

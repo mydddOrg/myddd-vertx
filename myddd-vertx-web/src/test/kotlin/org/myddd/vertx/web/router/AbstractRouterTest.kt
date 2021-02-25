@@ -2,6 +2,7 @@ package org.myddd.vertx.web.router
 
 import com.google.inject.Guice
 import io.vertx.core.Vertx
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
@@ -23,6 +24,9 @@ import kotlin.Exception
 class AbstractRouterTest {
 
     companion object{
+
+        private val logger = LoggerFactory.getLogger(AbstractRouterTest::class.java)
+
         private const val port = 8080
         private const val host = "127.0.0.1"
 
@@ -88,7 +92,7 @@ class AbstractRouterTest {
                     .await()
 
                 testContext.verify {
-                    println(response.bodyAsString())
+                    logger.debug(response.bodyAsString())
                     Assertions.assertEquals(400,response.statusCode())
                 }
             }catch (e:Exception){
@@ -120,7 +124,7 @@ class AbstractRouterTest {
                     .await()
 
                 testContext.verify {
-                    println(response.bodyAsString())
+                    logger.info(response.bodyAsString())
                     Assertions.assertEquals(400,response.statusCode())
                 }
 
@@ -156,7 +160,7 @@ class AbstractRouterTest {
                     .await()
 
                 testContext.verify {
-                    println(response.bodyAsString())
+                    logger.debug(response.bodyAsString())
                     Assertions.assertEquals(400,response.statusCode())
                 }
             }catch (e:Exception){

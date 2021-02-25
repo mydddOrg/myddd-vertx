@@ -6,10 +6,10 @@ import io.vertx.config.ConfigStoreOptions
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.future.PromiseImpl
+import io.vertx.core.impl.logging.Logger
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.await
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import org.myddd.vertx.i18n.I18N
 import java.util.*
 import javax.inject.Inject
@@ -19,7 +19,7 @@ class I18NVertxProvider @Inject constructor(vertx:Vertx) : I18N {
     companion object {
         const val NULL_LANGUAGE = "NULL"
         const val EMPTY = ""
-        val logger: Logger = LogManager.getLogger(I18NVertxProvider::class.java)
+        val logger: Logger = LoggerFactory.getLogger(I18NVertxProvider::class.java)
     }
 
     private val vertx:Vertx = vertx
