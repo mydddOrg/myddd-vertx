@@ -2,6 +2,6 @@ package org.myddd.vertx.domain
 
 import java.io.Serializable
 
-interface Entity {
+interface Entity : Serializable{
     fun getId():Serializable
 }

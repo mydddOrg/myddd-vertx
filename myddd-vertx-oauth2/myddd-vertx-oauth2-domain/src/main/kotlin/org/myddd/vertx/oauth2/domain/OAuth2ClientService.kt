@@ -3,7 +3,7 @@ package org.myddd.vertx.oauth2.domain
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.kotlin.coroutines.await
-import org.myddd.vertx.domain.DomainException
+import org.myddd.vertx.base.BusinessLogicException
 import java.util.*
 import javax.inject.Inject
 
@@ -35,9 +35,9 @@ class OAuth2ClientService {
         val future = PromiseImpl<OAuth2Token>()
         var token = queryClientToken(client.clientId)
 
-        if(Objects.isNull(token)) throw DomainException(OAuth2ErrorCode.ACCESS_TOKEN_NOT_EXISTS)
+        if(Objects.isNull(token)) throw BusinessLogicException(OAuth2ErrorCode.ACCESS_TOKEN_NOT_EXISTS)
 
-        if(token?.refreshToken != refreshToken) throw  DomainException(OAuth2ErrorCode.REFRESH_TOKEN_NOT_MATCH)
+        if(token?.refreshToken != refreshToken) throw  BusinessLogicException(OAuth2ErrorCode.REFRESH_TOKEN_NOT_MATCH)
 
         token.refreshToken().await()
 

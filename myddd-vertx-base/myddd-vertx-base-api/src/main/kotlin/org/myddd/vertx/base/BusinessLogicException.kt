@@ -1,9 +1,8 @@
 package org.myddd.vertx.base
 
-interface BusinessLogicException {
+import org.myddd.vertx.error.ErrorCode
+import java.lang.RuntimeException
 
-    val errorCode:String
-
-    val values: Array<String>
+class BusinessLogicException(val errorCode:ErrorCode,val values: Array<String> = emptyArray()) : RuntimeException(errorCode.toString()) {
 
 }

@@ -1,9 +1,8 @@
 package org.myddd.vertx.oauth2.start
 
-import org.myddd.vertx.domain.ErrorCode
-import java.util.*
+import org.myddd.vertx.error.ErrorCode
 
-enum class OAuth2WebErrorCode :ErrorCode  {
+enum class OAuth2WebErrorCode : ErrorCode {
 
     ILLEGAL_PARAMETER_FOR_CREATE_CLIENT,
 

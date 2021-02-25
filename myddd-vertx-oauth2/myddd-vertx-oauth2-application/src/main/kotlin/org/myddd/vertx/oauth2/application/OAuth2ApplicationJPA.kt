@@ -3,7 +3,7 @@ package org.myddd.vertx.oauth2.application
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.kotlin.coroutines.await
-import org.myddd.vertx.domain.DomainException
+import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2UserDTO
@@ -18,11 +18,11 @@ class OAuth2ApplicationJPA : OAuth2Application {
     override suspend fun requestClientToken(clientId: String, clientSecret: String): Future<OAuth2UserDTO?> {
         return try {
             val user = clientService.queryClientByClientId(clientId).await()
-            if(Objects.isNull(user)) throw DomainException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
+            if(Objects.isNull(user)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
 
-            if(user?.clientSecret != clientSecret) throw DomainException(OAuth2ApiErrorCode.CLIENT_SECRET_NOT_MATCH)
+            if(user?.clientSecret != clientSecret) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_SECRET_NOT_MATCH)
 
-            if(user.disabled) throw DomainException(OAuth2ApiErrorCode.CLIENT_DISABLED)
+            if(user.disabled) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_DISABLED)
 
             val token = clientService.generateClientToken(user).await()
             Future.succeededFuture(toOAuth2UserDTO(user,token))
@@ -37,7 +37,7 @@ class OAuth2ApplicationJPA : OAuth2Application {
         try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
 
-            if(Objects.isNull(queryUser)) throw DomainException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
+            if(Objects.isNull(queryUser)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
 
             val token = clientService.refreshUserToken(queryUser!!,refreshToken).await()
             promise.onSuccess(toOAuth2UserDTO(queryUser,token))
@@ -53,12 +53,12 @@ class OAuth2ApplicationJPA : OAuth2Application {
 
         try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
-            if(Objects.isNull(queryUser)) throw DomainException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
+            if(Objects.isNull(queryUser)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
 
             val queryToken = clientService.queryUserToken(clientId).await()
-            if(Objects.isNull(queryToken)) throw DomainException(OAuth2ApiErrorCode.CLIENT_TOKEN_NOT_FOUND)
+            if(Objects.isNull(queryToken)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_TOKEN_NOT_FOUND)
 
-            if(queryToken?.accessToken != accessToken) throw DomainException(OAuth2ApiErrorCode.ACCESS_TOKEN_NOT_MATCH)
+            if(queryToken?.accessToken != accessToken) throw BusinessLogicException(OAuth2ApiErrorCode.ACCESS_TOKEN_NOT_MATCH)
 
             clientService.revokeUserToken(queryUser!!).await()
             promise.onSuccess(true)
@@ -73,11 +73,11 @@ class OAuth2ApplicationJPA : OAuth2Application {
         val promise = PromiseImpl<OAuth2UserDTO?>()
         try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
-            if(Objects.isNull(queryUser)) throw DomainException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
+            if(Objects.isNull(queryUser)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
 
             val queryToken = clientService.queryUserToken(clientId).await()
 
-            if(Objects.isNull(queryToken)) throw DomainException(OAuth2ApiErrorCode.CLIENT_TOKEN_NOT_FOUND)
+            if(Objects.isNull(queryToken)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_TOKEN_NOT_FOUND)
 
 
             promise.onSuccess(toOAuth2UserDTO(queryUser!!,queryToken!!))

@@ -80,7 +80,7 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
                 val language = it.request().getHeader(X_LANGUAGE_IN_HEADER)
 
                 var responseJson= if(failure is BusinessLogicException){
-                    val errorMsgI18n = errorI18n.getMessage(failure.errorCode,failure.values,language).await()
+                    val errorMsgI18n = errorI18n.getMessage(failure.errorCode.errorCode(),failure.values,language).await()
 
                     JsonObject()
                         .put(ERROR_CODE,failure.errorCode)

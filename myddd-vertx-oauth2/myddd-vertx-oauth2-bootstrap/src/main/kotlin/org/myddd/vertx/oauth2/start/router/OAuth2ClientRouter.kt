@@ -7,7 +7,7 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.myddd.vertx.domain.DomainException
+import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
 import org.myddd.vertx.oauth2.api.OAuth2ClientDTO
@@ -33,7 +33,7 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractRouter
                 try {
                     val body = it.bodyAsJson
                     if(body.getString("clientId").isNullOrEmpty() || body.getString("name").isNullOrEmpty()){
-                        throw DomainException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_CREATE_CLIENT)
+                        throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_CREATE_CLIENT)
                     }
 
                     val createClientDTO = body.mapTo(OAuth2ClientDTO::class.java)
@@ -57,14 +57,14 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractRouter
                     val clientSecret = body.getString("clientSecret")
 
                     if(clientId.isNullOrEmpty() || clientSecret.isNullOrEmpty()){
-                        throw DomainException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_CLIENT_ID_AND_CLIENT_SECRET)
+                        throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_CLIENT_ID_AND_CLIENT_SECRET)
                     }
 
                     val oauth2Client = oAuth2ClientApplication.queryClient(clientId).await()
-                        ?: throw DomainException(OAuth2WebErrorCode.CLIENT_NOT_FOUND)
+                        ?: throw BusinessLogicException(OAuth2WebErrorCode.CLIENT_NOT_FOUND)
 
                     if(clientSecret != oauth2Client.clientSecret){
-                        throw DomainException(OAuth2WebErrorCode.CLIENT_SECRET_NOT_MATCH)
+                        throw BusinessLogicException(OAuth2WebErrorCode.CLIENT_SECRET_NOT_MATCH)
                     }
 
                     val resetSecret = oAuth2ClientApplication.resetClientSecret(clientId).await()
@@ -87,14 +87,14 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractRouter
                     val clientSecret = jsonBody.getString("clientSecret")
 
                     if(clientId.isNullOrEmpty() || clientSecret.isNullOrEmpty()){
-                        throw DomainException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_CLIENT_ID_AND_CLIENT_SECRET)
+                        throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_CLIENT_ID_AND_CLIENT_SECRET)
                     }
 
                     val oauth2Client = oAuth2ClientApplication.queryClient(clientId).await()
-                        ?: throw DomainException(OAuth2WebErrorCode.CLIENT_NOT_FOUND)
+                        ?: throw BusinessLogicException(OAuth2WebErrorCode.CLIENT_NOT_FOUND)
 
                     if(clientSecret != oauth2Client.clientSecret){
-                        throw DomainException(OAuth2WebErrorCode.CLIENT_SECRET_NOT_MATCH)
+                        throw BusinessLogicException(OAuth2WebErrorCode.CLIENT_SECRET_NOT_MATCH)
                     }
 
                     oAuth2ClientApplication.disableClient(clientId).await()

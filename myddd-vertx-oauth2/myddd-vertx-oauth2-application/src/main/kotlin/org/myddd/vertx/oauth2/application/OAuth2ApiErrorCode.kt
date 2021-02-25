@@ -1,7 +1,6 @@
 package org.myddd.vertx.oauth2.application
 
-import org.myddd.vertx.domain.ErrorCode
-import java.util.*
+import org.myddd.vertx.error.ErrorCode
 
 enum class OAuth2ApiErrorCode : ErrorCode {
 

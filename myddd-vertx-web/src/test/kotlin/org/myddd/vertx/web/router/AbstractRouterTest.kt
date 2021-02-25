@@ -78,9 +78,18 @@ class AbstractRouterTest {
         GlobalScope.launch {
             try {
                 val webClient = WebClient.create(vertx)
-                val response = webClient.get(port,host,"/v1/users").send().await()
+                var response = webClient.get(port,host,"/v1/users").send().await()
                 testContext.verify {
                     Assertions.assertEquals(200,response.statusCode())
+                }
+
+                response = webClient.get(port,host,"/v1/users?error=true")
+                    .send()
+                    .await()
+
+                testContext.verify {
+                    println(response.bodyAsString())
+                    Assertions.assertEquals(400,response.statusCode())
                 }
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -96,7 +105,7 @@ class AbstractRouterTest {
             try {
                 val webClient = WebClient.create(vertx)
                 val userId = UUID.randomUUID().toString()
-                val response = webClient.post(port,host,"/v1/users")
+                var response = webClient.post(port,host,"/v1/users")
                     .sendJsonObject(JsonObject().put("userId",userId))
                     .await()
 
@@ -105,6 +114,16 @@ class AbstractRouterTest {
                     val responseBody = response.bodyAsJsonObject()
                     Assertions.assertEquals(userId,responseBody.getString("userId"))
                 }
+
+                response = webClient.post(port,host,"/v1/users?error=true")
+                    .sendJsonObject(JsonObject().put("userId",userId))
+                    .await()
+
+                testContext.verify {
+                    println(response.bodyAsString())
+                    Assertions.assertEquals(400,response.statusCode())
+                }
+
             }catch (e:Exception){
                 testContext.failNow(e)
             }
@@ -120,7 +139,7 @@ class AbstractRouterTest {
                 val userId = UUID.randomUUID().toString()
                 val name = UUID.randomUUID().toString()
 
-                val response = webClient.put(port,host,"/v1/users/$userId")
+                var response = webClient.put(port,host,"/v1/users/$userId")
                     .sendJsonObject(JsonObject().put("name",name))
                     .await()
 
@@ -130,6 +149,15 @@ class AbstractRouterTest {
 
                     Assertions.assertEquals(userId,bodyJson.getString("userId"))
                     Assertions.assertEquals(name,bodyJson.getString("name"))
+                }
+
+                response = webClient.put(port,host,"/v1/users/$userId?error=true")
+                    .sendJsonObject(JsonObject().put("name",name))
+                    .await()
+
+                testContext.verify {
+                    println(response.bodyAsString())
+                    Assertions.assertEquals(400,response.statusCode())
                 }
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -145,7 +173,7 @@ class AbstractRouterTest {
                 val webClient = WebClient.create(vertx)
                 val userId = UUID.randomUUID().toString()
 
-                val response = webClient.patch(port,host,"/v1/users/$userId")
+                var response = webClient.patch(port,host,"/v1/users/$userId")
                     .sendJsonObject(JsonObject().put("name",UUID.randomUUID().toString()))
                     .await()
 
@@ -155,6 +183,14 @@ class AbstractRouterTest {
 
                     Assertions.assertEquals(userId,bodyJson.getString("userId"))
                     Assertions.assertNotNull(bodyJson.getString("name"))
+                }
+
+                response = webClient.patch(port,host,"/v1/users/$userId?error=true")
+                    .sendJsonObject(JsonObject().put("name",UUID.randomUUID().toString()))
+                    .await()
+
+                testContext.verify {
+                    Assertions.assertEquals(400,response.statusCode())
                 }
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -170,12 +206,20 @@ class AbstractRouterTest {
                 val webClient = WebClient.create(vertx)
                 val userId = UUID.randomUUID().toString()
 
-                val response = webClient.delete(port,host,"/v1/users/$userId")
+                var response = webClient.delete(port,host,"/v1/users/$userId")
                     .send()
                     .await()
 
                 testContext.verify {
                     Assertions.assertEquals(204,response.statusCode())
+                }
+
+                response = webClient.delete(port,host,"/v1/users/$userId?error=true")
+                    .send()
+                    .await()
+
+                testContext.verify {
+                    Assertions.assertEquals(400,response.statusCode())
                 }
             }catch (e:Exception){
                 testContext.failNow(e)

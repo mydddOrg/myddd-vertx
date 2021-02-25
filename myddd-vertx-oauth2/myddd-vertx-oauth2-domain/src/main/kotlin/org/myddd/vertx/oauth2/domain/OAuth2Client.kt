@@ -2,8 +2,8 @@ package org.myddd.vertx.oauth2.domain
 
 import io.vertx.core.Future
 import io.vertx.kotlin.coroutines.await
+import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.domain.BaseEntity
-import org.myddd.vertx.domain.DomainException
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 import javax.persistence.*
@@ -40,11 +40,11 @@ class OAuth2Client:BaseEntity() {
 
     suspend fun createClient():Future<OAuth2Client>{
         if(name.isNullOrEmpty()){
-            throw DomainException(OAuth2ErrorCode.CLIENT_NAME_CAN_NOT_NULL)
+            throw BusinessLogicException(OAuth2ErrorCode.CLIENT_NAME_CAN_NOT_NULL)
         }
 
         if(clientId.isNullOrEmpty()){
-            throw DomainException(OAuth2ErrorCode.CLIENT_ID_CAN_NOT_NULL)
+            throw BusinessLogicException(OAuth2ErrorCode.CLIENT_ID_CAN_NOT_NULL)
         }
 
         this.created = System.currentTimeMillis()

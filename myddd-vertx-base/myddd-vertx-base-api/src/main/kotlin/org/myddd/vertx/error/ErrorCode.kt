@@ -1,4 +1,4 @@
-package org.myddd.vertx.domain
+package org.myddd.vertx.error
 
 interface ErrorCode {
 

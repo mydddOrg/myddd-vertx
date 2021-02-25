@@ -1,6 +1,5 @@
 package org.myddd.vertx.domain
 
-import java.io.Serializable
 import javax.persistence.*
 
 /**
