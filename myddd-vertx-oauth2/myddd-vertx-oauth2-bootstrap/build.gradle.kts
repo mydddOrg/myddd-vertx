@@ -77,5 +77,5 @@ dependencies {
     implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-provider"))
 
 
-
+    implementation(project(":myddd-vertx-web"))
 }

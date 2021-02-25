@@ -1,20 +1,20 @@
 package org.myddd.vertx.oauth2.start.router
 
 import io.vertx.core.Vertx
-import io.vertx.core.http.HttpMethod
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.myddd.vertx.domain.BusinessLogicException
+import org.myddd.vertx.domain.DomainException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.start.OAuth2WebErrorCode
+import org.myddd.vertx.web.router.AbstractRouter
 import kotlin.Exception
 
-class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractOAuth2Router(vertx = vertx, router = router) {
+class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx, router = router) {
 
     private val basePath = "oauth2"
 
@@ -35,7 +35,7 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractOAuth2Router(vert
                     val clientId = jsonBody.getString("clientId")
                     val clientSecret = jsonBody.getString("clientSecret")
 
-                    if(grantType != "client_credentials") throw BusinessLogicException(OAuth2WebErrorCode.NOT_SUPPORT_OAUTH2_GRANT_TYPE)
+                    if(grantType != "client_credentials") throw DomainException(OAuth2WebErrorCode.NOT_SUPPORT_OAUTH2_GRANT_TYPE)
 
                     val userDTO = oAuth2Application.requestClientToken(clientId,clientSecret).await()
 
@@ -58,7 +58,7 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractOAuth2Router(vert
                     val clientId = bodyJson.getString("clientId")
                     val refreshToken = bodyJson.getString("refreshToken")
 
-                    if(clientId.isNullOrEmpty() || refreshToken.isNullOrEmpty()) throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REFRESH_TOKEN)
+                    if(clientId.isNullOrEmpty() || refreshToken.isNullOrEmpty()) throw DomainException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REFRESH_TOKEN)
 
                     val tokenDTO = oAuth2Application.refreshUserToken(clientId,refreshToken).await()
                     val requestToken = JsonObject.mapFrom(tokenDTO?.tokenDTO)
@@ -79,7 +79,7 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractOAuth2Router(vert
                     val clientId = it.pathParam("clientId")
                     val accessToken = it.pathParam("accessToken")
 
-                    if(clientId.isNullOrEmpty() || accessToken.isNullOrEmpty()) throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REVOKE_TOKEN)
+                    if(clientId.isNullOrEmpty() || accessToken.isNullOrEmpty()) throw DomainException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REVOKE_TOKEN)
 
                     oAuth2Application.revokeUserToken(clientId,accessToken).await()
                     it.response().setStatusCode(204).end()

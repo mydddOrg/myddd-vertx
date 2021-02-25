@@ -1,4 +1,4 @@
-package org.myddd.vertx.oauth2.start.router
+package org.myddd.vertx.web.router
 
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
@@ -12,21 +12,15 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.myddd.vertx.domain.BusinessLogicException
+import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.ioc.InstanceFactory
 
-abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
-
-    private val router:Router = router
-
-    val vertx:Vertx = vertx
-
-    val version = "v1"
+abstract class AbstractRouter constructor(protected val vertx: Vertx,protected val router:Router,protected val version:String = "v1") {
 
     private val bodyHandler = BodyHandler.create()
 
-    private val errorI18n:I18N by lazy { InstanceFactory.getInstance(I18N::class.java) }
+    private val errorI18n: I18N by lazy { InstanceFactory.getInstance(I18N::class.java) }
 
     companion object {
         const val ERROR_CODE = "errorCode"
@@ -40,7 +34,7 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
         const val CONTENT_TYPE_JSON = "application/json"
     }
 
-    protected fun createGetRoute(path:String,handle: Handler<RoutingContext>):Route {
+    protected fun createGetRoute(path:String,handle: Handler<RoutingContext>): Route {
         return createRoute(HttpMethod.GET,path,handle)
     }
 
@@ -60,18 +54,19 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
         return createRoute(HttpMethod.PATCH,path,handle)
     }
 
-    protected fun createRoute(httpMethod:HttpMethod,path:String,handle: Handler<RoutingContext>):Route {
+    private fun createRoute(httpMethod: HttpMethod, path:String, handle: Handler<RoutingContext>):Route {
         val handles = listOf(handle)
         return createRoute(httpMethod,path,handles)
     }
 
-    protected fun createRoute(httpMethod:HttpMethod,path:String,handlers: List<Handler<RoutingContext>>):Route {
+    private fun createRoute(httpMethod: HttpMethod, path:String, handlers: List<Handler<RoutingContext>>):Route {
         val route = router.route(httpMethod,path)
 
         if(httpMethod != HttpMethod.DELETE && httpMethod != HttpMethod.GET){
             route.handler(bodyHandler)
-            route.consumes(CONTENT_TYPE_JSON).produces(CONTENT_TYPE_JSON)
+            route.consumes(CONTENT_TYPE_JSON)
         }
+        route.produces(CONTENT_TYPE_JSON)
 
 
         handlers.forEach {
