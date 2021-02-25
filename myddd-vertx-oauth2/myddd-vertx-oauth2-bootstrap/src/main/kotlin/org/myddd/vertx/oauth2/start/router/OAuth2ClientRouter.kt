@@ -28,7 +28,7 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2
     }
 
     private fun createClientRoute(){
-        createRoute(HttpMethod.POST,"/$version/$basePath/clients"){
+        createPostRoute("/$version/$basePath/clients"){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
                     val body = it.bodyAsJson
@@ -49,7 +49,7 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2
     }
 
     private fun resetClientSecretRoute(){
-        createRoute(HttpMethod.PATCH,"/$version/$basePath/clients/:clientId/clientSecret"){
+        createPatchRoute("/$version/$basePath/clients/:clientId/clientSecret"){
             GlobalScope.launch(vertx.dispatcher()) {
                 try{
                     val clientId = it.pathParam("clientId")
@@ -79,7 +79,7 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractOAuth2
     }
 
     private fun disabledStatusClientRoute(){
-        createRoute(HttpMethod.PATCH,"/$version/$basePath/clients/:clientId/disabledStatus"){
+        createPatchRoute("/$version/$basePath/clients/:clientId/disabledStatus"){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
                     val clientId = it.pathParam("clientId")

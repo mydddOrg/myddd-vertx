@@ -12,6 +12,9 @@ include("myddd-vertx-repository:myddd-vertx-repository-hibernate")
 include("myddd-vertx-querychannel:myddd-vertx-querychannel-api")
 include("myddd-vertx-querychannel:myddd-vertx-querychannel-hibernate")
 
+include("myddd-vertx-i18n:myddd-vertx-i18n-api")
+include("myddd-vertx-i18n:myddd-vertx-i18n-provider")
+
 //oauth2.0的实现
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-domain")
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-infra")

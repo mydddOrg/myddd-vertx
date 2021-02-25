@@ -27,7 +27,7 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractOAuth2Router(vert
     }
 
     private fun requestClientTokenRoute(){
-        createRoute(HttpMethod.POST,"/$version/$basePath/token"){
+        createPostRoute("/$version/$basePath/token"){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
                     val jsonBody = it.bodyAsJson
@@ -51,7 +51,7 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractOAuth2Router(vert
     }
 
     private fun refreshClientTokenToken(){
-        createRoute(HttpMethod.POST,"/$version/$basePath/refreshToken"){
+        createPostRoute("/$version/$basePath/refreshToken"){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
                     val bodyJson = it.bodyAsJson
@@ -73,7 +73,7 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractOAuth2Router(vert
     }
 
     private fun revokeClientTokenRoute(){
-        createRoute(HttpMethod.DELETE,"/$version/$basePath/clients/:clientId/token/:accessToken"){
+        createDeleteRoute("/$version/$basePath/clients/:clientId/token/:accessToken"){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
                     val clientId = it.pathParam("clientId")

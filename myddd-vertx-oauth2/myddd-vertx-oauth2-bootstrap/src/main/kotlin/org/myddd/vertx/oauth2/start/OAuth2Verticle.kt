@@ -40,6 +40,6 @@ class OAuth2Verticle : CoroutineVerticle() {
     }
 
     private fun initIOC(){
-        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(OAuth2GuiceModule())))
+        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(OAuth2GuiceModule(vertx))))
     }
 }

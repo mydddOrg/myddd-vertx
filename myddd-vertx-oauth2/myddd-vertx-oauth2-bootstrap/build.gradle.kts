@@ -71,6 +71,11 @@ dependencies {
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
 
     implementation("com.fasterxml.jackson.core:jackson-databind:${rootProject.extra["jackson_version"]}")
+    implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
+
+    implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-api"))
+    implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-provider"))
+
 
 
 }

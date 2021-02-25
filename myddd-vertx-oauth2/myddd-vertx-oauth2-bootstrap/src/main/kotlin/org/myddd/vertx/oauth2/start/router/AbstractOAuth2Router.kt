@@ -8,7 +8,13 @@ import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
+import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.myddd.vertx.domain.BusinessLogicException
+import org.myddd.vertx.i18n.I18N
+import org.myddd.vertx.ioc.InstanceFactory
 
 abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
 
@@ -20,12 +26,38 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
 
     private val bodyHandler = BodyHandler.create()
 
+    private val errorI18n:I18N by lazy { InstanceFactory.getInstance(I18N::class.java) }
+
     companion object {
         const val ERROR_CODE = "errorCode"
         const val ERROR_MSG = "errorMsg"
         const val OTHER_ERROR = "other error"
 
         const val HTTP_400_RESPONSE = 400
+
+        const val X_LANGUAGE_IN_HEADER = "X_LANGUAGE"
+
+        const val CONTENT_TYPE_JSON = "application/json"
+    }
+
+    protected fun createGetRoute(path:String,handle: Handler<RoutingContext>):Route {
+        return createRoute(HttpMethod.GET,path,handle)
+    }
+
+    protected fun createPostRoute(path:String,handle: Handler<RoutingContext>):Route {
+        return createRoute(HttpMethod.POST,path,handle)
+    }
+
+    protected fun createDeleteRoute(path:String,handle: Handler<RoutingContext>):Route {
+        return createRoute(HttpMethod.DELETE,path,handle)
+    }
+
+    protected fun createPutRoute(path:String,handle: Handler<RoutingContext>):Route {
+        return createRoute(HttpMethod.PUT,path,handle)
+    }
+
+    protected fun createPatchRoute(path:String,handle: Handler<RoutingContext>):Route {
+        return createRoute(HttpMethod.PATCH,path,handle)
     }
 
     protected fun createRoute(httpMethod:HttpMethod,path:String,handle: Handler<RoutingContext>):Route {
@@ -38,26 +70,33 @@ abstract class AbstractOAuth2Router constructor(router: Router, vertx: Vertx) {
 
         if(httpMethod != HttpMethod.DELETE && httpMethod != HttpMethod.GET){
             route.handler(bodyHandler)
-            route.consumes("application/json").produces("application/json")
+            route.consumes(CONTENT_TYPE_JSON).produces(CONTENT_TYPE_JSON)
         }
+
 
         handlers.forEach {
             route.handler(it)
         }
 
         route.failureHandler {
-            val failure = it.failure()
-            var responseJson= if(failure is BusinessLogicException){
-                JsonObject()
-                    .put(ERROR_CODE,failure.errorCode)
-                    .put(ERROR_MSG,failure.errorMsg)
-            }else{
-                JsonObject()
-                    .put(ERROR_CODE,OTHER_ERROR)
-                    .put(ERROR_MSG,failure.localizedMessage)
-            }
+            GlobalScope.launch(vertx.dispatcher()) {
+                val failure = it.failure()
 
-            it.response().setStatusCode(HTTP_400_RESPONSE).end(responseJson.toBuffer())
+                val language = it.request().getHeader(X_LANGUAGE_IN_HEADER)
+
+                var responseJson= if(failure is BusinessLogicException){
+                    val errorMsgI18n = errorI18n.getMessage(failure.errorCode,failure.values,language).await()
+
+                    JsonObject()
+                        .put(ERROR_CODE,failure.errorCode)
+                        .put(ERROR_MSG, errorMsgI18n)
+                }else{
+                    JsonObject()
+                        .put(ERROR_CODE,OTHER_ERROR)
+                        .put(ERROR_MSG,failure.localizedMessage)
+                }
+                it.response().setStatusCode(HTTP_400_RESPONSE).end(responseJson.toBuffer())
+            }
         }
 
         return route

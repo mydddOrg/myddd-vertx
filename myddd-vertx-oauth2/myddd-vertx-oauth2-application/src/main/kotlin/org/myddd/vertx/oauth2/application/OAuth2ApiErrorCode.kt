@@ -5,36 +5,14 @@ import java.util.*
 
 enum class OAuth2ApiErrorCode : ErrorCode {
 
-    CLIENT_NOT_FOUND {
-        override fun errorMsg(locale: Locale): String? {
-            return "没有找到对应的Client"
-        }
-    }
-    ,
+    CLIENT_NOT_FOUND,
 
-    CLIENT_SECRET_NOT_MATCH {
-        override fun errorMsg(locale: Locale): String? {
-            return "Client Secret不正确"
-        }
-    }
-    ,
+    CLIENT_SECRET_NOT_MATCH,
 
-    CLIENT_DISABLED {
-        override fun errorMsg(locale: Locale): String? {
-            return "Client处于禁用状态"
-        }
-    },
+    CLIENT_DISABLED,
 
-    CLIENT_TOKEN_NOT_FOUND {
-        override fun errorMsg(locale: Locale): String? {
-            return "未找到TOKEN"
-        }
-    },
+    CLIENT_TOKEN_NOT_FOUND,
 
-    ACCESS_TOKEN_NOT_MATCH {
-        override fun errorMsg(locale: Locale): String? {
-            return "accessToken无法匹配"
-        }
-    }
+    ACCESS_TOKEN_NOT_MATCH
 
 }
