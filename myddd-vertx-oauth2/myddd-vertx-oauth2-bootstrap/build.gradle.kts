@@ -12,7 +12,7 @@ plugins {
 group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
 
-val mainVerticleName = "org.myddd.vertx.oauth2.start.MydddOAuth2Verticle"
+val mainVerticleName = "org.myddd.vertx.oauth2.start.OAuth2Verticle"
 val launcherClassName = "io.vertx.core.Launcher"
 
 
