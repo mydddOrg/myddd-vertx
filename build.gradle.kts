@@ -14,6 +14,7 @@ extra["log4j_version"] = "2.14.0"
 extra["jackson_version"] = "2.12.1"
 extra["javax_persistence_version"] = "2.2.1"
 extra["mockito_version"] = "3.7.7"
+extra["hibernate_core_version"] = "5.4.28.Final"
 
 group = "cc.lingenliu"
 version = project.extra["version"]!!
