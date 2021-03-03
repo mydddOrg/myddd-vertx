@@ -7,7 +7,6 @@ servers:
     description: 本地服务器
 paths:
   # ==== clients ======
-
   # 创建一个client
   /clients:
     post:
@@ -222,9 +221,7 @@ paths:
           $ref: "#/components/responses/errorResponse"
 
 
-
   # ===== 组织 =======
-
   # 查询单个组织信息
   /organizations/{orgId}:
     get:
@@ -328,9 +325,7 @@ paths:
           $ref: "#/components/responses/errorResponse"
 
 
-
   # ===== 雇员 =======
-
   # 查询单个雇员详情
   /employees/{employeeId}:
     get:
@@ -431,9 +426,7 @@ paths:
           $ref: "#/components/responses/errorResponse"
 
 
-
   # ===== 媒体 =======
-
   # 上传一个媒体文件
   /medias:
     post:
@@ -504,9 +497,7 @@ paths:
           $ref: "#/components/responses/errorResponse"
 
 
-
   # ===== 消息 =======
-
   # 发送消息
   /message/send:
     post:
@@ -617,11 +608,9 @@ paths:
           $ref: "#/components/responses/errorResponse"
 
 
-
   # ===== 应用 =======
-
   # 获取应用管理员
-  /app/admin_list:
+  /get_admin_list:
     get:
       tags:
         - "应用"
@@ -637,6 +626,41 @@ paths:
                   type: string
         400:
           $ref: "#/components/responses/errorResponse"
+
+   #获取一个应用明细
+  # 获取应用详情
+  /apps/{appId}:
+    get:
+      tags:
+        - "应用"
+      parameters:
+        - name: appId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: 应用
+      summary: 获取一个应用的详情
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appId:
+                    type: string
+                    description: appId
+                  name:
+                    type: string
+                    description: app名称
+
+        400:
+          $ref: "#/components/responses/errorResponse"
+
+  # ===== 其它 =======
+
+
 
 components:
   schemas:
