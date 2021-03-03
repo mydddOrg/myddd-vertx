@@ -28,4 +28,5 @@ dependencies {
     testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
+
 }

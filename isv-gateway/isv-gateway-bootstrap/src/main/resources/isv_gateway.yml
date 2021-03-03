@@ -1,0 +1,745 @@
+openapi: "3.0.2"
+info:
+  title: ISV 网关API
+  version: "1.0"
+servers:
+  - url: http://127.0.0.1:8080/v1
+    description: 本地服务器
+paths:
+  # ==== clients ======
+
+  # 创建一个client
+  /clients:
+    post:
+      tags:
+        - "clients"
+      summary: 请求创建一个网关client
+      description: 当前支持WorkPlus_ISV,WorkPlus以及企业微信三种类型
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientName:
+                  type: string
+                  description: client名称
+                clientType:
+                  type: string
+                  description: 客户类型
+                  enum:
+                    - WorkPlus_Isv
+                    - WorkPlus_App
+                    - Work_WeiXin
+                description:
+                  type: string
+                  description: 对应用的描述
+                extraForWorkWeiXin:
+                  type: object
+                  description: 填写必要的属性，当clientId类型为Work_WeiXin时必填
+                  properties:
+                    corpid:
+                      type: string
+                      description: 企业微信中的corpid
+                    suiteId:
+                      type: string
+                      description: 第三方应用ID
+                    suite_secret:
+                      type: string
+                      description: 第三方应用密钥
+                extraForWorkPlusISV:
+                  type: object
+                  description: 填写必要的属性,当clientId类型为WorkPlus_Isv时必填
+                  properties:
+                    suiteKey:
+                      type: string
+                      description: WorkPlus ISV套件key
+                    suiteSecret:
+                      type: string
+                      description: WorkPlus ISV套件secret
+                    vendorkey:
+                      type: string
+                      description: WorkPlus ISV供应商KEY
+                    appId:
+                      type: string
+                      description: WorkPlus ISV的AppId
+                    domainId:
+                      type: string
+                      description: 域ID
+                extraForWorkPlus:
+                  type: object
+                  description: 填写必要的属性,当clientId
+                  properties:
+                    clientId:
+                      type: string
+                      description: WorkPlus应用的clientId类型为WorkPlus_App时必填
+                    clientSecret:
+                      type: string
+                      description: WorkPlus应用的clientSecret
+                    domainId:
+                      type: string
+                      description: 域ID
+              required:
+                - clientName
+                - clientType
+      responses:
+        "200":
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                clientId: i03VPeHDHpda7PlVuKwaCBqFCSbehTgG
+                name: 测试应用
+                clientSecret: vQGWBea4xcC4KlqByAgfwylxG7oFgys6
+                description: 这是一个示例应用的详细说明，你在这里可以描述更多应用的信息
+
+        "400":
+          $ref: "#/components/responses/errorResponse"
+  # 重置client secret
+  /clients/clientSecret:
+    patch:
+      tags:
+        - "clients"
+      summary: 重置一个client的secret
+      description: 通过此api来重置client的secret,这个是给client调用的
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: 需要重置的clientId
+                clientSecret:
+                  type: string
+                  description: 原clientSecret
+              required:
+                - "clientId"
+                - "clientSecret"
+              example:
+                clientId: 1Vdq19UzefUhjbSMnNx7mBoMVZJDsaZm
+                clientSecret: 9DSN4N14vEAuFjHNeDHWh4V8gtPzaOQO
+  # 申请token
+  /clients/token:
+    post:
+      tags:
+        - "clients"
+      summary: 申请accessToken
+      description: 申请一个accessToken，这是后续调用其它API的基础
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: 需要申请token的clientId
+                clientSecret:
+                  type: string
+                  description: 需要申请token的clientSecret
+                grantType:
+                  type: string
+                  default: "client_credentials"
+                  enum:
+                    - "client_credentials"
+                  description: 当前只支持client_credentials一种方式，取固定值
+              required:
+                - "clientId"
+                - "clientSecret"
+                - "grantType"
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenResponse"
+
+        "400":
+          $ref: "#/components/responses/errorResponse"
+  # 刷新token
+  /clients/refreshToken:
+    post:
+      tags:
+        - "clients"
+      summary: 刷新accessToken
+      description: 刷新accessToken，在accssToken过期前需要主动刷新accessToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: 需刷新token的clientId
+                refreshToken:
+                  type: string
+                  description: 刷新token
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenResponse"
+        "400":
+          $ref: "#/components/responses/errorResponse"
+  # 注销token
+  /clients/{clientId}/token/{accessToken}:
+    delete:
+      tags:
+        - "clients"
+      summary: 请求注销一个accessToken
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: 需要注销的clientId
+          schema:
+            type: string
+        - name: accessToken
+          in: path
+          required: true
+          description: 需要注销的clientId
+          schema:
+            type: string
+
+      responses:
+        "204":
+          description: OK
+        "400":
+          $ref: "#/components/responses/errorResponse"
+
+
+
+  # ===== 组织 =======
+
+  # 查询单个组织信息
+  /organizations/{orgId}:
+    get:
+      tags:
+        - "组织"
+      summary: 获取指定组织的详情
+      parameters:
+        - name: orgId
+          in: path
+          required: false
+          schema:
+            type: string
+          description: 如果传空，则返回当前组织根组织信息
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/organization"
+        400:
+          $ref: "#/components/responses/errorResponse"
+  # 查询组织下的子部门
+  /organizations/{orgId}/children:
+    get:
+      tags:
+        - "组织"
+      summary: 获取指定组织下的子组织
+      description: 查询指定部门下的子部门信息，这个接口只返回部门，如需雇员或雇员+部门请使用其它接口
+      parameters:
+        - name: orgId
+          in: path
+          required: false
+          schema:
+            type: string
+          description: 如果传空，则返回当前组织根组织信息
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/organization"
+        400:
+          $ref: "#/components/responses/errorResponse"
+  # 查询组织下的雇员
+  /organizations/{orgId}/employees:
+    get:
+      tags:
+        - "组织"
+      summary: 获取组织下的雇员信息
+      description: 此接口会返回指定部门下的雇员信息,这个接口只包含雇员信息
+      parameters:
+        - name: orgId
+          in: path
+          required: false
+          schema:
+            type: string
+          description: 如果传空，则返回当前组织根组织信息
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/employee"
+        400:
+          $ref: "#/components/responses/errorResponse"
+  # 查询组织下的部门+雇员明细
+  /organizations/{orgId}/details:
+    get:
+      tags:
+        - "组织"
+      summary: 获取组织的部门与雇员
+      description: 这个接口可以获取组织的部门与雇员两个信息，如果只需要其中的任何一个，可以使用其它接口
+      parameters:
+        - name: orgId
+          in: path
+          required: false
+          schema:
+            type: string
+          description: 如果传空，则返回当前组织根组织信息
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                properties:
+                  employees:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/employee"
+                    description: 雇员信息
+                  children:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/organization"
+                    description: 部门信息
+        400:
+          $ref: "#/components/responses/errorResponse"
+
+
+
+  # ===== 雇员 =======
+
+  # 查询单个雇员详情
+  /employees/{employeeId}:
+    get:
+      tags:
+        - "雇员"
+      summary: 获取指定雇员的信息
+      description: 传入雇员ID，查询一个指定的雇员信息
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/employee"
+        400:
+          $ref: "#/components/responses/errorResponse"
+  # 查询多个雇员
+  /employees/batch:
+    get:
+      tags:
+        - "雇员"
+      summary: 查询多个雇员
+      description: 传入一批雇员ID，返回多个雇员ID信息，限制每次最多100
+      parameters:
+        - name: userIdList
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 传入多个雇员信息，以逗号分隔
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/employee"
+        400:
+          $ref: "#/components/responses/errorResponse"
+
+        # 分页查询雇员
+  # 分页查询雇员
+  /employees/pages:
+    get:
+      tags:
+        - "雇员"
+      summary: 分页获取雇员
+      description: 调用此接口可以批量获取雇员信息
+      parameters:
+        - name: skip
+          in: query
+          required: false
+          description: 开始数
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+          description: 每页记录数
+        - name: orgId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 组织ID,传入此值表示分页查询指定组织下的雇员
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 搜索字符，传入此值，表示查询符合条件的雇员
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: 总数
+                  skip:
+                    type: integer
+                    description: 当前开始数
+                  limit:
+                    type: integer
+                    description: 分页条数
+                  datas:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/employee"
+        400:
+          $ref: "#/components/responses/errorResponse"
+
+
+
+  # ===== 媒体 =======
+
+  # 上传一个媒体文件
+  /medias:
+    post:
+      tags:
+        - "媒体"
+      summary: 上传一个媒体
+      description: 上传一个文件到媒体中心
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fileDigest:
+                  type: string
+                  description: 上传媒体的MD5码值
+                fileSize:
+                  type: integer
+                  description: 文件大小
+                fileName:
+                  type: string
+                  description: 文件名称
+                file:
+                  type: string
+                  format: binary
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mediaId:
+                    type: string
+                    description: 媒体ID
+        400:
+          $ref: "#/components/responses/errorResponse"
+  # 下载一个媒体文件
+  /medias/{mediaId}:
+    get:
+      tags:
+        - "媒体"
+      summary: 下载媒体文件
+      parameters:
+        - name: mediaId
+          required: true
+          schema:
+            type: string
+          description: 媒体ID
+      responses:
+        200:
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: "#/components/responses/errorResponse"
+
+
+
+  # ===== 消息 =======
+
+  # 发送消息
+  /message/send:
+    post:
+      tags:
+        - "消息"
+      summary: 推送消息
+      description: 推送消息的API，支持文本，图片，文件，语音，模板消息（WorkPlus专有),卡片消息(微信专用), markdown消息(微信专用)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                msgType:
+                  type: string
+                  description: 消息类型
+                  enum:
+                    - text
+                    - image
+                    - file
+                    - voice
+                    - textcard
+                    - template
+                    - markdown
+                forAll:
+                  type: boolean
+                  description: 是否推送所有人员(关注此app范围内)
+                  default: false
+                toUsers:
+                  type: string
+                  default: 推送的用户标识ID,以 | 间隔
+                text:
+                  type: object
+                  description: 推送文本的消息内容
+                  properties:
+                    content:
+                      type: string
+                      default: 推送的文本消息内容'
+                image:
+                  type: object
+                  description: 推送的消息为图片时的body内容
+                  properties:
+                    mediaId:
+                      type: string
+                      description: 图片mediaId
+                    isGif:
+                      type: boolean
+                      default: false
+                      description: 是否GIT，默认false
+                    height:
+                      type: number
+                      description: 图片高度
+                    width:
+                      type: number
+                      description: 图片宽度
+                voice:
+                  type: object
+                  properties:
+                    mediaId:
+                      type: string
+                      description: 语音的媒体ID
+                file:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: 文件名
+                    mediaId:
+                      type: string
+                      description: 文件媒体ID
+                textcard:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: 卡片标题
+                    description:
+                      type: string
+                      description: 卡片内容
+                    url:
+                      type: string
+                      description: 跳转URL
+                    btntxt:
+                      type: string
+                      description: 按钮标题
+                markdown:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+                      description: markdown内容
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                properties:
+                  invalidUser:
+                    type: string
+                    description: 无效的用户,如"userid1|userid2",只要有一个发送成功，则返回200
+                  invalidParty:
+                    type: string
+                    description: 无效的部门
+          400:
+            $ref: "#/components/responses/errorResponse"
+        400:
+          $ref: "#/components/responses/errorResponse"
+
+
+
+  # ===== 应用 =======
+
+  # 获取应用管理员
+  /app/admin_list:
+    get:
+      tags:
+        - "应用"
+      summary: 获取应用管理员
+      description: 获取到此应用的管理员
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        400:
+          $ref: "#/components/responses/errorResponse"
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: string
+          description: 错误码
+        errorMsg:
+          type: string
+          description: 错误详细描述
+
+    client:
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: clientId，全局唯一，只支持字母，数字以及下划线
+        clientSecret:
+          type: string
+          description: 系统生成的clientSecret
+        name:
+          type: string
+          description: client的名字
+        description:
+          type: string
+          description: client的详细描述
+
+    tokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: 生成的access token
+        refreshToken:
+          type: string
+          description: 刷新token,用来刷新access token
+        accessExpiredIn:
+          type: integer
+          description: accessToken过期时间，单位（豪秒)
+        refreshExpiredIn:
+          type: integer
+          description: refreshToken过期时间,单位 (豪秒)
+
+    organization:
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: 组织Id
+        path:
+          type: string
+          description: 组织路径
+        name:
+          type: string
+          description: 组织名称
+        logo:
+          type: string
+          description: 组织头像
+
+    employeePosition:
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: 组织Id
+        orgName:
+          type: string
+          description: 组织名称
+        path:
+          type: string
+          description: 组织路径
+        primary:
+          type: boolean
+          description: 是否主部门
+
+    employee:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: userId
+        name:
+          type: string
+          description: 名称
+        avatar:
+          type: string
+          description: 头像
+        mobile:
+          type: string
+          description: 手机号
+        positions:
+          type: array
+          items:
+            $ref: "#/components/schemas/employeePosition"
+  responses:
+    errorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: INVALID_PARAMETERS
+            errorMsg: 非法参数
+

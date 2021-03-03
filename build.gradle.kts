@@ -7,7 +7,7 @@ plugins {
     id("org.sonarqube") version "3.0"
 }
 
-extra["version"] = "1.0-SNAPSHOT"
+extra["version"] = "1.0.0-SNAPSHOT"
 extra["vertx_version"] = "4.0.2"
 
 extra["log4j_version"] = "2.14.0"
@@ -15,6 +15,8 @@ extra["jackson_version"] = "2.12.1"
 extra["javax_persistence_version"] = "2.2.1"
 extra["mockito_version"] = "3.7.7"
 extra["hibernate_core_version"] = "5.4.28.Final"
+
+extra["isv_gateway_version"] = "1.0.0-SNAPSHOT"
 
 group = "cc.lingenliu"
 version = project.extra["version"]!!
