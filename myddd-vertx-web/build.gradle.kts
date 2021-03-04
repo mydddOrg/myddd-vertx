@@ -30,8 +30,6 @@ dependencies {
     api("io.vertx:vertx-config-yaml:${rootProject.extra["vertx_version"]}")
 
     implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
-    implementation("commons-net:commons-net:3.8.0")
-
 
     //api
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
@@ -47,5 +45,6 @@ dependencies {
     //test
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
+    testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
 
 }

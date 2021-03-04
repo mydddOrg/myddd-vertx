@@ -20,6 +20,7 @@ import org.myddd.vertx.web.router.WebGuice
 class GlobalConfigTest {
 
     companion object {
+
         @BeforeAll
         @JvmStatic
         fun beforeAll(vertx:Vertx,testContext: VertxTestContext){
@@ -39,14 +40,15 @@ class GlobalConfigTest {
                     Assertions.assertNotNull(GlobalConfig.getConfig())
                 }
 
-                val enableWhiteIPFilter = GlobalConfig.getConfig()?.getBoolean("ipFilter.white.enable")
+                val enableWhiteIPFilter = GlobalConfig.getConfig()?.getBoolean("ipFilter.whitelist.enable")
 
                 testContext.verify {
-                    Assertions.assertEquals(true,enableWhiteIPFilter)
+                    Assertions.assertEquals(false,enableWhiteIPFilter)
                 }
                 testContext.completeNow()
 
             }catch (e:Exception){
+                e.printStackTrace()
                 testContext.failNow(e)
             }
         }

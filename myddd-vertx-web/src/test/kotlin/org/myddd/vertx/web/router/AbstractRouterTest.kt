@@ -11,16 +11,15 @@ import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.web.router.config.GlobalConfig
+import org.myddd.vertx.web.router.handler.IPFilterHandle
 import java.util.*
 import kotlin.Exception
 
@@ -31,7 +30,8 @@ class AbstractRouterTest {
 
         private val logger = LoggerFactory.getLogger(AbstractRouterTest::class.java)
 
-        private const val port = 8080
+        private var port = 8080
+
         private const val host = "127.0.0.1"
 
         private lateinit var deployId:String
@@ -41,8 +41,9 @@ class AbstractRouterTest {
         fun beforeAll(vertx:Vertx,testContext: VertxTestContext){
 
             GlobalScope.launch {
+                port = 10000 + Random().nextInt(1000)
                 InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(WebGuice(vertx))))
-                deployId = vertx.deployVerticle(WebVerticle()).await()
+                deployId = vertx.deployVerticle(WebVerticle(port = port)).await()
                 testContext.completeNow()
             }
         }
@@ -63,6 +64,16 @@ class AbstractRouterTest {
         testContext.verify {
             Assertions.assertNotNull(InstanceFactory.getInstance(Vertx::class.java))
         }
+        testContext.completeNow()
+    }
+
+    @BeforeEach
+    fun disableIpFilter(vertx: Vertx,testContext: VertxTestContext){
+        Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
+        Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.BLACK_LIST_ENABLE)).thenReturn(false)
+        GlobalConfig.configObject = jsonConfig
+        IPFilterHandle.reloadCache()
+
         testContext.completeNow()
     }
 
@@ -239,7 +250,7 @@ class AbstractRouterTest {
 
     @Test
     fun testLoadGlobalConfig(vertx: Vertx,testContext: VertxTestContext){
-        val path = "config.properties"
+        val path = "META-INF/config.properties"
 
         val fileStore = ConfigStoreOptions()
             .setType("file")
@@ -257,6 +268,139 @@ class AbstractRouterTest {
             }else{
                 testContext.failNow(it.cause())
             }
+        }
+    }
+
+    private val jsonConfig = Mockito.mock(JsonObject::class.java)
+
+    @Test
+    fun testNoIpFilter(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch {
+
+            try {
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
+                GlobalConfig.configObject = jsonConfig
+
+                testContext.verify {
+                    Assertions.assertEquals(false,jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE))
+                    Assertions.assertEquals(false,
+                        GlobalConfig.getConfig()?.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE))
+                }
+
+                IPFilterHandle.reloadCache()
+
+                val webClient = WebClient.create(vertx)
+                var response = webClient.get(port, host,"/v1/users").send().await()
+                testContext.verify {
+                    Assertions.assertEquals(200,response.statusCode())
+                }
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testIpFilterWhite(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch {
+
+            try {
+                val webClient = WebClient.create(vertx)
+
+                //启用IP白名单,包括自己
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(true)
+                Mockito.`when`(jsonConfig.getString(IPFilterHandle.WHITE_LIST_VALUES)).thenReturn("127.0.0.1")
+                GlobalConfig.configObject = jsonConfig
+
+                IPFilterHandle.reloadCache()
+
+                var response = webClient.get(port, host,"/v1/users").send().await()
+                testContext.verify {
+                    Assertions.assertEquals(200,response.statusCode())
+                }
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testIpFilterWhiteNotInclude(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch {
+
+            try {
+                val webClient = WebClient.create(vertx)
+
+                //启用IP白名单,包括自己
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(true)
+                Mockito.`when`(jsonConfig.getString(IPFilterHandle.WHITE_LIST_VALUES)).thenReturn("127.0.0.2")
+                GlobalConfig.configObject = jsonConfig
+                IPFilterHandle.reloadCache()
+
+
+                var response = webClient.get(port, host,"/v1/users").send().await()
+                testContext.verify {
+                    Assertions.assertEquals(403,response.statusCode())
+                }
+
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testIpFilterBlack(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch {
+
+            try {
+                val webClient = WebClient.create(vertx)
+
+                //启用IP白名单,包括自己
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.BLACK_LIST_ENABLE)).thenReturn(true)
+
+                Mockito.`when`(jsonConfig.getString(IPFilterHandle.BLACK_LIST_VALUES)).thenReturn("127.0.0.1")
+                GlobalConfig.configObject = jsonConfig
+                IPFilterHandle.reloadCache()
+
+                var response = webClient.get(port, host,"/v1/users").send().await()
+                testContext.verify {
+                    Assertions.assertEquals(403,response.statusCode())
+                }
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testIpFilterBlackNotInclude(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch {
+
+            try {
+                val webClient = WebClient.create(vertx)
+
+                //启用IP白名单,包括自己
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.BLACK_LIST_ENABLE)).thenReturn(true)
+
+                Mockito.`when`(jsonConfig.getString(IPFilterHandle.BLACK_LIST_VALUES)).thenReturn("127.0.0.2")
+                GlobalConfig.configObject = jsonConfig
+                IPFilterHandle.reloadCache()
+
+                var response = webClient.get(port, host,"/v1/users").send().await()
+                testContext.verify {
+                    Assertions.assertEquals(200,response.statusCode())
+                }
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+            testContext.completeNow()
         }
     }
 

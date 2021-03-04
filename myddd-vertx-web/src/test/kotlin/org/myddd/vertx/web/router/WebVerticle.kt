@@ -15,7 +15,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.web.router.config.GlobalConfig
 
-class WebVerticle : CoroutineVerticle() {
+class WebVerticle(private val port:Int = 8080) : CoroutineVerticle() {
 
     private val logger by lazy { LoggerFactory.getLogger(WebVerticle::class.java) }
 
@@ -45,7 +45,7 @@ class WebVerticle : CoroutineVerticle() {
         NotExistsRouter(vertx,router)
         UserRouter(vertx,router)
 
-        return server.requestHandler(router).listen(8080)
+        return server.requestHandler(router).listen(port)
     }
 
     private fun initIOC(){

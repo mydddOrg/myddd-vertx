@@ -11,7 +11,7 @@ import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.oauth2.start.router.OAuth2ClientRouter
 import org.myddd.vertx.oauth2.start.router.OAuth2TokenRouter
 
-class OAuth2Verticle : CoroutineVerticle() {
+class OAuth2Verticle(private val port:Int = 8080) : CoroutineVerticle() {
 
 
     override fun start(startFuture: Promise<Void>?) {
@@ -34,8 +34,10 @@ class OAuth2Verticle : CoroutineVerticle() {
             OAuth2ClientRouter(router = router,vertx = vertx)
             OAuth2TokenRouter(router = router,vertx = vertx)
 
-            server.requestHandler(router).listen(8080)
+            server.requestHandler(router).listen(port)
             startFuture?.complete();
+        }.onFailure {
+            it.printStackTrace()
         }
     }
 

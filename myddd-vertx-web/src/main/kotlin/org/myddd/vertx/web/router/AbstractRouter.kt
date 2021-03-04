@@ -23,7 +23,6 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
 
     private val errorI18n: I18N by lazy { InstanceFactory.getInstance(I18N::class.java) }
 
-    private val ipFilterHandle = IPFilterHandle()
 
     companion object {
         const val ERROR_CODE = "errorCode"
@@ -72,7 +71,7 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         route.produces(CONTENT_TYPE_JSON)
 
         //enable ip filter
-        route.handler(ipFilterHandle)
+        route.handler(IPFilterHandle())
 
         handlers.forEach {
             route.handler(it)

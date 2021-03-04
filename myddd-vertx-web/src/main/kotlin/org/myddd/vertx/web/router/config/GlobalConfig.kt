@@ -15,7 +15,7 @@ object GlobalConfig {
 
     private val vertx by lazy {InstanceFactory.getInstance(Vertx::class.java)}
 
-    private var configObject : JsonObject? = null
+    internal var configObject : JsonObject? = null
 
     fun getConfig():JsonObject? {
         return configObject
@@ -31,6 +31,8 @@ object GlobalConfig {
             }catch (e:Exception){
                 promise.fail(e)
             }
+        }else{
+            promise.onSuccess(Unit)
         }
         return promise.future()
     }
@@ -41,7 +43,7 @@ object GlobalConfig {
         try {
 
 
-            val path = "config.properties"
+            val path = "META-INF/config.properties"
 
             val configFileStore = ConfigStoreOptions()
                 .setType("file")
@@ -57,6 +59,7 @@ object GlobalConfig {
 
             promise.onSuccess(config)
         }catch (e:Exception){
+            e.printStackTrace()
             promise.fail(e)
         }
 
