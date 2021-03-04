@@ -15,12 +15,15 @@ import kotlinx.coroutines.launch
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.web.router.handler.IPFilterHandle
 
 abstract class AbstractRouter constructor(protected val vertx: Vertx,protected val router:Router,protected val version:String = "v1") {
 
     private val bodyHandler = BodyHandler.create()
 
     private val errorI18n: I18N by lazy { InstanceFactory.getInstance(I18N::class.java) }
+
+    private val ipFilterHandle = IPFilterHandle()
 
     companion object {
         const val ERROR_CODE = "errorCode"
@@ -68,6 +71,8 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         }
         route.produces(CONTENT_TYPE_JSON)
 
+        //enable ip filter
+        route.handler(ipFilterHandle)
 
         handlers.forEach {
             route.handler(it)

@@ -1,6 +1,9 @@
 package org.myddd.vertx.web.router
 
 import com.google.inject.Guice
+import io.vertx.config.ConfigRetriever
+import io.vertx.config.ConfigRetrieverOptions
+import io.vertx.config.ConfigStoreOptions
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
@@ -8,6 +11,7 @@ import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.AfterAll
@@ -35,6 +39,7 @@ class AbstractRouterTest {
         @BeforeAll
         @JvmStatic
         fun beforeAll(vertx:Vertx,testContext: VertxTestContext){
+
             GlobalScope.launch {
                 InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(WebGuice(vertx))))
                 deployId = vertx.deployVerticle(WebVerticle()).await()
@@ -232,5 +237,27 @@ class AbstractRouterTest {
         }
     }
 
+    @Test
+    fun testLoadGlobalConfig(vertx: Vertx,testContext: VertxTestContext){
+        val path = "config.properties"
+
+        val fileStore = ConfigStoreOptions()
+            .setType("file")
+            .setFormat("properties")
+            .setConfig(JsonObject().put("path", path))
+
+        val options = ConfigRetrieverOptions()
+            .addStore(fileStore)
+        val configRetriever = ConfigRetriever.create(vertx, options)
+
+        configRetriever.getConfig {
+            if(it.succeeded()){
+                println(it.result())
+                testContext.completeNow()
+            }else{
+                testContext.failNow(it.cause())
+            }
+        }
+    }
 
 }
