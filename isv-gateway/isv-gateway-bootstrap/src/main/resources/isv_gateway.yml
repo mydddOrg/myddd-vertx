@@ -7,133 +7,14 @@ servers:
     description: 本地服务器
 paths:
   # ==== clients ======
-  # 创建一个client
-  /clients:
-    post:
-      tags:
-        - "clients"
-      summary: 请求创建一个网关client
-      description: 当前支持WorkPlus_ISV,WorkPlus以及企业微信三种类型
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                clientName:
-                  type: string
-                  description: client名称
-                clientType:
-                  type: string
-                  description: 客户类型
-                  enum:
-                    - WorkPlus_Isv
-                    - WorkPlus_App
-                    - Work_WeiXin
-                callback:
-                  type: string
-                  description: 回调URL
-                description:
-                  type: string
-                  description: 对应用的描述
-                extraForWorkWeiXin:
-                  type: object
-                  description: 填写必要的属性，当clientId类型为Work_WeiXin时必填
-                  properties:
-                    corpid:
-                      type: string
-                      description: 企业微信中的corpid
-                    suiteId:
-                      type: string
-                      description: 第三方应用ID
-                    suite_secret:
-                      type: string
-                      description: 第三方应用密钥
-                extraForWorkPlusISV:
-                  type: object
-                  description: 填写必要的属性,当clientId类型为WorkPlus_Isv时必填
-                  properties:
-                    suiteKey:
-                      type: string
-                      description: WorkPlus ISV套件key
-                    suiteSecret:
-                      type: string
-                      description: WorkPlus ISV套件secret
-                    vendorkey:
-                      type: string
-                      description: WorkPlus ISV供应商KEY
-                    appId:
-                      type: string
-                      description: WorkPlus ISV的AppId
-                    domainId:
-                      type: string
-                      description: 域ID
-                extraForWorkPlus:
-                  type: object
-                  description: 填写必要的属性,当clientId
-                  properties:
-                    clientId:
-                      type: string
-                      description: WorkPlus应用的clientId类型为WorkPlus_App时必填
-                    clientSecret:
-                      type: string
-                      description: WorkPlus应用的clientSecret
-                    domainId:
-                      type: string
-                      description: 域ID
-              required:
-                - clientName
-                - clientType
-                - callback
-      responses:
-        "200":
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                clientId: i03VPeHDHpda7PlVuKwaCBqFCSbehTgG
-                name: 测试应用
-                clientSecret: vQGWBea4xcC4KlqByAgfwylxG7oFgys6
-                description: 这是一个示例应用的详细说明，你在这里可以描述更多应用的信息
-
-        "400":
-          $ref: "#/components/responses/errorResponse"
-  # 重置client secret
-  /clients/clientSecret:
-    patch:
-      tags:
-        - "clients"
-      summary: 重置一个client的secret
-      description: 通过此api来重置client的secret,这个是给client调用的
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                clientId:
-                  type: string
-                  description: 需要重置的clientId
-                clientSecret:
-                  type: string
-                  description: 原clientSecret
-              required:
-                - "clientId"
-                - "clientSecret"
-              example:
-                clientId: 1Vdq19UzefUhjbSMnNx7mBoMVZJDsaZm
-                clientSecret: 9DSN4N14vEAuFjHNeDHWh4V8gtPzaOQO
   # 申请token
   /clients/token:
     post:
       tags:
         - "clients"
       summary: 申请accessToken
-      description: 申请一个accessToken，这是后续调用其它API的基础
+      description: 申请一个accessToken，这是后续调用其它API的权限基础 <br/>
+        调用api都需要在header中，传入accessToken值
       requestBody:
         required: true
         content:
@@ -168,6 +49,97 @@ paths:
 
         "400":
           $ref: "#/components/responses/errorResponse"
+  #查询指定clients的配置信息
+  /clients/{clientId}:
+    parameters:
+      - name: clientId
+        in: path
+        required: true
+        description: 传入客户ID
+        schema:
+          type: string
+    get:
+      tags:
+        - "clients"
+      summary: 查询一个client信息
+      description: 这是给client调用的，可以查询到自己client的相关信息<br/>
+                   这个接口只允许查询到自己的
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/client"
+        400:
+          $ref: "#/components/responses/errorResponse"
+
+        # 重置client secret
+    patch:
+      tags:
+        - "clients"
+      summary: 更新client的部分设置
+      description: 这个接口是部分更新接口，你只需要传入你想要更新的字段就行。没有传的不会更新。<br/>
+                   支持更新的字段见body,其中extra中的信息需要传全部的值 <br/>
+                   这个接口仅支持更新自己的，不支持更新别人的 </br>
+                   重置client的密钥不能使用此接口
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 更新client的名称
+                description:
+                  type: string
+                  description: 更新应用描述
+                callback:
+                  type: string
+                  description: 更新callback
+                extra:
+                  oneOf:
+                    - $ref: "#/components/schemas/extraForWorkWeiXin"
+                    - $ref: "#/components/schemas/extraForWorkPlusISV"
+                    - $ref: "#/components/schemas/extraForWorkPlus"
+                  description: extra是全量更新，不能只填写其中一个属性这种方式
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/client"
+        400:
+          $ref: "#/components/responses/errorResponse"
+
+  /clients/clientSecret:
+    patch:
+      tags:
+        - "clients"
+      summary: 重置一个client的secret
+      description: 通过此api来重置client的secret <br/>
+                   这个接口仅支持更新自己的，不支持更新别人的
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: 需要重置的clientId
+                clientSecret:
+                  type: string
+                  description: 原clientSecret
+              required:
+                - "clientId"
+                - "clientSecret"
+              example:
+                clientId: 1Vdq19UzefUhjbSMnNx7mBoMVZJDsaZm
+                clientSecret: 9DSN4N14vEAuFjHNeDHWh4V8gtPzaOQO
+
   # 刷新token
   /clients/refreshToken:
     post:
@@ -223,7 +195,6 @@ paths:
           description: OK
         "400":
           $ref: "#/components/responses/errorResponse"
-
 
   # ===== 组织 =======
   # 查询单个组织信息
@@ -662,12 +633,131 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
 
-  # ===== 其它 =======
+  # ==== admin ======
+  /admin/clients:
+    post:
+      tags:
+        - "管理"
+      summary: 请求创建一个网关client
+      description: 当前支持WorkPlus_ISV,WorkPlus以及企业微信三种类型 \n
+        这是个管理接口
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientName:
+                  type: string
+                  description: client名称
+                clientType:
+                  type: string
+                  description: 客户类型
+                  enum:
+                    - WorkPlus_Isv
+                    - WorkPlus_App
+                    - Work_WeiXin
+                callback:
+                  type: string
+                  description: 回调URL
+                description:
+                  type: string
+                  description: 对应用的描述
+                extra:
+                  oneOf:
+                    - $ref: "#/components/schemas/extraForWorkWeiXin"
+                    - $ref: "#/components/schemas/extraForWorkPlusISV"
+                    - $ref: "#/components/schemas/extraForWorkPlus"
+              required:
+                - clientName
+                - clientType
+                - callback
+                - extra
+      responses:
+        "200":
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/client"
+              example:
+                clientId: i03VPeHDHpda7PlVuKwaCBqFCSbehTgG
+                name: 测试应用
+                clientSecret: vQGWBea4xcC4KlqByAgfwylxG7oFgys6
+                description: 这是一个示例应用的详细说明，你在这里可以描述更多应用的信息
 
-
+        "400":
+          $ref: "#/components/responses/errorResponse"
 
 components:
   schemas:
+    extraForWorkWeiXin:
+      type: object
+      description: 填写必要的属性，当clientId类型为Work_WeiXin时必填
+      properties:
+        corpid:
+          type: string
+          description: 企业微信中的corpid
+        suiteId:
+          type: string
+          description: 第三方应用ID
+        suite_secret:
+          type: string
+          description: 第三方应用密钥
+      required:
+        - corpid
+        - suiteId
+        - suite_secret
+
+    extraForWorkPlusISV:
+      type: object
+      description: 填写必要的属性,当clientId类型为WorkPlus_Isv时必填
+      properties:
+        suiteKey:
+          type: string
+          description: WorkPlus ISV套件key
+        suiteSecret:
+          type: string
+          description: WorkPlus ISV套件secret
+        vendorkey:
+          type: string
+          description: WorkPlus ISV供应商KEY
+        appId:
+          type: string
+          description: WorkPlus ISV的AppId
+        domainId:
+          type: string
+          description: 域ID
+      required:
+        - suiteKey
+        - suiteSecret
+        - vendorkey
+        - appId
+        - domainId
+
+    extraForWorkPlus:
+      type: object
+      description: 填写必要的属性,当clientId
+      properties:
+        clientId:
+          type: string
+          description: WorkPlus应用的clientId类型为WorkPlus_App时必填
+        clientSecret:
+          type: string
+          description: WorkPlus应用的clientSecret
+        domainId:
+          type: string
+          description: 域ID
+        api:
+          type: string
+          description: workplus api
+      required:
+        - clientId
+        - clientSecret
+        - domainId
+        - api
+
     ErrorResponse:
       type: object
       properties:
@@ -690,9 +780,15 @@ components:
         name:
           type: string
           description: client的名字
+        callback:
+          type: string
+          description: 回调地址
         description:
           type: string
           description: client的详细描述
+        extra:
+          type: object
+
 
     tokenResponse:
       type: object
@@ -761,6 +857,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/employeePosition"
+
+
   responses:
     errorResponse:
       content:
