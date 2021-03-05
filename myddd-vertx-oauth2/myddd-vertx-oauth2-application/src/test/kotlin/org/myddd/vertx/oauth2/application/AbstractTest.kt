@@ -17,6 +17,8 @@ import org.myddd.vertx.oauth2.infra.repsitory.OAuth2ClientRepositoryHibernate
 import org.myddd.vertx.oauth2.infra.repsitory.OAuth2TokenRepositoryHibernate
 import org.myddd.vertx.querychannel.api.QueryChannel
 import org.myddd.vertx.querychannel.hibernate.QueryChannelHibernate
+import org.myddd.vertx.string.RandomIDString
+import org.myddd.vertx.string.RandomIDStringProvider
 import javax.persistence.Persistence
 
 @ExtendWith(VertxExtension::class)
@@ -36,6 +38,9 @@ abstract class AbstractTest {
 
                 bind(OAuth2Application::class.java).to(OAuth2ApplicationJPA::class.java)
                 bind(OAuth2ClientApplication::class.java).to(OAuth2ClientApplicationJPA::class.java)
+
+                bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+
             }
         })))
     }

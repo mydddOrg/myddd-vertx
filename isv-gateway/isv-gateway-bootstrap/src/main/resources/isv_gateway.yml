@@ -702,13 +702,13 @@ components:
         suiteId:
           type: string
           description: 第三方应用ID
-        suite_secret:
+        suiteSecret:
           type: string
           description: 第三方应用密钥
       required:
         - corpid
         - suiteId
-        - suite_secret
+        - suiteSecret
 
     extraForWorkPlusISV:
       type: object
@@ -726,15 +726,11 @@ components:
         appId:
           type: string
           description: WorkPlus ISV的AppId
-        domainId:
-          type: string
-          description: 域ID
       required:
         - suiteKey
         - suiteSecret
         - vendorkey
         - appId
-        - domainId
 
     extraForWorkPlus:
       type: object

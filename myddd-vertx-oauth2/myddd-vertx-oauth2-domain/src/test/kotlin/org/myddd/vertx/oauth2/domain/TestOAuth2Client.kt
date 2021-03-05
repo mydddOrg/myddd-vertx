@@ -1,7 +1,9 @@
 package org.myddd.vertx.oauth2.domain
 
+import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
@@ -9,6 +11,20 @@ import org.junit.jupiter.api.Test
 import java.util.*
 
 class TestOAuth2Client : AbstractTest() {
+
+
+    @Test
+    fun testCreateInstance(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val oAuth2Client = OAuth2Client.createInstance(UUID.randomUUID().toString())
+                testContext.verify { Assertions.assertNotNull(oAuth2Client) }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
 
     @Test
     fun testCreateClientFailed(testContext: VertxTestContext){

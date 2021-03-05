@@ -18,6 +18,8 @@ import org.myddd.vertx.querychannel.api.QueryChannel
 import org.myddd.vertx.querychannel.hibernate.QueryChannelHibernate
 import org.myddd.vertx.repository.api.EntityRepository
 import org.myddd.vertx.repository.hibernate.EntityRepositoryHibernate
+import org.myddd.vertx.string.RandomIDString
+import org.myddd.vertx.string.RandomIDStringProvider
 import javax.persistence.Persistence
 
 class OAuth2GuiceModule(vertx: Vertx) : AbstractModule() {
@@ -42,5 +44,7 @@ class OAuth2GuiceModule(vertx: Vertx) : AbstractModule() {
         bind(OAuth2ClientApplication::class.java).to(OAuth2ClientApplicationJPA::class.java)
 
         bind(I18N::class.java).to(I18NVertxProvider::class.java)
+
+        bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
     }
 }

@@ -8,12 +8,13 @@
 
         <class>org.myddd.vertx.oauth2.domain.OAuth2Client</class>
         <class>org.myddd.vertx.oauth2.domain.OAuth2Token</class>
+        <class>com.foreverht.isvgateway.domain.ISVClient</class>
 
         <properties>
 
             <!-- MySQL -->
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://127.0.0.1:3306/backend"/>
+                      value="jdbc:mysql://127.0.0.1:3306/isv_gateway"/>
 
             <!-- Credentials -->
             <property name="javax.persistence.jdbc.user"

@@ -11,6 +11,8 @@ import org.myddd.vertx.oauth2.domain.OAuth2ClientRepository
 import org.myddd.vertx.oauth2.domain.OAuth2TokenRepository
 import org.myddd.vertx.oauth2.infra.repsitory.OAuth2ClientRepositoryHibernate
 import org.myddd.vertx.oauth2.infra.repsitory.OAuth2TokenRepositoryHibernate
+import org.myddd.vertx.string.RandomIDString
+import org.myddd.vertx.string.RandomIDStringProvider
 import javax.persistence.Persistence
 
 @ExtendWith(VertxExtension::class)
@@ -25,6 +27,8 @@ abstract class AbstractTest {
 
                 bind(OAuth2ClientRepository::class.java).to(OAuth2ClientRepositoryHibernate::class.java)
                 bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
+                bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+
             }
         })))
     }
