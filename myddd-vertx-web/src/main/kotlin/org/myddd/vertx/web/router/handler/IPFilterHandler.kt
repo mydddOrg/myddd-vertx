@@ -3,6 +3,7 @@ package org.myddd.vertx.web.router.handler
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
+import io.vertx.core.net.SocketAddress
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -48,37 +49,38 @@ class IPFilterHandle : Handler<RoutingContext> {
 
     }
 
-
-
-
     override fun handle(rc: RoutingContext?) {
         GlobalScope.launch(vertx.dispatcher()) {
             val address = rc?.request()?.remoteAddress()
 
-            if(enableWhiteList){
-                var inRange = false
-                whiteList?.forEach {
-                    if(checkIPMatching(it,address?.hostAddress())){
-                        inRange = true
-                        return@forEach
-                    }
-                }
-                if(inRange) rc?.next() else rc?.response()?.setStatusCode(403)?.end()
+            when {
+                enableWhiteList -> filterWithWhiteList(address, rc)
+                enableBlackList -> filterWithBlackList(address, rc)
+                else -> rc?.next()
             }
-            else if(enableBlackList){
-                var inRange = false
-                blackList?.forEach {
-                    if(checkIPMatching(it,address?.hostAddress())){
-                        inRange = true
-                        return@forEach
-                    }
-                }
-                if(!inRange) rc?.next() else rc?.response()?.setStatusCode(403)?.end()
-            }else{
-                rc?.next()
-            }
-            logger.info("request ip: $address")
         }
+    }
+
+    private fun filterWithBlackList(address: SocketAddress?, rc: RoutingContext?) {
+        var inRange = false
+        blackList?.forEach {
+            if (checkIPMatching(it, address?.hostAddress())) {
+                inRange = true
+                return@forEach
+            }
+        }
+        if (!inRange) rc?.next() else rc?.response()?.setStatusCode(403)?.end()
+    }
+
+    private fun filterWithWhiteList(address: SocketAddress?, rc: RoutingContext?) {
+        var inRange = false
+        whiteList?.forEach {
+            if (checkIPMatching(it, address?.hostAddress())) {
+                inRange = true
+                return@forEach
+            }
+        }
+        if (inRange) rc?.next() else rc?.response()?.setStatusCode(403)?.end()
     }
 
     private fun checkIPMatching(pattern: String, address: String?): Boolean {
