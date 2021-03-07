@@ -3,9 +3,17 @@ package org.myddd.vertx.web.router
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.validation.ValidationHandler
+import io.vertx.ext.web.validation.builder.Bodies
+import io.vertx.json.schema.SchemaParser
+import io.vertx.json.schema.SchemaRouter
+import io.vertx.json.schema.SchemaRouterOptions
 import org.myddd.vertx.base.BusinessLogicException
 
 class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,router = router) {
+
+
+
 
     init {
         createUserGetRoute()
@@ -26,9 +34,7 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
     }
 
     private fun createUserPostRoute(){
-        createPostRoute("/$version/users"){
-
-
+        createPostRoute("/$version/users",UserRouterValidation.postUserValidation()) {
             val bodyJson = it.bodyAsJson
             val userId = bodyJson.getString("userId")
 

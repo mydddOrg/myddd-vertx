@@ -8,7 +8,8 @@ import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
-import io.vertx.json.schema.ValidationException
+import io.vertx.ext.web.validation.BadRequestException
+import io.vertx.ext.web.validation.ValidationHandler
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -28,7 +29,10 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
     companion object {
         const val ERROR_CODE = "errorCode"
         const val ERROR_MSG = "errorMsg"
-        const val OTHER_ERROR = "other error"
+        const val OTHER_ERROR = "OTHER_ERROR"
+        const val BAD_REQUEST = "BAD_REQUEST"
+
+
 
         const val HTTP_400_RESPONSE = 400
 
@@ -45,6 +49,10 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         return createRoute(HttpMethod.POST,path,handle)
     }
 
+    protected fun createPostRoute(path:String,validationHandler: ValidationHandler,handle: Handler<RoutingContext>):Route {
+        return createRoute(HttpMethod.POST,path,validationHandler,handle)
+    }
+
     protected fun createDeleteRoute(path:String,handle: Handler<RoutingContext>):Route {
         return createRoute(HttpMethod.DELETE,path,handle)
     }
@@ -59,10 +67,15 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
 
     private fun createRoute(httpMethod: HttpMethod, path:String, handle: Handler<RoutingContext>):Route {
         val handles = listOf(handle)
-        return createRoute(httpMethod,path,handles)
+        return createRoute(httpMethod,path,null,handles)
     }
 
-    private fun createRoute(httpMethod: HttpMethod, path:String, handlers: List<Handler<RoutingContext>>):Route {
+    private fun createRoute(httpMethod: HttpMethod, path:String,validationHandler: ValidationHandler?,handle: Handler<RoutingContext>):Route {
+        val handles = listOf(handle)
+        return createRoute(httpMethod,path,validationHandler,handles)
+    }
+
+    private fun createRoute(httpMethod: HttpMethod, path:String,validationHandler: ValidationHandler?,handlers: List<Handler<RoutingContext>>):Route {
         val route = router.route(httpMethod,path)
 
         if(httpMethod != HttpMethod.DELETE && httpMethod != HttpMethod.GET){
@@ -73,6 +86,11 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
 
         //enable ip filter
         route.handler(IPFilterHandle())
+
+        //validation
+        if(validationHandler!=null){
+            route.handler(validationHandler)
+        }
 
         handlers.forEach {
             route.handler(it)
@@ -91,9 +109,9 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
                         .put(ERROR_CODE,failure.errorCode)
                         .put(ERROR_MSG, errorMsgI18n)
                 }
-                else if(failure is ValidationException){
+                else if(failure is BadRequestException){
                     JsonObject()
-                        .put(ERROR_CODE,OTHER_ERROR)
+                        .put(ERROR_CODE,BAD_REQUEST)
                         .put(ERROR_MSG,failure.localizedMessage)
                 }
                 else{
