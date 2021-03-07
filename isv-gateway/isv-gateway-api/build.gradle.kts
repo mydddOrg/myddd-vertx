@@ -12,6 +12,8 @@ dependencies {
     api("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     api("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
+    api(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-api"))
+    implementation("com.fasterxml.jackson.core:jackson-annotations:${rootProject.extra["jackson_version"]}")
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
 }

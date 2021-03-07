@@ -17,8 +17,11 @@ import javax.persistence.*
     uniqueConstraints = [UniqueConstraint(columnNames = ["client_id"])])
 class ISVClient : BaseEntity() {
 
-    @Column(name = "client_id")
+    @Column(name = "client_id",nullable = false)
     lateinit var clientId:String
+
+    @Column(name = "client_type",nullable = false)
+    lateinit var clientType:ISVClientType
 
     @OneToOne(fetch = FetchType.EAGER,cascade = [CascadeType.ALL])
     @JoinColumn(name = "relate_id", referencedColumnName = "id",nullable = false)
@@ -31,8 +34,8 @@ class ISVClient : BaseEntity() {
     @Convert(converter = ISVClientExtraConverter::class)
     lateinit var extra: ISVClientExtra
 
-    @Column(name = "display_name")
-    var clientName:String? = null
+    @Column(name = "client_name",nullable = false)
+    lateinit var clientName:String
 
     @Column(name = "description")
     var description:String? = null
@@ -56,6 +59,8 @@ class ISVClient : BaseEntity() {
             client.extra = extra
             client.callback = callback
             client.description = description
+
+            client.clientType = extra.clientType
 
             return client
         }
