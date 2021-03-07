@@ -8,6 +8,7 @@ import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
+import io.vertx.json.schema.ValidationException
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -89,7 +90,13 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
                     JsonObject()
                         .put(ERROR_CODE,failure.errorCode)
                         .put(ERROR_MSG, errorMsgI18n)
-                }else{
+                }
+                else if(failure is ValidationException){
+                    JsonObject()
+                        .put(ERROR_CODE,OTHER_ERROR)
+                        .put(ERROR_MSG,failure.localizedMessage)
+                }
+                else{
                     JsonObject()
                         .put(ERROR_CODE,OTHER_ERROR)
                         .put(ERROR_MSG,failure.localizedMessage)

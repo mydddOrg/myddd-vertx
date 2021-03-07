@@ -36,7 +36,6 @@ open class EntityRepositoryHibernate : EntityRepository {
             }
         }
 
-
         return promise.future()
     }
 
