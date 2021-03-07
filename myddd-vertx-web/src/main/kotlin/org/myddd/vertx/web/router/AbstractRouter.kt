@@ -32,8 +32,6 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         const val OTHER_ERROR = "OTHER_ERROR"
         const val BAD_REQUEST = "BAD_REQUEST"
 
-
-
         const val HTTP_400_RESPONSE = 400
 
         const val X_LANGUAGE_IN_HEADER = "X_LANGUAGE"
@@ -96,34 +94,37 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
             route.handler(it)
         }
 
+        failureHandler(route)
+
+        return route
+    }
+
+    private fun failureHandler(route: Route) {
         route.failureHandler {
             GlobalScope.launch(vertx.dispatcher()) {
                 val failure = it.failure()
 
                 val language = it.request().getHeader(X_LANGUAGE_IN_HEADER)
 
-                var responseJson= if(failure is BusinessLogicException){
-                    val errorMsgI18n = errorI18n.getMessage(failure.errorCode.errorCode(),failure.values,language).await()
+                var responseJson = if (failure is BusinessLogicException) {
+                    val errorMsgI18n =
+                        errorI18n.getMessage(failure.errorCode.errorCode(), failure.values, language).await()
 
                     JsonObject()
-                        .put(ERROR_CODE,failure.errorCode)
+                        .put(ERROR_CODE, failure.errorCode)
                         .put(ERROR_MSG, errorMsgI18n)
-                }
-                else if(failure is BadRequestException){
+                } else if (failure is BadRequestException) {
                     JsonObject()
-                        .put(ERROR_CODE,BAD_REQUEST)
-                        .put(ERROR_MSG,failure.localizedMessage)
-                }
-                else{
+                        .put(ERROR_CODE, BAD_REQUEST)
+                        .put(ERROR_MSG, failure.localizedMessage)
+                } else {
                     JsonObject()
-                        .put(ERROR_CODE,OTHER_ERROR)
-                        .put(ERROR_MSG,failure.localizedMessage)
+                        .put(ERROR_CODE, OTHER_ERROR)
+                        .put(ERROR_MSG, failure.localizedMessage)
                 }
                 it.response().setStatusCode(HTTP_400_RESPONSE).end(responseJson.toBuffer())
             }
         }
-
-        return route
     }
 
 }
