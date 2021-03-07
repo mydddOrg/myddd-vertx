@@ -106,19 +106,19 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
 
                 val language = it.request().getHeader(X_LANGUAGE_IN_HEADER)
 
-                var responseJson = if (failure is BusinessLogicException) {
-                    val errorMsgI18n =
-                        errorI18n.getMessage(failure.errorCode.errorCode(), failure.values, language).await()
+                var responseJson = when (failure) {
+                    is BusinessLogicException -> {
+                        val errorMsgI18n =
+                            errorI18n.getMessage(failure.errorCode.errorCode(), failure.values, language).await()
 
-                    JsonObject()
-                        .put(ERROR_CODE, failure.errorCode)
-                        .put(ERROR_MSG, errorMsgI18n)
-                } else if (failure is BadRequestException) {
-                    JsonObject()
+                        JsonObject()
+                            .put(ERROR_CODE, failure.errorCode)
+                            .put(ERROR_MSG, errorMsgI18n)
+                    }
+                    is BadRequestException -> JsonObject()
                         .put(ERROR_CODE, BAD_REQUEST)
                         .put(ERROR_MSG, failure.localizedMessage)
-                } else {
-                    JsonObject()
+                    else -> JsonObject()
                         .put(ERROR_CODE, OTHER_ERROR)
                         .put(ERROR_MSG, failure.localizedMessage)
                 }
