@@ -17,7 +17,7 @@ import javax.persistence.*
     uniqueConstraints = [UniqueConstraint(columnNames = ["client_id"])])
 class OAuth2Token : BaseEntity() {
 
-    @Column(name = "client_id",length = 32)
+    @Column(name = "client_id",length = 36)
     lateinit var clientId:String
 
     @Column(name = "access_token",length = 128)

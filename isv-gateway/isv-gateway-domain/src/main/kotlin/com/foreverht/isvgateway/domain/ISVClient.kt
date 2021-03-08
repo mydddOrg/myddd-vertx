@@ -17,7 +17,7 @@ import javax.persistence.*
     uniqueConstraints = [UniqueConstraint(columnNames = ["client_id"])])
 class ISVClient : BaseEntity() {
 
-    @Column(name = "client_id",nullable = false,length = 32)
+    @Column(name = "client_id",nullable = false,length = 36)
     lateinit var clientId:String
 
     @Column(name = "client_type",nullable = false,length = 20)
