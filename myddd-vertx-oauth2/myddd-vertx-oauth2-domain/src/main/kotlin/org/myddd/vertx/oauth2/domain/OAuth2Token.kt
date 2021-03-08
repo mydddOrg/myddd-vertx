@@ -17,13 +17,13 @@ import javax.persistence.*
     uniqueConstraints = [UniqueConstraint(columnNames = ["client_id"])])
 class OAuth2Token : BaseEntity() {
 
-    @Column(name = "client_id")
+    @Column(name = "client_id",length = 32)
     lateinit var clientId:String
 
-    @Column(name = "access_token")
+    @Column(name = "access_token",length = 128)
     lateinit var accessToken:String
 
-    @Column(name = "refresh_token")
+    @Column(name = "refresh_token",length = 128)
     lateinit var refreshToken:String
 
     @Column(name = "access_expired_in")

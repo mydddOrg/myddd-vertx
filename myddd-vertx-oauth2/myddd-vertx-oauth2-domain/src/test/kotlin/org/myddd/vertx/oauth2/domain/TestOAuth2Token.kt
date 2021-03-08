@@ -53,7 +53,6 @@ class TestOAuth2Token : AbstractTest() {
     private fun createClient():OAuth2Client {
         val client = OAuth2Client()
         client.name = UUID.randomUUID().toString()
-        client.displayName = "测试应用"
         client.description = "这是一个测试应用"
         return client
     }

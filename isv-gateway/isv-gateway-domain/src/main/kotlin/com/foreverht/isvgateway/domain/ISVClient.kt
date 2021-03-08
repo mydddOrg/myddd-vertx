@@ -17,24 +17,24 @@ import javax.persistence.*
     uniqueConstraints = [UniqueConstraint(columnNames = ["client_id"])])
 class ISVClient : BaseEntity() {
 
-    @Column(name = "client_id",nullable = false)
+    @Column(name = "client_id",nullable = false,length = 32)
     lateinit var clientId:String
 
-    @Column(name = "client_type",nullable = false)
+    @Column(name = "client_type",nullable = false,length = 20)
     lateinit var clientType:ISVClientType
 
     @OneToOne(fetch = FetchType.EAGER,cascade = [CascadeType.ALL])
     @JoinColumn(name = "relate_id", referencedColumnName = "id",nullable = false)
     lateinit var oauth2Client:OAuth2Client
 
-    @Column(name = "callback",nullable = false)
+    @Column(name = "callback",nullable = false,length = 100)
     lateinit var callback:String
 
     @Column(name = "extra")
     @Convert(converter = ISVClientExtraConverter::class)
     lateinit var extra: ISVClientExtra
 
-    @Column(name = "client_name",nullable = false)
+    @Column(name = "client_name",nullable = false,length = 200)
     lateinit var clientName:String
 
     @Column(name = "description")

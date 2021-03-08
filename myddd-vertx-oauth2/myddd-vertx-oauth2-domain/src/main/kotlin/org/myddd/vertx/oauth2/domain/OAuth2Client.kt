@@ -18,19 +18,16 @@ import javax.persistence.*
 )
 class OAuth2Client:BaseEntity() {
 
-    @Column(name = "client_id")
+    @Column(name = "client_id",length = 32)
     lateinit var clientId:String
 
-    @Column(name = "client_secret")
+    @Column(name = "client_secret",length = 32)
     lateinit var clientSecret:String
 
-    @Column(nullable = false)
+    @Column(nullable = false,length = 255)
     var name:String = ""
 
     var disabled:Boolean = false
-
-    @Column(name = "display_name")
-    var displayName:String? = null
 
     @Column(name = "description")
     var description:String? = null
