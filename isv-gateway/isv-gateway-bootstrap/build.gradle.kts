@@ -1,10 +1,13 @@
 plugins {
     java
+    application
     kotlin("jvm")
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 group = "com.foreverht.isvgateway"
 version = rootProject.extra["isv_gateway_version"]!!
+
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
@@ -14,6 +17,21 @@ tasks.jacocoTestReport {
     reports {
         xml.isEnabled = true
     }
+}
+
+val mainVerticleName = "com.foreverht.isvgateway.bootstrap.ISVBootstrapVerticle"
+val launcherClassName = "io.vertx.core.Launcher"
+
+application {
+    mainClassName = launcherClassName
+}
+
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    archiveClassifier.set("fat")
+    manifest {
+        attributes(mapOf("Main-Verticle" to mainVerticleName))
+    }
+    mergeServiceFiles()
 }
 
 dependencies {
