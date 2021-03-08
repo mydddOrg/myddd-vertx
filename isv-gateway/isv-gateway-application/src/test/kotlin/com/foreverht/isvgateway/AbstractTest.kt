@@ -1,5 +1,9 @@
 package com.foreverht.isvgateway
 
+import com.foreverht.isvgateway.api.ISVClientApplication
+import com.foreverht.isvgateway.application.ISVClientApplicationImpl
+import com.foreverht.isvgateway.domain.ISVClientRepository
+import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.vertx.core.Vertx
@@ -41,6 +45,10 @@ abstract class AbstractTest {
                     bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
 
                     bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+
+
+                    bind(ISVClientRepository::class.java).to(ISVClientRepositoryHibernate::class.java)
+                    bind(ISVClientApplication::class.java).to(ISVClientApplicationImpl::class.java)
                 }
             })))
 

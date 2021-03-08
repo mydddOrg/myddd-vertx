@@ -39,41 +39,43 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         const val CONTENT_TYPE_JSON = "application/json"
     }
 
-    protected fun createGetRoute(path:String,handle: Handler<RoutingContext>): Route {
-        return createRoute(HttpMethod.GET,path,handle)
+    //--------- no validation -----------
+    protected fun createGetRoute(path:String,handlers: (route:Route) -> Unit): Route {
+        return createRoute(HttpMethod.GET,path,handlers)
     }
 
-    protected fun createPostRoute(path:String,handle: Handler<RoutingContext>):Route {
-        return createRoute(HttpMethod.POST,path,handle)
+    protected fun createPostRoute(path:String,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.POST,path,handlers)
     }
 
-    protected fun createPostRoute(path:String,validationHandler: ValidationHandler,handle: Handler<RoutingContext>):Route {
-        return createRoute(HttpMethod.POST,path,validationHandler,handle)
+    protected fun createDeleteRoute(path:String,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.DELETE,path,handlers)
     }
 
-    protected fun createDeleteRoute(path:String,handle: Handler<RoutingContext>):Route {
-        return createRoute(HttpMethod.DELETE,path,handle)
+    protected fun createPutRoute(path:String,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.PUT,path,handlers)
     }
 
-    protected fun createPutRoute(path:String,handle: Handler<RoutingContext>):Route {
-        return createRoute(HttpMethod.PUT,path,handle)
+    protected fun createPatchRoute(path:String,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.PATCH,path,handlers)
     }
 
-    protected fun createPatchRoute(path:String,handle: Handler<RoutingContext>):Route {
-        return createRoute(HttpMethod.PATCH,path,handle)
+
+    //------- width validation
+
+    protected fun createPostRoute(path:String,validationHandler: ValidationHandler,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.POST,path,validationHandler,handlers)
     }
 
-    private fun createRoute(httpMethod: HttpMethod, path:String, handle: Handler<RoutingContext>):Route {
-        val handles = listOf(handle)
-        return createRoute(httpMethod,path,null,handles)
+    protected fun createPatchRoute(path:String,validationHandler: ValidationHandler,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.PATCH,path,validationHandler,handlers)
     }
 
-    private fun createRoute(httpMethod: HttpMethod, path:String,validationHandler: ValidationHandler?,handle: Handler<RoutingContext>):Route {
-        val handles = listOf(handle)
-        return createRoute(httpMethod,path,validationHandler,handles)
+    private fun createRoute(httpMethod: HttpMethod, path:String, handlers: (route:Route) -> Unit):Route {
+        return createRoute(httpMethod,path,null,handlers)
     }
 
-    private fun createRoute(httpMethod: HttpMethod, path:String,validationHandler: ValidationHandler?,handlers: List<Handler<RoutingContext>>):Route {
+    private fun createRoute(httpMethod: HttpMethod, path:String,validationHandler: ValidationHandler?,handlers: (route:Route) -> Unit):Route {
         val route = router.route(httpMethod,path)
 
         if(httpMethod != HttpMethod.DELETE && httpMethod != HttpMethod.GET){
@@ -90,9 +92,7 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
             route.handler(validationHandler)
         }
 
-        handlers.forEach {
-            route.handler(it)
-        }
+        handlers(route)
 
         failureHandler(route)
 

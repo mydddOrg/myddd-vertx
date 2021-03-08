@@ -28,7 +28,7 @@ dependencies {
     //查询通道
     api(project(":myddd-vertx-querychannel:myddd-vertx-querychannel-api"))
     //查询通道实现
-    implementation(project(":myddd-vertx-querychannel:myddd-vertx-querychannel-hibernate"))
+    api(project(":myddd-vertx-querychannel:myddd-vertx-querychannel-hibernate"))
 
 
     //依赖注入
@@ -37,5 +37,5 @@ dependencies {
     testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-
+    testImplementation(project(":isv-gateway:isv-gateway-infra"))
 }

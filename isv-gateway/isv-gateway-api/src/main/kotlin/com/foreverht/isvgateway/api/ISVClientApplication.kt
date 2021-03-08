@@ -5,10 +5,10 @@ import io.vertx.core.Future
 
 interface ISVClientApplication {
 
-    suspend fun queryClientInfo(clientId:String):Future<ISVClientDTO>
+    suspend fun queryClientByClientId(clientId:String):Future<ISVClientDTO?>
 
-    suspend fun updateISVClient(isvClientDTO: ISVClientDTO):ISVClientDTO
+    suspend fun updateISVClient(isvClientDTO: ISVClientDTO):Future<ISVClientDTO>
 
-    suspend fun createISVClient(isvClientDTO: ISVClientDTO):ISVClientDTO
+    suspend fun createISVClient(isvClientDTO: ISVClientDTO):Future<ISVClientDTO>
 
 }

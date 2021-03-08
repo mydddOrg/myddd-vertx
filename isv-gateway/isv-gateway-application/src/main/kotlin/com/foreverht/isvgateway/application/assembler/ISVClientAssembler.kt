@@ -21,19 +21,9 @@ fun toISVClientDTO(isvClient:ISVClient) : ISVClientDTO {
 }
 
 fun toISVClient(isvClientDTO: ISVClientDTO) : ISVClient {
-    val isvClient = ISVClient()
-    isvClient.clientName = isvClientDTO.clientName
-    isvClient.callback = isvClientDTO.callback
-    isvClient.description = isvClientDTO.description
-    toISVClientExtra(isvClientDTO.extra)?.also { isvClient.extra = it}
-    isvClient.clientType = toISVClientType(isvClientDTO.extra.clientType)
-    return isvClient
-}
-
-private fun toISVClientType(clientType:String) : ISVClientType {
-    return when(clientType) {
-        else -> ISVClientType.WorkPlus
-    }
+    val extra = toISVClientExtra(isvClientDTO.extra)
+    checkNotNull(extra)
+    return ISVClient.createClient(clientId = isvClientDTO.clientId,clientName = isvClientDTO.clientName,callback = isvClientDTO.callback,extra = extra,description = isvClientDTO.description)
 }
 
 fun toISVClientExtra(isvExtraDTO: ISVClientExtraDTO):ISVClientExtra? {

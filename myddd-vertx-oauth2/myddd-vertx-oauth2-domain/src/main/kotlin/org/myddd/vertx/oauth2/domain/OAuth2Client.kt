@@ -14,7 +14,7 @@ import javax.persistence.*
     indexes = [
         Index(name = "index_client_id",columnList = "client_id")
     ],
-    uniqueConstraints = [UniqueConstraint(columnNames = ["client_id"]),UniqueConstraint(columnNames = ["name"])]
+    uniqueConstraints = [UniqueConstraint(columnNames = ["client_id"])]
 )
 class OAuth2Client:BaseEntity() {
 
@@ -54,7 +54,6 @@ class OAuth2Client:BaseEntity() {
         }
 
         this.created = System.currentTimeMillis()
-        this.clientId = randomIDString.randomString(32)
         this.clientSecret = randomIDString.randomString(32)
 
         return repository.save(this)

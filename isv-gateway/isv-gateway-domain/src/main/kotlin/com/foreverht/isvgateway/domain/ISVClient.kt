@@ -47,9 +47,14 @@ class ISVClient : BaseEntity() {
         private val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
         private val repository by lazy { InstanceFactory.getInstance(ISVClientRepository::class.java) }
 
-        fun createClient(clientName:String, callback:String, extra:ISVClientExtra, description:String? = null):ISVClient{
+        fun createClient(clientName:String, callback:String, extra:ISVClientExtra,clientId: String? = null,description:String? = null):ISVClient{
             val oAuth2Client = OAuth2Client()
-            oAuth2Client.clientId = randomIDString.randomString(32)
+
+            oAuth2Client.clientId =  when {
+                Objects.nonNull(clientId) -> clientId!!
+                else -> randomIDString.randomString(32)
+            }
+
             oAuth2Client.clientSecret = randomIDString.randomString(32)
 
             val client = ISVClient()

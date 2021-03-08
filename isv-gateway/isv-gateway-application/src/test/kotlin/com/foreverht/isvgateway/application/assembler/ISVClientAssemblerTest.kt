@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.application.assembler
 
+import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.ISVClientExtraDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test
 import org.myddd.vertx.oauth2.domain.OAuth2Client
 import java.util.*
 
-class ISVClientAssemblerTest {
+class ISVClientAssemblerTest : AbstractTest() {
 
     @Test
     fun testToISVClientDTO(){

@@ -27,65 +27,71 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = ve
     }
 
     private fun requestClientTokenRoute(){
-        createPostRoute("/$version/$basePath/token"){
-            GlobalScope.launch(vertx.dispatcher()) {
-                try {
-                    val jsonBody = it.bodyAsJson
-                    val grantType = jsonBody.getString("grantType")
-                    val clientId = jsonBody.getString("clientId")
-                    val clientSecret = jsonBody.getString("clientSecret")
+        createPostRoute("/$version/$basePath/token"){ route ->
+            route.handler {
+                GlobalScope.launch(vertx.dispatcher()) {
+                    try {
+                        val jsonBody = it.bodyAsJson
+                        val grantType = jsonBody.getString("grantType")
+                        val clientId = jsonBody.getString("clientId")
+                        val clientSecret = jsonBody.getString("clientSecret")
 
-                    if(grantType != "client_credentials") throw BusinessLogicException(OAuth2WebErrorCode.NOT_SUPPORT_OAUTH2_GRANT_TYPE)
+                        if(grantType != "client_credentials") throw BusinessLogicException(OAuth2WebErrorCode.NOT_SUPPORT_OAUTH2_GRANT_TYPE)
 
-                    val userDTO = oAuth2Application.requestClientToken(clientId,clientSecret).await()
+                        val userDTO = oAuth2Application.requestClientToken(clientId,clientSecret).await()
 
-                    val requestToken = JsonObject.mapFrom(userDTO?.tokenDTO)
+                        val requestToken = JsonObject.mapFrom(userDTO?.tokenDTO)
 
-                    it.end(requestToken.toBuffer())
+                        it.end(requestToken.toBuffer())
 
-                }catch (e:Exception){
-                    it.fail(HTTP_400_RESPONSE,e)
+                    }catch (e:Exception){
+                        it.fail(HTTP_400_RESPONSE,e)
+                    }
                 }
             }
         }
     }
 
     private fun refreshClientTokenToken(){
-        createPostRoute("/$version/$basePath/refreshToken"){
-            GlobalScope.launch(vertx.dispatcher()) {
-                try {
-                    val bodyJson = it.bodyAsJson
-                    val clientId = bodyJson.getString("clientId")
-                    val refreshToken = bodyJson.getString("refreshToken")
+        createPostRoute("/$version/$basePath/refreshToken"){ route ->
+            route.handler {
+                GlobalScope.launch(vertx.dispatcher()) {
+                    try {
+                        val bodyJson = it.bodyAsJson
+                        val clientId = bodyJson.getString("clientId")
+                        val refreshToken = bodyJson.getString("refreshToken")
 
-                    if(clientId.isNullOrEmpty() || refreshToken.isNullOrEmpty()) throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REFRESH_TOKEN)
+                        if(clientId.isNullOrEmpty() || refreshToken.isNullOrEmpty()) throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REFRESH_TOKEN)
 
-                    val tokenDTO = oAuth2Application.refreshUserToken(clientId,refreshToken).await()
-                    val requestToken = JsonObject.mapFrom(tokenDTO?.tokenDTO)
+                        val tokenDTO = oAuth2Application.refreshUserToken(clientId,refreshToken).await()
+                        val requestToken = JsonObject.mapFrom(tokenDTO?.tokenDTO)
 
-                    it.end(requestToken.toBuffer())
+                        it.end(requestToken.toBuffer())
 
-                }catch (e:Exception){
-                    it.fail(HTTP_400_RESPONSE,e)
+                    }catch (e:Exception){
+                        it.fail(HTTP_400_RESPONSE,e)
+                    }
                 }
             }
         }
     }
 
     private fun revokeClientTokenRoute(){
-        createDeleteRoute("/$version/$basePath/clients/:clientId/token/:accessToken"){
-            GlobalScope.launch(vertx.dispatcher()) {
-                try {
-                    val clientId = it.pathParam("clientId")
-                    val accessToken = it.pathParam("accessToken")
+        createDeleteRoute("/$version/$basePath/clients/:clientId/token/:accessToken"){ route ->
+            route.handler {
+                GlobalScope.launch(vertx.dispatcher()) {
+                    try {
+                        val clientId = it.pathParam("clientId")
+                        val accessToken = it.pathParam("accessToken")
 
-                    if(clientId.isNullOrEmpty() || accessToken.isNullOrEmpty()) throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REVOKE_TOKEN)
+                        if(clientId.isNullOrEmpty() || accessToken.isNullOrEmpty()) throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REVOKE_TOKEN)
 
-                    oAuth2Application.revokeUserToken(clientId,accessToken).await()
-                    it.response().setStatusCode(204).end()
+                        oAuth2Application.revokeUserToken(clientId,accessToken).await()
+                        it.response().setStatusCode(204).end()
 
-                }catch (e:Exception){
-                    it.fail(HTTP_400_RESPONSE,e)
+                    }catch (e:Exception){
+                        it.fail(HTTP_400_RESPONSE,e)
+                    }
                 }
             }
         }
