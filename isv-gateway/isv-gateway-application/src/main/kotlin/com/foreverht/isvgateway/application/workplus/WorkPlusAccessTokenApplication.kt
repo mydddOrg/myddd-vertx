@@ -7,7 +7,6 @@ import com.foreverht.isvgateway.domain.ISVErrorCode
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
 import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusApp
 import io.vertx.core.Future
-import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject

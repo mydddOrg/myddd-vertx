@@ -41,6 +41,8 @@ class AccessTokenApplicationTest : AbstractTest() {
 
         private lateinit var isvClientId:String
 
+        private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
+
         private fun realISVClient() : ISVClientDTO {
             val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
                 clientId = clientId,
@@ -89,8 +91,6 @@ class AccessTokenApplicationTest : AbstractTest() {
     fun testRequestToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val webClient = WebClient.create(vertx)
-
                 val tokenResponse = webClient.postAbs("$api/token")
                     .sendJsonObject(requestTokenJsonObject())
                     .await()

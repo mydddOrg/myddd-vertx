@@ -40,7 +40,6 @@ class ISVClientRouterTest : AbstractRouteTest(){
     fun testCreateISVClientRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val webClient = WebClient.create(vertx)
                 val response = webClient.post(port, host,"/v1/clients")
                     .sendJsonObject(randomISVClientDTO()).await()
 
@@ -60,8 +59,6 @@ class ISVClientRouterTest : AbstractRouteTest(){
     fun testQueryISVClientRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-
-                val webClient = WebClient.create(vertx)
                 val response = webClient.post(port, host,"/v1/clients")
                     .sendJsonObject(randomISVClientDTO()).await()
 
@@ -97,8 +94,6 @@ class ISVClientRouterTest : AbstractRouteTest(){
     fun testUpdateISVClient(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-
-                val webClient = WebClient.create(vertx)
                 val response = webClient.post(port, host,"/v1/clients")
                     .sendJsonObject(randomISVClientDTO()).await()
 
@@ -133,9 +128,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
     fun testRequestClientToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-
                 //error
-                val webClient = WebClient.create(vertx)
                 var errorResponse = webClient.post(port,host,"/v1/clients/token")
                     .sendJson(JsonObject("{\"clientId\":\"${UUID.randomUUID()}\",\"clientSecret\":\"${UUID.randomUUID()}\",\"grantType\":\"client_credentials\"}"))
                     .await()
@@ -185,8 +178,6 @@ class ISVClientRouterTest : AbstractRouteTest(){
     fun testRefreshClientToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val webClient = WebClient.create(vertx)
-
                 //error 不正确的值
                 var errorResponse = webClient.post(port,host,"/v1/clients/refreshToken")
                     .sendJson(JsonObject("{\"clientId\":\"${UUID.randomUUID()}\",\"refreshToken\":\"${UUID.randomUUID()}\"}"))
@@ -229,9 +220,6 @@ class ISVClientRouterTest : AbstractRouteTest(){
     fun testRevokeToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-
-                val webClient = WebClient.create(vertx)
-
                 val created = createISVClient(webClient, testContext)
 
                 var requestResponse = webClient.post(port,host,"/v1/clients/token")

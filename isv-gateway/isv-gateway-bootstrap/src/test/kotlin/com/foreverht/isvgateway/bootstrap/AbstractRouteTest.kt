@@ -1,6 +1,7 @@
 package com.foreverht.isvgateway.bootstrap
 
 import io.vertx.core.Vertx
+import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -23,11 +24,14 @@ abstract class AbstractRouteTest {
 
         val host = "127.0.0.1"
 
+        lateinit var webClient: WebClient
+
         @BeforeAll
         @JvmStatic
         fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
+                    webClient = WebClient.create(vertx)
                     deployId = vertx.deployVerticle(ISVBootstrapVerticle(port = port)).await()
                     testContext.verify {
                         Assertions.assertNotNull(deployId)

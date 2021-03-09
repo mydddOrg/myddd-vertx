@@ -36,6 +36,8 @@ class AbstractRouterTest {
 
         private lateinit var deployId:String
 
+        private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
+
         @BeforeAll
         @JvmStatic
         fun beforeAll(vertx:Vertx,testContext: VertxTestContext){
@@ -81,7 +83,6 @@ class AbstractRouterTest {
     fun testNotExistsRoute(vertx:Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-                val webClient = WebClient.create(vertx)
                 val response = webClient.get(port,host,"/${UUID.randomUUID()}")
                     .send().await()
                 testContext.verify { Assertions.assertEquals(404,response.statusCode()) }
@@ -97,7 +98,6 @@ class AbstractRouterTest {
     fun testGetRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-                val webClient = WebClient.create(vertx)
                 var response = webClient.get(port,host,"/v1/users").send().await()
                 testContext.verify {
                     Assertions.assertEquals(200,response.statusCode())
@@ -123,7 +123,6 @@ class AbstractRouterTest {
     fun testPostRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-                val webClient = WebClient.create(vertx)
                 val userId = UUID.randomUUID().toString()
                 var response = webClient.post(port,host,"/v1/users")
                     .sendJsonObject(JsonObject().put("userId",userId))
@@ -164,7 +163,6 @@ class AbstractRouterTest {
     fun testPutRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-                val webClient = WebClient.create(vertx)
                 val userId = UUID.randomUUID().toString()
                 val name = UUID.randomUUID().toString()
 
@@ -199,7 +197,6 @@ class AbstractRouterTest {
     fun testPatchRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-                val webClient = WebClient.create(vertx)
                 val userId = UUID.randomUUID().toString()
 
                 var response = webClient.patch(port,host,"/v1/users/$userId")
@@ -232,7 +229,6 @@ class AbstractRouterTest {
     fun testDeleteRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-                val webClient = WebClient.create(vertx)
                 val userId = UUID.randomUUID().toString()
 
                 var response = webClient.delete(port,host,"/v1/users/$userId")
@@ -298,7 +294,6 @@ class AbstractRouterTest {
 
                 IPFilterHandle.reloadCache()
 
-                val webClient = WebClient.create(vertx)
                 var response = webClient.get(port, host,"/v1/users").send().await()
                 testContext.verify {
                     Assertions.assertEquals(200,response.statusCode())
@@ -315,8 +310,6 @@ class AbstractRouterTest {
         GlobalScope.launch {
 
             try {
-                val webClient = WebClient.create(vertx)
-
                 //启用IP白名单,包括自己
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(true)
                 Mockito.`when`(jsonConfig.getString(IPFilterHandle.WHITE_LIST_VALUES)).thenReturn("127.0.0.1")
@@ -340,8 +333,6 @@ class AbstractRouterTest {
         GlobalScope.launch {
 
             try {
-                val webClient = WebClient.create(vertx)
-
                 //启用IP白名单,包括自己
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(true)
                 Mockito.`when`(jsonConfig.getString(IPFilterHandle.WHITE_LIST_VALUES)).thenReturn("127.0.0.2")
@@ -366,8 +357,6 @@ class AbstractRouterTest {
         GlobalScope.launch {
 
             try {
-                val webClient = WebClient.create(vertx)
-
                 //启用IP白名单,包括自己
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.BLACK_LIST_ENABLE)).thenReturn(true)
@@ -392,8 +381,6 @@ class AbstractRouterTest {
         GlobalScope.launch {
 
             try {
-                val webClient = WebClient.create(vertx)
-
                 //启用IP白名单,包括自己
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.BLACK_LIST_ENABLE)).thenReturn(true)

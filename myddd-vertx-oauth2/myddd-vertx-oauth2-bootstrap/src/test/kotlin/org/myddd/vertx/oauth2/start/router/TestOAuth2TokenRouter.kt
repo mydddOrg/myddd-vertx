@@ -22,7 +22,6 @@ class TestOAuth2TokenRouter : AbstractWebTest() {
             try {
 
                 //error
-                val webClient = WebClient.create(vertx)
                 var errorResponse = webClient.post(port,host,"/v1/oauth2/token")
                     .sendJson(JsonObject("{\"clientId\":\"${UUID.randomUUID()}\",\"clientSecret\":\"${UUID.randomUUID()}\",\"grantType\":\"client_credentials\"}"))
                     .await()
@@ -73,8 +72,6 @@ class TestOAuth2TokenRouter : AbstractWebTest() {
     fun testRefreshClientToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val webClient = WebClient.create(vertx)
-
                 //error 不正确的值
                 var errorResponse = webClient.post(port,host,"/v1/oauth2/refreshToken")
                     .sendJson(JsonObject("{\"clientId\":\"${UUID.randomUUID()}\",\"refreshToken\":\"${UUID.randomUUID()}\"}"))
@@ -116,8 +113,6 @@ class TestOAuth2TokenRouter : AbstractWebTest() {
     fun testRevokeToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-
-                val webClient = WebClient.create(vertx)
                 val created = createRandomClient(webClient,testContext)
                 var requestResponse = webClient.post(port,host,"/v1/oauth2/token")
                     .sendJson(JsonObject("{\"clientId\":\"${created.clientId}\",\"clientSecret\":\"${created.clientSecret}\",\"grantType\":\"client_credentials\"}"))

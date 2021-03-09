@@ -19,8 +19,6 @@ class TestOAuth2ClientRouter : AbstractWebTest() {
     fun testCreateClient(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-                val webClient = WebClient.create(vertx)
-
                 createRandomClient(webClient,testContext)
 
                 //error
@@ -52,9 +50,6 @@ class TestOAuth2ClientRouter : AbstractWebTest() {
 
         GlobalScope.launch() {
             try {
-
-                val webClient = WebClient.create(vertx)
-
                 val created = createRandomClient(webClient,testContext)
 
                 val resetSecretResponse = webClient.patch(port,host,"/v1/oauth2/clients/${created.clientId}/clientSecret")
@@ -90,9 +85,6 @@ class TestOAuth2ClientRouter : AbstractWebTest() {
     fun testDisableClient(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch {
             try {
-
-                val webClient = WebClient.create(vertx)
-
                 val created = createRandomClient(webClient,testContext)
 
                 val response = webClient.patch(port,host,"/v1/oauth2/clients/${created.clientId}/disabledStatus")

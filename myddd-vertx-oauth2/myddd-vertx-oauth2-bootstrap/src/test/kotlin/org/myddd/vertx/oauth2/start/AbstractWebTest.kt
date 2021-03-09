@@ -24,10 +24,13 @@ open class AbstractWebTest {
 
         private var deployId:String? = null
 
+        lateinit var webClient: WebClient
+
         @BeforeAll
         @JvmStatic
         fun beforeClass(vertx: Vertx, testContext: VertxTestContext){
             GlobalScope.launch {
+                webClient = WebClient.create(vertx)
                 deployId = vertx.deployVerticle(OAuth2Verticle()).await()
                 testContext.completeNow()
             }
