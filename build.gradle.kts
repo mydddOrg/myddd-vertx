@@ -1,8 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+//使用新的kotlin compile
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions.useIR = true
+
 plugins {
     java
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.4.30"
     id("jacoco")
     id("org.sonarqube") version "3.0"
 }
@@ -19,7 +23,7 @@ extra["commons_lang3_version"] = "3.12.0"
 
 extra["isv_gateway_version"] = "1.0.0-SNAPSHOT"
 
-group = "cc.lingenliu"
+group = "org.myddd.vertx"
 version = project.extra["version"]!!
 
 subprojects {
