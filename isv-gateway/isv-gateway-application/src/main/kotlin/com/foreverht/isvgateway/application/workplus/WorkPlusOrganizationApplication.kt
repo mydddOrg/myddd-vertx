@@ -17,14 +17,10 @@ import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
 class WorkPlusOrganizationApplication : OrganizationApplication {
-
-    companion object {
-        private val accessTokenApplication:AccessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java,"WorkPlusApp") }
-        private val isvClientApplication:ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
-        private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
-
-        private val logger:Logger by lazy { LoggerFactory.getLogger(WorkPlusOrganizationApplication::class.java) }
-    }
+    private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
+    private val accessTokenApplication:AccessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java,"WorkPlusApp") }
+    private val isvClientApplication:ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
+    private val logger:Logger by lazy { LoggerFactory.getLogger(WorkPlusOrganizationApplication::class.java) }
 
     override suspend fun queryOrganizationById(
         clientId:String,

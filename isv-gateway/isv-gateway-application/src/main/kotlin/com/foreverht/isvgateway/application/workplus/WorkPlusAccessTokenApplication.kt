@@ -17,11 +17,8 @@ import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
 class WorkPlusAccessTokenApplication : AccessTokenApplication{
-
-    companion object {
-        val logger: Logger by lazy { LoggerFactory.getLogger(WorkPlusAccessTokenApplication::class.java) }
-        val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
-    }
+    val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
+    val logger: Logger by lazy { LoggerFactory.getLogger(WorkPlusAccessTokenApplication::class.java) }
 
     override suspend fun requestRequestAccessToken(clientId: String): Future<String?> {
         return try {
