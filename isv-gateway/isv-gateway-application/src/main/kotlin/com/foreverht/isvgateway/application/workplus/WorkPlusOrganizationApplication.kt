@@ -22,11 +22,7 @@ class WorkPlusOrganizationApplication : OrganizationApplication {
     private val isvClientApplication:ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
     private val logger:Logger by lazy { LoggerFactory.getLogger(WorkPlusOrganizationApplication::class.java) }
 
-    override suspend fun queryOrganizationById(
-        clientId:String,
-        orgCode: String,
-        orgId: String?
-    ): Future<OrganizationDTO> {
+    override suspend fun queryOrganizationById(clientId:String,orgCode: String,orgId: String?): Future<OrganizationDTO> {
         return try {
             val isvClient = isvClientApplication.queryClientByClientId(clientId).await()
             if(Objects.isNull(isvClient))throw BusinessLogicException(ISVErrorCode.CLIENT_ID_NOT_FOUND)
@@ -34,15 +30,15 @@ class WorkPlusOrganizationApplication : OrganizationApplication {
 
 
             val accessToken  = accessTokenApplication.requestRequestAccessToken(clientId = clientId).await()
-            logger.debug("【Request URL】:$" + "${extra.api}/admin/organizations/$orgCode/view?employee_limit=0&org_limit=0&org_id=$orgId&access_token=$accessToken")
-            val response = webClient.getAbs("${extra.api}/admin/organizations/$orgCode/view?employee_limit=0&org_limit=0&org_id=$orgId&access_token=$accessToken").send().await()
+            val requestUrl = "${extra.api}/admin/organizations/$orgCode/view?employee_limit=0&org_limit=0&org_id=$orgId&access_token=$accessToken"
+            logger.debug("【Request URL】:$requestUrl" )
+            val response = webClient.getAbs(requestUrl).send().await()
 
             val responseBody = response.bodyAsJsonObject()
-            if(response.statusCode() == 200 && responseBody.getInteger("status") == 0){
+            if(response.resultSuccess()){
                 logger.debug(responseBody.toString())
                 val resultList = responseBody.getJsonArray("result")
                 if(resultList.list.size > 0){
-
                     var resultJsonObject:JsonObject = resultList.getJsonObject(0)
                     Future.succeededFuture(OrganizationDTO.createInstanceFromJsonObject(resultJsonObject))
                 }else{

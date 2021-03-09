@@ -10,14 +10,17 @@ import io.vertx.core.Future
 import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
+import io.vertx.ext.web.client.HttpResponse
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
+import java.nio.Buffer
 import java.util.*
 
+
 class WorkPlusAccessTokenApplication : AccessTokenApplication{
-    val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
+    private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
     val logger: Logger by lazy { LoggerFactory.getLogger(WorkPlusAccessTokenApplication::class.java) }
 
     override suspend fun requestRequestAccessToken(clientId: String): Future<String?> {
@@ -65,7 +68,7 @@ class WorkPlusAccessTokenApplication : AccessTokenApplication{
                  .await()
 
              val bodyJson = tokenResponse.bodyAsJsonObject()
-             if(tokenResponse.statusCode() == 200 && bodyJson.getInteger("status") == 0){
+             if(tokenResponse.resultSuccess()){
                  val result = bodyJson.getJsonObject("result")
                  logger.info("请求TOKEN的result:$result")
                  val tokenExtra = ISVClientTokenExtraForWorkPlusApp.createInstanceFormJsonObject(result)
@@ -79,3 +82,7 @@ class WorkPlusAccessTokenApplication : AccessTokenApplication{
          }
     }
 }
+
+
+
+
