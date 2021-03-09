@@ -6,6 +6,16 @@ plugins {
 group = "com.foreverht.isvgateway"
 version = rootProject.extra["isv_gateway_version"]!!
 
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+    }
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
 
