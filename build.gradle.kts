@@ -6,7 +6,7 @@ compileKotlin.kotlinOptions.useIR = true
 
 plugins {
     java
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.4.31"
     id("jacoco")
     id("org.sonarqube") version "3.0"
 }
