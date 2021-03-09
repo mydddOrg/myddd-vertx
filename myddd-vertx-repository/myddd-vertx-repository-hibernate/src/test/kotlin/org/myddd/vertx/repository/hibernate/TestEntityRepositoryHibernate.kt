@@ -43,6 +43,13 @@ class TestEntityRepositoryHibernate {
                 testContext.verify {
                     Assertions.assertTrue(created.id > 0)
                 }
+
+                val anotherUser = User(username = "lingen",age = 35)
+                try {
+                    repository.save(anotherUser).await()
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -64,6 +71,14 @@ class TestEntityRepositoryHibernate {
                 var queryUser = repository.get(User::class.java,createdUser.id).await()
                 testContext.verify {
                     Assertions.assertEquals(queryUser?.age,36)
+                }
+
+
+                val notExistsUser = User(username = "anotherUser",age = 1000)
+                try {
+                    repository.save(notExistsUser).await()
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
                 }
                 testContext.completeNow()
             }catch (e:Exception){

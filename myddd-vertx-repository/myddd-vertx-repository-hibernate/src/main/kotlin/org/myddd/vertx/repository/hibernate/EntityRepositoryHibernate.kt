@@ -57,11 +57,11 @@ open class EntityRepositoryHibernate : EntityRepository {
         sessionFactory.withSession { session ->
             session.find(clazz,id)
         }.subscribe().with({
-                findObj -> if(findObj != null) promise.onSuccess(true) else promise.onSuccess(false)
-                           },
+                findObj -> if(findObj != null) promise.onSuccess(true) else promise.onSuccess(false)},
             {
                 promise.fail(it)
-            })
+            }
+        )
         return promise.future()
     }
 
