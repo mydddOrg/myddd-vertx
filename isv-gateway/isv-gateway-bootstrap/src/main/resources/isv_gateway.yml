@@ -655,9 +655,9 @@ paths:
                   type: string
                   description: 客户类型
                   enum:
-                    - WorkPlus_Isv
-                    - WorkPlus_App
-                    - Work_WeiXin
+                    - WorkPlusISV
+                    - WorkPlusApp
+                    - WorkWeiXin
                 callback:
                   type: string
                   description: 回调URL
@@ -738,7 +738,7 @@ components:
       properties:
         clientId:
           type: string
-          description: WorkPlus应用的clientId类型为WorkPlus_App时必填
+          description: WorkPlus应用的clientId类型为WorkPlusApp时必填
         clientSecret:
           type: string
           description: WorkPlus应用的clientSecret

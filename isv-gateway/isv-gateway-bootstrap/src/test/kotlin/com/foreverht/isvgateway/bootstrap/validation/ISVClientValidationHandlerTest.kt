@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.bootstrap.validation
 
+import com.foreverht.isvgateway.domain.ISVClientType
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.vertx.core.Vertx
@@ -49,7 +50,7 @@ class ISVClientValidationHandlerTest {
                     .put("api",UUID.randomUUID().toString())
                     .put("domainId",UUID.randomUUID().toString())
                     .put("ownerId",UUID.randomUUID().toString())
-                    .put("clientType","WorkPlus_App")
+                    .put("clientType",ISVClientType.WorkPlusApp.toString())
 
 
                 extraForWorkPlusValidation?.validateAsync(extraForWorkPlusJson)?.await()
@@ -87,7 +88,7 @@ class ISVClientValidationHandlerTest {
                     .put("api",UUID.randomUUID().toString())
                     .put("domainId",UUID.randomUUID().toString())
                     .put("ownerId",UUID.randomUUID().toString())
-                    .put("clientType","WorkPlus_App")
+                    .put("clientType","WorkPlusApp")
 
                 val createISVClientJson = JsonObject()
                     .put("clientName",UUID.randomUUID().toString())
@@ -121,7 +122,7 @@ class ISVClientValidationHandlerTest {
                         .put("clientId", UUID.randomUUID().toString())
                         .put("clientSecret",UUID.randomUUID().toString())
                         .put("domainId",UUID.randomUUID().toString())
-                        .put("clientType","WorkPlus_App")
+                        .put("clientType","WorkPlusApp")
 
                     val notValidCreateISVClientJson = JsonObject()
                         .put("clientName",UUID.randomUUID().toString())

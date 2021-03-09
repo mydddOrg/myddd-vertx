@@ -7,7 +7,8 @@ enum class ISVErrorCode : ErrorCode {
     /**
      * 不支持的clientType
      */
-    CLIENT_TYPE_NOT_SUPPORT
+    CLIENT_TYPE_NOT_SUPPORT,
 
+    CLIENT_ID_NOT_FOUND
 
 }

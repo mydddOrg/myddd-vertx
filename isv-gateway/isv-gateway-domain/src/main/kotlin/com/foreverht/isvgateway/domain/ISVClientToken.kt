@@ -28,12 +28,29 @@ class ISVClientToken : BaseEntity() {
     lateinit var extra: ISVClientTokenExtra
 
     companion object {
-        private val isvClientRepository by lazy { InstanceFactory.getInstance(ISVClientRepository::class.java) }
+        private val repository by lazy { InstanceFactory.getInstance(ISVClientRepository::class.java) }
+
+        suspend fun queryByClientId(clientId:String):Future<ISVClientToken?>{
+            return repository.singleQuery(ISVClientToken::class.java,"from ISVClientToken where clientId = :clientId",
+                mapOf("clientId" to clientId))
+        }
+
+        suspend fun saveByExtraToken(tokenExtra: ISVClientTokenExtra,clientId: String):Future<ISVClientToken> {
+            return try {
+                val isvClientToken = ISVClientToken()
+                isvClientToken.clientType = tokenExtra.clientType
+                isvClientToken.token = tokenExtra.accessToken()
+                isvClientToken.extra = tokenExtra
+                isvClientToken.clientId = clientId
+                return repository.save(isvClientToken)
+            }catch (t:Throwable){
+                Future.failedFuture(t)
+            }
+        }
     }
 
     suspend fun saveClientToken():Future<ISVClientToken>{
-       return isvClientRepository.save(this)
+       return repository.save(this)
     }
-
 
 }

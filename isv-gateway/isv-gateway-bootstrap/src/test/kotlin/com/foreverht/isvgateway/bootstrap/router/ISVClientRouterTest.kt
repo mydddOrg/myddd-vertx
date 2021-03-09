@@ -293,7 +293,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
             .put("api", UUID.randomUUID().toString())
             .put("domainId", UUID.randomUUID().toString())
             .put("ownerId",UUID.randomUUID().toString())
-            .put("clientType","WorkPlus_App")
+            .put("clientType","WorkPlusApp")
 
         return JsonObject()
             .put("clientName", UUID.randomUUID().toString())

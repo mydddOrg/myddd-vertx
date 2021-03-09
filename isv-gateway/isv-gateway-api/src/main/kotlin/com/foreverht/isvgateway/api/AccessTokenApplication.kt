@@ -4,6 +4,6 @@ import io.vertx.core.Future
 
 interface AccessTokenApplication {
 
-    fun requestRequestAccessToken(clientId:String):Future<String>
+    suspend fun requestRequestAccessToken(clientId:String):Future<String?>
 
 }

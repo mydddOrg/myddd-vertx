@@ -10,6 +10,7 @@ import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.name.Names
 import io.vertx.core.Vertx
+import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import org.hibernate.reactive.mutiny.Mutiny
@@ -41,6 +42,7 @@ abstract class AbstractTest {
             InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
                 override fun configure() {
                     bind(Vertx::class.java).toInstance(vertx)
+                    bind(WebClient::class.java).toInstance(WebClient.create(vertx))
                     bind(Mutiny.SessionFactory::class.java).toInstance(
                         Persistence.createEntityManagerFactory("default")
                             .unwrap(Mutiny.SessionFactory::class.java))
@@ -56,14 +58,14 @@ abstract class AbstractTest {
                     bind(ISVClientRepository::class.java).to(ISVClientRepositoryHibernate::class.java)
                     bind(ISVClientApplication::class.java).to(ISVClientApplicationImpl::class.java)
 
-                    bind(AccessTokenApplication::class.java)
-                        .annotatedWith(Names.named("WorkPlus_App"))
-                        .to(WorkPlusAccessTokenApplication::class.java)
+                    bind(AccessTokenApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(WorkPlusAccessTokenApplication::class.java)
 
                 }
             })))
 
             testContext.completeNow()
         }
+
+
     }
 }

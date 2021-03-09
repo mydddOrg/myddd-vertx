@@ -9,5 +9,5 @@ import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
     property = "clientType")
-@JsonSubTypes(value = [JsonSubTypes.Type(value = ISVClientExtraForWorkPlusDTO::class, name = "WorkPlus_App")])
+@JsonSubTypes(value = [JsonSubTypes.Type(value = ISVClientExtraForWorkPlusDTO::class, name = "WorkPlusApp")])
 abstract class ISVClientExtraDTO(var clientType:String)

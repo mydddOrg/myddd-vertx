@@ -117,7 +117,6 @@ class ISVClientApplicationTest : AbstractTest() {
         )
 
         return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())
-
     }
 
 }
