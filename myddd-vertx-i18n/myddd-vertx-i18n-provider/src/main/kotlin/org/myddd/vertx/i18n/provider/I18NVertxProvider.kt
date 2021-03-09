@@ -46,7 +46,7 @@ class I18NVertxProvider @Inject constructor(vertx:Vertx) : I18N {
 
     private suspend fun getLanguageJsonObject(language: String?): Future<JsonObject?> {
         val promise = PromiseImpl<JsonObject?>()
-        val exceptedLanguage:String = if(language.isNullOrEmpty()) NULL_LANGUAGE else language!!
+        val exceptedLanguage:String = if(language.isNullOrEmpty()) NULL_LANGUAGE else language
 
         if(i18nConfig.containsKey(exceptedLanguage)){
             promise.onSuccess(i18nConfig[exceptedLanguage])

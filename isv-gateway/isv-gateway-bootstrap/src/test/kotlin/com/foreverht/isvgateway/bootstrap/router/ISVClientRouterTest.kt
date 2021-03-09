@@ -126,7 +126,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
 
     @Test
     fun testRequestClientToken(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 //error
                 var errorResponse = webClient.post(port,host,"/v1/clients/token")
@@ -218,7 +218,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
 
     @Test
     fun testRevokeToken(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val created = createISVClient(webClient, testContext)
 

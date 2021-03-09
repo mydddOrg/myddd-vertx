@@ -1,7 +1,9 @@
 package org.myddd.vertx.oauth2.domain
 
+import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
@@ -16,9 +18,9 @@ class TestOAuth2ClientService : AbstractTest() {
 
     private val tokenRepository by lazy { InstanceFactory.getInstance(OAuth2TokenRepository::class.java) }
     @Test
-    fun testQueryClientByClientId(testContext: VertxTestContext){
+    fun testQueryClientByClientId(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 val client = OAuth2Client()
                 client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
@@ -37,9 +39,9 @@ class TestOAuth2ClientService : AbstractTest() {
     }
 
     @Test
-    fun testGenerateClientToken(testContext: VertxTestContext){
+    fun testGenerateClientToken(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 val client = OAuth2Client()
                 client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
@@ -56,9 +58,9 @@ class TestOAuth2ClientService : AbstractTest() {
     }
 
     @Test
-    fun testRefreshUserToken(testContext: VertxTestContext){
+    fun testRefreshUserToken(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 val client = OAuth2Client()
                 client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
@@ -90,9 +92,9 @@ class TestOAuth2ClientService : AbstractTest() {
     }
 
     @Test
-    fun testRevokeUserToken(testContext: VertxTestContext){
+    fun testRevokeUserToken(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 val client = OAuth2Client()
                 client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
@@ -114,9 +116,9 @@ class TestOAuth2ClientService : AbstractTest() {
     }
 
     @Test
-    fun testQueryUserToken(testContext: VertxTestContext){
+    fun testQueryUserToken(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 val client = OAuth2Client()
                 client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()

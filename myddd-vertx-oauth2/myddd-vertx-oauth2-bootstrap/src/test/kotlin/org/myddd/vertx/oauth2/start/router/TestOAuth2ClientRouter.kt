@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
@@ -17,7 +18,7 @@ class TestOAuth2ClientRouter : AbstractWebTest() {
 
     @Test
     fun testCreateClient(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 createRandomClient(webClient,testContext)
 
@@ -48,7 +49,7 @@ class TestOAuth2ClientRouter : AbstractWebTest() {
     @Test
     fun testResetClientSecret(vertx: Vertx,testContext: VertxTestContext){
 
-        GlobalScope.launch() {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val created = createRandomClient(webClient,testContext)
 
@@ -83,7 +84,7 @@ class TestOAuth2ClientRouter : AbstractWebTest() {
 
     @Test
     fun testDisableClient(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val created = createRandomClient(webClient,testContext)
 

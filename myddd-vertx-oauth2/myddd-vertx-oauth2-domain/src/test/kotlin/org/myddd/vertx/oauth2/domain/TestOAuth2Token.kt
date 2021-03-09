@@ -1,7 +1,9 @@
 package org.myddd.vertx.oauth2.domain
 
+import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
@@ -11,9 +13,9 @@ import java.util.*
 class TestOAuth2Token : AbstractTest() {
 
     @Test
-    fun testCreateTokenFromClient(testContext: VertxTestContext){
+    fun testCreateTokenFromClient(vertx: Vertx, testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 val client = createClient()
                 client.clientId = UUID.randomUUID().toString()
                 val createdClient = client.createClient().await()
@@ -28,9 +30,9 @@ class TestOAuth2Token : AbstractTest() {
     }
 
     @Test
-    fun testRefreshToken(testContext: VertxTestContext){
+    fun testRefreshToken(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 val client = createClient()
                 client.clientId = UUID.randomUUID().toString()
 

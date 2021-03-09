@@ -1,7 +1,9 @@
 package org.myddd.vertx.oauth2.infra
 
+import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
@@ -16,8 +18,8 @@ class TestOAuth2ClientRepositoryHibernate : AbstractTest() {
     private val repository:OAuth2ClientRepository by lazy { InstanceFactory.getInstance(OAuth2ClientRepository::class.java)}
 
     @Test
-    fun testQueryClientByClientIdFailed(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testQueryClientByClientIdFailed(vertx: Vertx, testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val empty  = repository.queryClientByClientId(UUID.randomUUID().toString()).await()
                 testContext.verify {
@@ -31,8 +33,8 @@ class TestOAuth2ClientRepositoryHibernate : AbstractTest() {
     }
 
     @Test
-    fun testQueryClientByClientId(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testQueryClientByClientId(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val client = OAuth2Client()
                 client.clientId = UUID.randomUUID().toString()

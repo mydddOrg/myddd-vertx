@@ -24,7 +24,7 @@ class GlobalConfigTest {
         @BeforeAll
         @JvmStatic
         fun beforeAll(vertx:Vertx,testContext: VertxTestContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(WebGuice(vertx))))
                 testContext.completeNow()
             }

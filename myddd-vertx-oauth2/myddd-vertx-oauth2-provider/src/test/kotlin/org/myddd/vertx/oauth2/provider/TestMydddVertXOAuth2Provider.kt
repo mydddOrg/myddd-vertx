@@ -1,12 +1,15 @@
 package org.myddd.vertx.oauth2.provider
 
+import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.oauth2.OAuth2Auth
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2UserDTO
@@ -15,12 +18,23 @@ import java.util.*
 
 class TestMydddVertXOAuth2Provider : AbstractTest() {
 
-    private val oAuth2Auth = MydddVertXOAuth2Provider()
+
+    companion object {
+
+        lateinit var oAuth2Auth:MydddVertXOAuth2Provider
+
+        @BeforeAll
+        @JvmStatic
+        fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
+            oAuth2Auth = MydddVertXOAuth2Provider()
+            testContext.completeNow()
+        }
+    }
 
     @Test
-    fun testAuthenticate(testContext: VertxTestContext){
+    fun testAuthenticate(vertx: Vertx, testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
 
                 try {
                     oAuth2Auth.authenticate(JsonObject()).await()
@@ -57,9 +71,9 @@ class TestMydddVertXOAuth2Provider : AbstractTest() {
     }
 
     @Test
-    fun testRefresh(testContext: VertxTestContext){
+    fun testRefresh(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
 
 
                 try {
@@ -100,9 +114,9 @@ class TestMydddVertXOAuth2Provider : AbstractTest() {
     }
 
     @Test
-    fun testRevoke(testContext: VertxTestContext){
+    fun testRevoke(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
 
 
                 val createdClient = createClient().createClient().await()

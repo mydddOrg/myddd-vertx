@@ -27,9 +27,9 @@ class TestOAuth2Client : AbstractTest() {
     }
 
     @Test
-    fun testCreateClientWithoutName(testContext: VertxTestContext){
+    fun testCreateClientWithoutName(vertx: Vertx,testContext: VertxTestContext){
         val client = OAuth2Client()
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 client.createClient().await()
                 testContext.failed()
@@ -40,8 +40,8 @@ class TestOAuth2Client : AbstractTest() {
     }
 
     @Test
-    fun testCreateClient(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testCreateClient(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val client = createClient()
                 val created = client.createClient().await()
@@ -58,8 +58,8 @@ class TestOAuth2Client : AbstractTest() {
     }
 
     @Test
-    fun testRenewClientSecret(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testRenewClientSecret(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val client = createClient()
                 val created = client.createClient().await()
@@ -78,8 +78,8 @@ class TestOAuth2Client : AbstractTest() {
     }
 
     @Test
-    fun testDisable(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testDisable(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val client = createClient()
                 val created = client.createClient().await()
@@ -100,8 +100,8 @@ class TestOAuth2Client : AbstractTest() {
     }
 
     @Test
-    fun testEnable(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testEnable(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val client = createClient()
                 val created = client.createClient().await()

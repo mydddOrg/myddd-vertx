@@ -18,7 +18,7 @@ class TestOAuth2TokenRouter : AbstractWebTest() {
 
     @Test
     fun testRequestClientToken(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
 
                 //error
@@ -111,7 +111,7 @@ class TestOAuth2TokenRouter : AbstractWebTest() {
 
     @Test
     fun testRevokeToken(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val created = createRandomClient(webClient,testContext)
                 var requestResponse = webClient.post(port,host,"/v1/oauth2/token")

@@ -11,6 +11,7 @@ import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.*
@@ -42,7 +43,7 @@ class AbstractRouterTest {
         @JvmStatic
         fun beforeAll(vertx:Vertx,testContext: VertxTestContext){
 
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 port = 10000 + Random().nextInt(1000)
                 InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(WebGuice(vertx))))
                 deployId = vertx.deployVerticle(WebVerticle(port = port)).await()
@@ -53,7 +54,7 @@ class AbstractRouterTest {
         @AfterAll
         @JvmStatic
         fun afterClass(vertx: Vertx, testContext: VertxTestContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 vertx.undeploy(deployId).await()
                 testContext.completeNow()
             }
@@ -81,7 +82,7 @@ class AbstractRouterTest {
 
     @Test
     fun testNotExistsRoute(vertx:Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val response = webClient.get(port,host,"/${UUID.randomUUID()}")
                     .send().await()
@@ -96,7 +97,7 @@ class AbstractRouterTest {
 
     @Test
     fun testGetRoute(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 var response = webClient.get(port,host,"/v1/users").send().await()
                 testContext.verify {
@@ -121,7 +122,7 @@ class AbstractRouterTest {
 
     @Test
     fun testPostRoute(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val userId = UUID.randomUUID().toString()
                 var response = webClient.post(port,host,"/v1/users")
@@ -161,7 +162,7 @@ class AbstractRouterTest {
 
     @Test
     fun testPutRoute(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val userId = UUID.randomUUID().toString()
                 val name = UUID.randomUUID().toString()
@@ -195,7 +196,7 @@ class AbstractRouterTest {
 
     @Test
     fun testPatchRoute(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val userId = UUID.randomUUID().toString()
 
@@ -227,7 +228,7 @@ class AbstractRouterTest {
 
     @Test
     fun testDeleteRoute(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val userId = UUID.randomUUID().toString()
 
@@ -280,7 +281,7 @@ class AbstractRouterTest {
 
     @Test
     fun testNoIpFilter(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
 
             try {
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
@@ -307,7 +308,7 @@ class AbstractRouterTest {
 
     @Test
     fun testIpFilterWhite(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
 
             try {
                 //启用IP白名单,包括自己
@@ -330,7 +331,7 @@ class AbstractRouterTest {
 
     @Test
     fun testIpFilterWhiteNotInclude(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
 
             try {
                 //启用IP白名单,包括自己
@@ -354,7 +355,7 @@ class AbstractRouterTest {
 
     @Test
     fun testIpFilterBlack(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
 
             try {
                 //启用IP白名单,包括自己
@@ -378,7 +379,7 @@ class AbstractRouterTest {
 
     @Test
     fun testIpFilterBlackNotInclude(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
 
             try {
                 //启用IP白名单,包括自己

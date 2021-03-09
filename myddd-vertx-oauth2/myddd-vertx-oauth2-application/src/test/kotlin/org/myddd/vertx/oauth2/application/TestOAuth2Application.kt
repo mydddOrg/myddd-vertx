@@ -1,7 +1,9 @@
 package org.myddd.vertx.oauth2.application
 
+import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
@@ -16,9 +18,9 @@ class TestOAuth2Application : AbstractTest() {
     private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java)}
 
     @Test
-    fun testRequestClientToken(testContext: VertxTestContext){
+    fun testRequestClientToken(vertx: Vertx, testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 try {
 
                     try {
@@ -75,9 +77,9 @@ class TestOAuth2Application : AbstractTest() {
     }
 
     @Test
-    fun testRefreshUserToken(testContext: VertxTestContext){
+    fun testRefreshUserToken(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 val client = OAuth2Client()
                 client.clientId = UUID.randomUUID().toString()
                 client.name = UUID.randomUUID().toString()
@@ -119,9 +121,9 @@ class TestOAuth2Application : AbstractTest() {
 
 
     @Test
-    fun testRevokeUserToken(testContext: VertxTestContext){
+    fun testRevokeUserToken(vertx: Vertx,testContext: VertxTestContext){
         executeWithTryCatch(testContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
 
                 val client = OAuth2Client()
                 client.clientId = UUID.randomUUID().toString()
@@ -149,8 +151,8 @@ class TestOAuth2Application : AbstractTest() {
     }
 
     @Test
-    fun testLoadUserToken(testContext: VertxTestContext){
-            GlobalScope.launch {
+    fun testLoadUserToken(vertx: Vertx,testContext: VertxTestContext){
+            GlobalScope.launch(vertx.dispatcher()) {
                 try{
                     try {
                         databaseOAuth2Application.loadUserToken(UUID.randomUUID().toString()).await()

@@ -29,7 +29,7 @@ open class AbstractWebTest {
         @BeforeAll
         @JvmStatic
         fun beforeClass(vertx: Vertx, testContext: VertxTestContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 webClient = WebClient.create(vertx)
                 deployId = vertx.deployVerticle(OAuth2Verticle()).await()
                 testContext.completeNow()
@@ -39,7 +39,7 @@ open class AbstractWebTest {
         @AfterAll
         @JvmStatic
         fun afterClass(vertx: Vertx, testContext: VertxTestContext){
-            GlobalScope.launch {
+            GlobalScope.launch(vertx.dispatcher()) {
                 vertx.undeploy(deployId).await()
                 testContext.completeNow()
             }

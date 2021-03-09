@@ -6,6 +6,7 @@ import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.hibernate.reactive.mutiny.Mutiny
@@ -50,8 +51,8 @@ class TestQueryChannelHibernate {
     }
 
     @Test
-    fun testPageQuery(testContext: VertxTestContext) {
-        GlobalScope.launch {
+    fun testPageQuery(vertx: Vertx,testContext: VertxTestContext) {
+        GlobalScope.launch(vertx.dispatcher()) {
             try{
                 prepareData(testContext)
 
@@ -73,8 +74,8 @@ class TestQueryChannelHibernate {
 
 
     @Test
-    fun testListQuery(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testListQuery(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             prepareData(testContext)
 
             val list = queryChannel.queryList(QueryParam(clazz = User::class.java,sql ="from User")).await()

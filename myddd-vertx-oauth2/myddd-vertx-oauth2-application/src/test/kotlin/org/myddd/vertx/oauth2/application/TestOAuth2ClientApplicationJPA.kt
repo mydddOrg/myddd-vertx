@@ -1,7 +1,9 @@
 package org.myddd.vertx.oauth2.application
 
+import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
@@ -20,8 +22,8 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
     }
 
     @Test
-    fun testCreateClient(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testCreateClient(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try{
                 val clientDto = OAuth2ClientDTO(clientId = "NEW_CLIENT",name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
                 val created = oAuth2ClientApplication.createClient(clientDto).await()
@@ -47,8 +49,8 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
 
 
     @Test
-    fun testQueryClient(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testQueryClient(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val clientDto = OAuth2ClientDTO(clientId = "NEW_CLIENT",name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
                 val created = oAuth2ClientApplication.createClient(clientDto).await()
@@ -77,8 +79,8 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
     }
 
     @Test
-    fun testResetClientSecret(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testResetClientSecret(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try{
                 try {
                     oAuth2ClientApplication.resetClientSecret(UUID.randomUUID().toString()).await()
@@ -115,8 +117,8 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
     }
 
     @Test
-    fun testEnableAndDisableClient(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testEnableAndDisableClient(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 try {
                     oAuth2ClientApplication.enableClient(UUID.randomUUID().toString()).await()
@@ -150,7 +152,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
 
                 testContext.completeNow()
             }catch (e:Exception){
-
+                testContext.failNow(e)
             }
         }
     }

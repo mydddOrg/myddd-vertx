@@ -2,9 +2,11 @@ package org.myddd.vertx.repository.hibernate
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
+import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.hibernate.reactive.mutiny.Mutiny
@@ -35,8 +37,8 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testAdd(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testAdd(vertx: Vertx, testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
                 val created = repository.save(user).await()
@@ -59,8 +61,8 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testUpdate(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testUpdate(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
                 val createdUser =  repository.save(user).await()
@@ -88,9 +90,9 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testFind(testContext: VertxTestContext){
+    fun testFind(vertx: Vertx,testContext: VertxTestContext){
 
-        GlobalScope.launch {
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
                 val createdUser =  repository.save(user).await()
@@ -111,8 +113,8 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testExists(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testExists(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
                 val createdUser =  repository.save(user).await()
@@ -129,8 +131,8 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testBatchAdd(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testBatchAdd(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val users = ArrayList<User>()
                 for (i in 1..10){
@@ -152,8 +154,8 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testDelete(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testDelete(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 repository.delete(User::class.java,Long.MAX_VALUE).await()
 
@@ -175,8 +177,8 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testQueryList(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testQueryList(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
                 repository.save(user).await()
@@ -205,8 +207,8 @@ class TestEntityRepositoryHibernate {
     }
 
     @Test
-    fun testSingleQuery(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testSingleQuery(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
 
                 val user =  User(username = "lingen",age = 35)
@@ -236,8 +238,8 @@ class TestEntityRepositoryHibernate {
 
 
     @Test
-    fun testExecuteUpdate(testContext: VertxTestContext){
-        GlobalScope.launch {
+    fun testExecuteUpdate(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
                 repository.save(user).await()

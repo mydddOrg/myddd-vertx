@@ -2,10 +2,12 @@ package org.myddd.vertx.oauth2.provider
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
+import io.vertx.core.Vertx
 import io.vertx.ext.auth.oauth2.OAuth2Auth
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import org.hibernate.reactive.mutiny.Mutiny
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
@@ -25,25 +27,32 @@ import javax.persistence.Persistence
 @ExtendWith(VertxExtension::class)
 abstract class AbstractTest {
 
-    init {
-        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
-            override fun configure() {
-                bind(Mutiny.SessionFactory::class.java).toInstance(
-                    Persistence.createEntityManagerFactory("default")
-                    .unwrap(Mutiny.SessionFactory::class.java))
 
-                bind(QueryChannel::class.java).to(QueryChannelHibernate::class.java)
-                bind(OAuth2ClientService::class.java)
+    companion object {
+        @BeforeAll
+        @JvmStatic
+        fun abstractBeforeAll(vertx: Vertx,testContext: VertxTestContext){
+            InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
+                override fun configure() {
+                    bind(Vertx::class.java).toInstance(vertx)
+                    bind(Mutiny.SessionFactory::class.java).toInstance(
+                        Persistence.createEntityManagerFactory("default")
+                            .unwrap(Mutiny.SessionFactory::class.java))
 
-                bind(OAuth2ClientRepository::class.java).to((OAuth2ClientRepositoryHibernate::class.java))
-                bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
-                bind(OAuth2Application::class.java).to(OAuth2ApplicationJPA::class.java)
+                    bind(QueryChannel::class.java).to(QueryChannelHibernate::class.java)
+                    bind(OAuth2ClientService::class.java)
 
-                bind(OAuth2Auth::class.java).to(MydddVertXOAuth2Provider::class.java)
-                bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+                    bind(OAuth2ClientRepository::class.java).to((OAuth2ClientRepositoryHibernate::class.java))
+                    bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
+                    bind(OAuth2Application::class.java).to(OAuth2ApplicationJPA::class.java)
 
-            }
-        })))
+                    bind(OAuth2Auth::class.java).to(MydddVertXOAuth2Provider::class.java)
+                    bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+
+                }
+            })))
+            testContext.completeNow()
+        }
     }
 
     protected fun executeWithTryCatch(testContext: VertxTestContext, execute:() -> Unit){
