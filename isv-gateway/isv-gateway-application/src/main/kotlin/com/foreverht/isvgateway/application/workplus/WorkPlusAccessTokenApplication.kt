@@ -10,12 +10,10 @@ import io.vertx.core.Future
 import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.web.client.HttpResponse
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
-import java.nio.Buffer
 import java.util.*
 
 
@@ -63,7 +61,7 @@ class WorkPlusAccessTokenApplication : AccessTokenApplication{
                  .put("client_id",extra.clientId)
                  .put("client_secret",extra.clientSecret)
 
-             val tokenResponse = webClient!!.postAbs("${extra.api}/token")
+             val tokenResponse = webClient.postAbs("${extra.api}/token")
                  .sendJsonObject(requestJSON)
                  .await()
 

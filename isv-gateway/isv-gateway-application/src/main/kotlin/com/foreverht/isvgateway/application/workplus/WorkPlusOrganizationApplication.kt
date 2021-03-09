@@ -39,7 +39,7 @@ class WorkPlusOrganizationApplication : OrganizationApplication {
                 logger.debug(responseBody.toString())
                 val resultList = responseBody.getJsonArray("result")
                 if(resultList.list.size > 0){
-                    var resultJsonObject:JsonObject = resultList.getJsonObject(0)
+                    val resultJsonObject:JsonObject = resultList.getJsonObject(0)
                     Future.succeededFuture(OrganizationDTO.createInstanceFromJsonObject(resultJsonObject))
                 }else{
                     Future.failedFuture(responseBody.toString())
