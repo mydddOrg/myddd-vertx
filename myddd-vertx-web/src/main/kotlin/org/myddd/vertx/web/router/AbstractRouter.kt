@@ -8,6 +8,8 @@ import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
+import io.vertx.ext.web.validation.BadRequestException
+import io.vertx.ext.web.validation.ValidationHandler
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -27,7 +29,8 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
     companion object {
         const val ERROR_CODE = "errorCode"
         const val ERROR_MSG = "errorMsg"
-        const val OTHER_ERROR = "other error"
+        const val OTHER_ERROR = "OTHER_ERROR"
+        const val BAD_REQUEST = "BAD_REQUEST"
 
         const val HTTP_400_RESPONSE = 400
 
@@ -36,32 +39,43 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         const val CONTENT_TYPE_JSON = "application/json"
     }
 
-    protected fun createGetRoute(path:String,handle: Handler<RoutingContext>): Route {
-        return createRoute(HttpMethod.GET,path,handle)
+    //--------- no validation -----------
+    protected fun createGetRoute(path:String,handlers: (route:Route) -> Unit): Route {
+        return createRoute(HttpMethod.GET,path,handlers)
     }
 
-    protected fun createPostRoute(path:String,handle: Handler<RoutingContext>):Route {
-        return createRoute(HttpMethod.POST,path,handle)
+    protected fun createPostRoute(path:String,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.POST,path,handlers)
     }
 
-    protected fun createDeleteRoute(path:String,handle: Handler<RoutingContext>):Route {
-        return createRoute(HttpMethod.DELETE,path,handle)
+    protected fun createDeleteRoute(path:String,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.DELETE,path,handlers)
     }
 
-    protected fun createPutRoute(path:String,handle: Handler<RoutingContext>):Route {
-        return createRoute(HttpMethod.PUT,path,handle)
+    protected fun createPutRoute(path:String,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.PUT,path,handlers)
     }
 
-    protected fun createPatchRoute(path:String,handle: Handler<RoutingContext>):Route {
-        return createRoute(HttpMethod.PATCH,path,handle)
+    protected fun createPatchRoute(path:String,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.PATCH,path,handlers)
     }
 
-    private fun createRoute(httpMethod: HttpMethod, path:String, handle: Handler<RoutingContext>):Route {
-        val handles = listOf(handle)
-        return createRoute(httpMethod,path,handles)
+
+    //------- width validation
+
+    protected fun createPostRoute(path:String,validationHandler: ValidationHandler,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.POST,path,validationHandler,handlers)
     }
 
-    private fun createRoute(httpMethod: HttpMethod, path:String, handlers: List<Handler<RoutingContext>>):Route {
+    protected fun createPatchRoute(path:String,validationHandler: ValidationHandler,handlers: (route:Route) -> Unit):Route {
+        return createRoute(HttpMethod.PATCH,path,validationHandler,handlers)
+    }
+
+    private fun createRoute(httpMethod: HttpMethod, path:String, handlers: (route:Route) -> Unit):Route {
+        return createRoute(httpMethod,path,null,handlers)
+    }
+
+    private fun createRoute(httpMethod: HttpMethod, path:String,validationHandler: ValidationHandler?,handlers: (route:Route) -> Unit):Route {
         val route = router.route(httpMethod,path)
 
         if(httpMethod != HttpMethod.DELETE && httpMethod != HttpMethod.GET){
@@ -73,32 +87,44 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         //enable ip filter
         route.handler(IPFilterHandle())
 
-        handlers.forEach {
-            route.handler(it)
+        //validation
+        if(validationHandler!=null){
+            route.handler(validationHandler)
         }
 
+        handlers(route)
+
+        failureHandler(route)
+
+        return route
+    }
+
+    private fun failureHandler(route: Route) {
         route.failureHandler {
             GlobalScope.launch(vertx.dispatcher()) {
                 val failure = it.failure()
 
                 val language = it.request().getHeader(X_LANGUAGE_IN_HEADER)
 
-                var responseJson= if(failure is BusinessLogicException){
-                    val errorMsgI18n = errorI18n.getMessage(failure.errorCode.errorCode(),failure.values,language).await()
+                var responseJson = when (failure) {
+                    is BusinessLogicException -> {
+                        val errorMsgI18n =
+                            errorI18n.getMessage(failure.errorCode.errorCode(), failure.values, language).await()
 
-                    JsonObject()
-                        .put(ERROR_CODE,failure.errorCode)
-                        .put(ERROR_MSG, errorMsgI18n)
-                }else{
-                    JsonObject()
-                        .put(ERROR_CODE,OTHER_ERROR)
-                        .put(ERROR_MSG,failure.localizedMessage)
+                        JsonObject()
+                            .put(ERROR_CODE, failure.errorCode)
+                            .put(ERROR_MSG, errorMsgI18n)
+                    }
+                    is BadRequestException -> JsonObject()
+                        .put(ERROR_CODE, BAD_REQUEST)
+                        .put(ERROR_MSG, failure.localizedMessage)
+                    else -> JsonObject()
+                        .put(ERROR_CODE, OTHER_ERROR)
+                        .put(ERROR_MSG, failure.localizedMessage)
                 }
                 it.response().setStatusCode(HTTP_400_RESPONSE).end(responseJson.toBuffer())
             }
         }
-
-        return route
     }
 
 }

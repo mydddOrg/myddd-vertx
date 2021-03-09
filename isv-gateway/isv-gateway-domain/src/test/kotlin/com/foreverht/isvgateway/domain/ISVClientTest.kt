@@ -136,7 +136,7 @@ class ISVClientTest : AbstractTest() {
             Future.succeededFuture(created)
         }catch (e:Exception){
             testContext.failNow(e)
-            Future.failedFuture("出错了")
+            Future.failedFuture(e)
         }
     }
 

@@ -27,19 +27,6 @@ class TestOAuth2Client : AbstractTest() {
     }
 
     @Test
-    fun testCreateClientFailed(testContext: VertxTestContext){
-        GlobalScope.launch {
-            try {
-                createClient().createClient().await()
-                createClient().createClient().await()
-                testContext.failNow("重复了，应该会抛异常")
-            }catch (e:Exception){
-                testContext.completeNow()
-            }
-        }
-    }
-
-    @Test
     fun testCreateClientWithoutName(testContext: VertxTestContext){
         val client = OAuth2Client()
         GlobalScope.launch {
@@ -143,7 +130,6 @@ class TestOAuth2Client : AbstractTest() {
         val client = OAuth2Client()
         client.clientId = UUID.randomUUID().toString()
         client.name = "TEST_A"
-        client.displayName = "测试应用"
         client.description = "这是一个测试应用"
         return client
     }

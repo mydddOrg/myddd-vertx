@@ -144,6 +144,15 @@ class AbstractRouterTest {
                     Assertions.assertEquals(400,response.statusCode())
                 }
 
+                response = webClient.post(port,host,"/v1/users?error=true")
+                    .sendJsonObject(JsonObject())
+                    .await()
+
+                testContext.verify {
+                    logger.error(response.bodyAsString())
+                    Assertions.assertEquals(400,response.statusCode())
+                }
+
             }catch (e:Exception){
                 testContext.failNow(e)
             }
