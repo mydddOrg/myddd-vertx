@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.domain
 
+import com.foreverht.isvgateway.domain.converter.ISVClientExtraConverter
 import io.vertx.core.Future
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.BaseEntity
@@ -30,7 +31,7 @@ class ISVClient : BaseEntity() {
     @Column(name = "callback",nullable = false,length = 100)
     lateinit var callback:String
 
-    @Column(name = "extra")
+    @Column(name = "extra",length = 500)
     @Convert(converter = ISVClientExtraConverter::class)
     lateinit var extra: ISVClientExtra
 

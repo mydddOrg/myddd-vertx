@@ -748,11 +748,15 @@ components:
         api:
           type: string
           description: workplus api
+        ownerId:
+          type: string
+          description: 当前应用所属的组织或域ID，如果是组织应用，填写组织ID，如果是域，填写域ID
       required:
         - clientId
         - clientSecret
         - domainId
         - api
+        - ownerId
 
     ErrorResponse:
       type: object

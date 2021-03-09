@@ -10,5 +10,6 @@ data class ISVClientExtraForWorkPlusDTO constructor(
     var clientId:String,
     var clientSecret:String,
     var domainId:String,
-    var api:String
+    var api:String,
+    var ownerId:String
     ) : ISVClientExtraDTO(clientType = "WorkPlus_App")

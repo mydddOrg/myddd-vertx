@@ -6,7 +6,7 @@ import com.foreverht.isvgateway.domain.ISVClientType
 class ISVClientExtraForWorkPlusApp : ISVClientExtra() {
 
     init {
-        this.clientType = ISVClientType.WorkPlus
+        this.clientType = ISVClientType.WorkPlusApp
     }
 
     lateinit var clientId:String
@@ -16,4 +16,7 @@ class ISVClientExtraForWorkPlusApp : ISVClientExtra() {
     lateinit var domainId:String
 
     lateinit var api:String
+
+    lateinit var ownerId:String
+
 }

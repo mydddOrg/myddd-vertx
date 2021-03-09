@@ -11,9 +11,15 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.string.RandomIDString
 import java.util.*
 
 class ISVClientTest : AbstractTest() {
+
+    companion object {
+        private val randomIdString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
+    }
 
     @Test
     fun testCreateInstance(vertx: Vertx,testContext: VertxTestContext){
@@ -143,10 +149,11 @@ class ISVClientTest : AbstractTest() {
 
     private fun createExtra():ISVClientExtra {
         val extra = ISVClientExtraForWorkPlusApp()
-        extra.clientId = UUID.randomUUID().toString()
-        extra.clientSecret = UUID.randomUUID().toString()
+        extra.clientId = randomIdString.randomString()
+        extra.clientSecret = randomIdString.randomString()
         extra.api = "http://api.workplus.io"
         extra.domainId = "atwork"
+        extra.ownerId = randomIdString.randomString()
 
         return extra
     }

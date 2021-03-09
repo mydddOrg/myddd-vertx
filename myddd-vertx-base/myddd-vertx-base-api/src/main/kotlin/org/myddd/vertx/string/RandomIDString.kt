@@ -2,5 +2,5 @@ package org.myddd.vertx.string
 
 interface RandomIDString {
 
-    fun randomString(count:Int):String
+    fun randomString(count:Int = 32):String
 }

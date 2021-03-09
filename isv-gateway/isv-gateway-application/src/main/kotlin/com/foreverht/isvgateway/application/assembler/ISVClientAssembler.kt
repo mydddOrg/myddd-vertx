@@ -5,7 +5,6 @@ import com.foreverht.isvgateway.api.dto.ISVClientExtraDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import com.foreverht.isvgateway.domain.ISVClient
 import com.foreverht.isvgateway.domain.ISVClientExtra
-import com.foreverht.isvgateway.domain.ISVClientType
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
 
 
@@ -34,7 +33,7 @@ fun toISVClientExtra(isvExtraDTO: ISVClientExtraDTO):ISVClientExtra? {
             isvClientExtra.clientSecret = isvExtraDTO.clientSecret
             isvClientExtra.domainId = isvExtraDTO.domainId
             isvClientExtra.api = isvExtraDTO.api
-
+            isvClientExtra.ownerId = isvExtraDTO.ownerId
             isvClientExtra
         }
         else -> null
@@ -48,7 +47,8 @@ fun toISVClientExtraDTO(isvClientExtra: ISVClientExtra) : ISVClientExtraDTO? {
                 clientId = isvClientExtra.clientId,
                 clientSecret = isvClientExtra.clientSecret,
                 api = isvClientExtra.api,
-                domainId = isvClientExtra.domainId
+                domainId = isvClientExtra.domainId,
+                ownerId = isvClientExtra.ownerId
             )
         }
         else -> null

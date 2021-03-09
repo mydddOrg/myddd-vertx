@@ -38,4 +38,5 @@ dependencies {
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation(project(":isv-gateway:isv-gateway-infra"))
+    testImplementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
 }

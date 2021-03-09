@@ -28,6 +28,7 @@ class ISVClientAssemblerTest : AbstractTest() {
         isvClientExtra.clientSecret = UUID.randomUUID().toString()
         isvClientExtra.domainId = UUID.randomUUID().toString()
         isvClientExtra.api = UUID.randomUUID().toString()
+        isvClientExtra.ownerId = UUID.randomUUID().toString()
 
         isvClient.extra = isvClientExtra
 
@@ -47,27 +48,29 @@ class ISVClientAssemblerTest : AbstractTest() {
     @Test
     fun testToISVClient(){
         val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
-            clientId = UUID.randomUUID().toString(),
-            clientSecret = UUID.randomUUID().toString(),
-            domainId = UUID.randomUUID().toString(),
-            api = UUID.randomUUID().toString()
+            clientId = randomIDString.randomString(),
+            clientSecret = randomIDString.randomString(),
+            domainId = randomIDString.randomString(),
+            api = randomIDString.randomString(),
+            ownerId = randomIDString.randomString()
         )
 
         val isvClientDTO = ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString(),clientId = UUID.randomUUID().toString())
 
         val isvClient = toISVClient(isvClientDTO)
         Assertions.assertNotNull(isvClient)
-        Assertions.assertEquals(ISVClientType.WorkPlus,isvClient.clientType)
+        Assertions.assertEquals(ISVClientType.WorkPlusApp,isvClient.clientType)
         Assertions.assertEquals(isvClientDTO.callback,isvClient.callback)
     }
 
     @Test
     fun testToISVClientExtra(){
         val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
-            clientId = UUID.randomUUID().toString(),
-        clientSecret = UUID.randomUUID().toString(),
-            domainId = UUID.randomUUID().toString(),
-            api = UUID.randomUUID().toString()
+            clientId = randomIDString.randomString(),
+        clientSecret = randomIDString.randomString(),
+            domainId = randomIDString.randomString(),
+            api = randomIDString.randomString(),
+            ownerId = randomIDString.randomString()
         )
 
         val isvClientExtra = toISVClientExtra(isvClientExtraDTO)
@@ -88,6 +91,7 @@ class ISVClientAssemblerTest : AbstractTest() {
         isvClientExtra.clientSecret = UUID.randomUUID().toString()
         isvClientExtra.domainId = UUID.randomUUID().toString()
         isvClientExtra.api = UUID.randomUUID().toString()
+        isvClientExtra.ownerId = UUID.randomUUID().toString()
 
         val isvClientExtraDTO = toISVClientExtraDTO(isvClientExtra)
 

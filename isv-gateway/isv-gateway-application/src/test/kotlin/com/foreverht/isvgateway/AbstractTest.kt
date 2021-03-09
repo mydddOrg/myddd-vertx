@@ -1,11 +1,14 @@
 package com.foreverht.isvgateway
 
+import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.application.ISVClientApplicationImpl
+import com.foreverht.isvgateway.application.workplus.WorkPlusAccessTokenApplication
 import com.foreverht.isvgateway.domain.ISVClientRepository
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
+import com.google.inject.name.Names
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -29,6 +32,9 @@ import javax.persistence.Persistence
 abstract class AbstractTest {
 
     companion object {
+
+        val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
+
         @BeforeAll
         @JvmStatic
         fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
@@ -49,6 +55,11 @@ abstract class AbstractTest {
 
                     bind(ISVClientRepository::class.java).to(ISVClientRepositoryHibernate::class.java)
                     bind(ISVClientApplication::class.java).to(ISVClientApplicationImpl::class.java)
+
+                    bind(AccessTokenApplication::class.java)
+                        .annotatedWith(Names.named("WorkPlus_App"))
+                        .to(WorkPlusAccessTokenApplication::class.java)
+
                 }
             })))
 

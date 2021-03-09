@@ -48,6 +48,7 @@ class ISVClientValidationHandlerTest {
                     .put("clientSecret",UUID.randomUUID().toString())
                     .put("api",UUID.randomUUID().toString())
                     .put("domainId",UUID.randomUUID().toString())
+                    .put("ownerId",UUID.randomUUID().toString())
                     .put("clientType","WorkPlus_App")
 
 
@@ -85,6 +86,7 @@ class ISVClientValidationHandlerTest {
                     .put("clientSecret",UUID.randomUUID().toString())
                     .put("api",UUID.randomUUID().toString())
                     .put("domainId",UUID.randomUUID().toString())
+                    .put("ownerId",UUID.randomUUID().toString())
                     .put("clientType","WorkPlus_App")
 
                 val createISVClientJson = JsonObject()

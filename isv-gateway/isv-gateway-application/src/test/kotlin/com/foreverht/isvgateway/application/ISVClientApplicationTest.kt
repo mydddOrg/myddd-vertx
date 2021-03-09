@@ -4,7 +4,6 @@ import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
-import com.foreverht.isvgateway.application.assembler.toISVClient
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -20,6 +19,8 @@ class ISVClientApplicationTest : AbstractTest() {
 
     private val isvClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
 
+
+
     @Test
     fun testInstanceFactory(vertx: Vertx,testContext: VertxTestContext){
         testContext.verify {
@@ -29,6 +30,7 @@ class ISVClientApplicationTest : AbstractTest() {
     }
 
     @Test
+
     fun testCreateISVClient(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -110,7 +112,8 @@ class ISVClientApplicationTest : AbstractTest() {
             clientId = UUID.randomUUID().toString(),
             clientSecret = UUID.randomUUID().toString(),
             domainId = UUID.randomUUID().toString(),
-            api = UUID.randomUUID().toString()
+            api = UUID.randomUUID().toString(),
+            ownerId = randomIDString.randomString()
         )
 
         return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())

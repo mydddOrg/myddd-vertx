@@ -29,6 +29,7 @@ object ISVClientValidationHandler {
             .requiredProperty("clientSecret",Schemas.stringSchema())
             .requiredProperty("domainId",Schemas.stringSchema())
             .requiredProperty("api",Schemas.stringSchema())
+            .requiredProperty("ownerId",Schemas.stringSchema())
             .requiredProperty("clientType",Schemas.enumSchema("WorkPlus_Isv","WorkPlus_App","Work_WeiXin"))
 
             .alias(ALIAS_EXTRA_FOR_WORKPLUS)
