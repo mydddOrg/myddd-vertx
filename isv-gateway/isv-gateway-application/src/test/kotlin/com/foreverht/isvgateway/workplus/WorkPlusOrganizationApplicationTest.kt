@@ -52,6 +52,62 @@ class WorkPlusOrganizationApplicationTest : AbstractWorkPlusTest() {
         }
     }
 
+    @Test
+    fun testQueryChildrenOrganizations(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                var subOrganizationList = organizationApplication.queryChildrenOrganizations(clientId = isvClientId,orgCode = ownerId).await()
+                testContext.verify {
+                    Assertions.assertNotNull(subOrganizationList)
+                }
+
+                subOrganizationList = organizationApplication.queryChildrenOrganizations(clientId = isvClientId,orgCode = ownerId,orgId = "aHexITjYkEurKyyxpKMgFh").await()
+                testContext.verify {
+                    Assertions.assertNotNull(subOrganizationList)
+                }
+
+                try {
+                    organizationApplication.queryChildrenOrganizations(clientId = randomIDString.randomString(),orgCode = randomIDString.randomString())
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testQueryOrganizationEmployees(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                var employees = organizationApplication.queryOrganizationEmployees(clientId = isvClientId,orgCode = ownerId).await()
+                testContext.verify {
+                    Assertions.assertNotNull(employees)
+                }
+
+                employees = organizationApplication.queryOrganizationEmployees(clientId = isvClientId,orgCode = ownerId, orgId = "aHexITjYkEurKyyxpKMgFh").await()
+                testContext.verify {
+                    logger.debug("COUNT:${employees.count()}")
+                    Assertions.assertNotNull(employees)
+                }
+
+                try {
+                    organizationApplication.queryOrganizationEmployees(clientId = randomIDString.randomString(),orgCode = randomIDString.randomString())
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+
+    }
+
 }
 
 
