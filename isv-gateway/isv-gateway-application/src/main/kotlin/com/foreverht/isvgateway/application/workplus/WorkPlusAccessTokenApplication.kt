@@ -11,6 +11,8 @@ import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
@@ -53,13 +55,17 @@ class WorkPlusAccessTokenApplication : AccessTokenApplication{
     private suspend fun requestAccessTokenForISVClient(isvClient: ISVClient):Future<ISVClientTokenExtraForWorkPlusApp> {
          return try {
              val extra = isvClient.extra as ISVClientExtraForWorkPlusApp
-             val requestJSON = JsonObject()
-                 .put("grant_type","client_credentials")
-                 .put("scope","app")
-                 .put("domain_id",extra.domainId)
-                 .put("org_id",extra.ownerId)
-                 .put("client_id",extra.clientId)
-                 .put("client_secret",extra.clientSecret)
+
+             val requestJSON = json {
+                 obj(
+                     "grant_type" to "client_credentials",
+                     "scope" to "app",
+                     "domain_id" to extra.domainId,
+                     "org_id" to extra.ownerId,
+                     "client_id" to extra.clientId,
+                     "client_secret" to extra.clientSecret
+                 )
+             }
 
              val tokenResponse = webClient.postAbs("${extra.api}/token")
                  .sendJsonObject(requestJSON)
