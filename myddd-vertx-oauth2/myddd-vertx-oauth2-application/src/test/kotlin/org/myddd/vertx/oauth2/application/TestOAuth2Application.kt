@@ -18,6 +18,38 @@ class TestOAuth2Application : AbstractTest() {
     private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java)}
 
     @Test
+    fun testQueryValidClientByToken(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val client = OAuth2Client()
+                client.clientId = UUID.randomUUID().toString()
+                client.name = UUID.randomUUID().toString()
+                val created = client.createClient().await()
+                var userDTO = databaseOAuth2Application.requestClientToken(created.clientId,created.clientSecret).await()
+                testContext.verify {
+                    Assertions.assertNotNull(userDTO)
+                    Assertions.assertFalse(userDTO!!.expired())
+                }
+
+                val clientId = databaseOAuth2Application.queryValidClientIdByAccessToken(userDTO!!.tokenDTO!!.accessToken).await()
+                testContext.verify {
+                    Assertions.assertNotNull(clientId)
+                    Assertions.assertEquals(client.clientId,clientId)
+                }
+
+                try {
+                    databaseOAuth2Application.queryValidClientIdByAccessToken(UUID.randomUUID().toString())
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testRequestClientToken(vertx: Vertx, testContext: VertxTestContext){
         executeWithTryCatch(testContext){
             GlobalScope.launch(vertx.dispatcher()) {

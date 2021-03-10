@@ -49,6 +49,20 @@ class OAuth2Token : BaseEntity() {
             future.onSuccess(created)
             return future
         }
+
+        suspend fun queryValidClientIdByAccessToken(accessToken:String):Future<String?>{
+            return try {
+                val queryClient = repository.singleQuery(OAuth2Token::class.java,"from OAuth2Token where accessToken = :accessToken",
+                    mapOf("accessToken" to accessToken)).await()
+                return if(Objects.nonNull(queryClient) && queryClient!!.accessExpiredIn > System.currentTimeMillis()){
+                    Future.succeededFuture(queryClient.clientId)
+                }else {
+                    Future.failedFuture("NOT FOUND OR NOT VALID")
+                }
+            }catch (t:Throwable){
+                Future.failedFuture(t)
+            }
+        }
     }
 
     /**

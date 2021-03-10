@@ -14,9 +14,9 @@ import java.util.*
 
 
 
-class IPFilterHandle : Handler<RoutingContext> {
+class IPFilterHandler : Handler<RoutingContext> {
 
-    private val logger by lazy { LoggerFactory.getLogger(IPFilterHandle::class.java) }
+    private val logger by lazy { LoggerFactory.getLogger(IPFilterHandler::class.java) }
 
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 

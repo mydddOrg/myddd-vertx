@@ -24,4 +24,7 @@ interface OAuth2Application {
      */
     suspend fun loadUserToken(clientId: String):Future<OAuth2UserDTO?>
 
+
+    suspend fun queryValidClientIdByAccessToken(accessToken: String):Future<String>
+
 }

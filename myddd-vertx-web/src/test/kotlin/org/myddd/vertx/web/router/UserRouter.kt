@@ -3,18 +3,15 @@ package org.myddd.vertx.web.router
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
-import io.vertx.ext.web.validation.ValidationHandler
-import io.vertx.ext.web.validation.builder.Bodies
-import io.vertx.json.schema.SchemaParser
-import io.vertx.json.schema.SchemaRouter
-import io.vertx.json.schema.SchemaRouterOptions
 import org.myddd.vertx.base.BusinessLogicException
+import org.myddd.vertx.web.router.handler.AccessTokenAuthorizationHandler
 
 class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,router = router) {
 
 
     init {
         createUserGetRoute()
+        createUserGetWithAuthorization()
         createUserPostRoute()
         createUserPutRoute()
         createUserPatchRoute()
@@ -23,6 +20,20 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
 
     private fun createUserGetRoute(){
         createGetRoute("/$version/users"){ route ->
+            route.handler {
+                val error = it.queryParam("error")
+                if(error.isNotEmpty()){
+                    throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR)
+                }
+                it.end()
+            }
+        }
+    }
+
+    private fun createUserGetWithAuthorization(){
+        createGetRoute("/$version/authorization/users"){ route ->
+            route.handler(AccessTokenAuthorizationHandler(vertx))
+
             route.handler {
                 val error = it.queryParam("error")
                 if(error.isNotEmpty()){

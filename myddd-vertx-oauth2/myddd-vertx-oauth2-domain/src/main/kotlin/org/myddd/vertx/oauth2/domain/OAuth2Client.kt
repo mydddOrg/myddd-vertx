@@ -46,7 +46,7 @@ class OAuth2Client:BaseEntity() {
     }
 
     suspend fun createClient():Future<OAuth2Client>{
-        if(name.isNullOrEmpty()){
+        if(name.isEmpty()){
             throw BusinessLogicException(OAuth2ErrorCode.CLIENT_NAME_CAN_NOT_NULL)
         }
 

@@ -8,6 +8,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2UserDTO
 import org.myddd.vertx.oauth2.domain.OAuth2ClientService
+import org.myddd.vertx.oauth2.domain.OAuth2Token
 import java.lang.Exception
 import java.util.*
 
@@ -85,5 +86,13 @@ class OAuth2ApplicationJPA : OAuth2Application {
             promise.fail(e)
         }
         return promise.future()
+    }
+
+    override suspend fun queryValidClientIdByAccessToken(accessToken: String): Future<String> {
+        return try {
+            Future.succeededFuture(OAuth2Token.queryValidClientIdByAccessToken(accessToken).await())
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 }

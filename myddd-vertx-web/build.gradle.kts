@@ -42,11 +42,17 @@ dependencies {
     implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
     implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-provider"))
     implementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
+    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-api"))
 
 
     //test
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
     testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
+
+    testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-domain"))
+    testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-application"))
+    testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-infra"))
+
 
 }

@@ -1,12 +1,10 @@
 package org.myddd.vertx.web.router
 
-import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
-import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.validation.BadRequestException
 import io.vertx.ext.web.validation.ValidationHandler
@@ -14,10 +12,11 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.myddd.vertx.base.BadAuthorizationException
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.web.router.handler.IPFilterHandle
+import org.myddd.vertx.web.router.handler.IPFilterHandler
 
 abstract class AbstractRouter constructor(protected val vertx: Vertx,protected val router:Router,protected val version:String = "v1") {
 
@@ -31,8 +30,12 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         const val ERROR_MSG = "errorMsg"
         const val OTHER_ERROR = "OTHER_ERROR"
         const val BAD_REQUEST = "BAD_REQUEST"
+        const val BAD_AUTHORIZATION = "BAD_AUTHORIZATION"
+
 
         const val HTTP_400_RESPONSE = 400
+        const val HTTP_403_RESPONSE = 403
+
 
         const val X_LANGUAGE_IN_HEADER = "X_LANGUAGE"
 
@@ -85,7 +88,7 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         route.produces(CONTENT_TYPE_JSON)
 
         //enable ip filter
-        route.handler(IPFilterHandle())
+        route.handler(IPFilterHandler())
 
         //validation
         if(validationHandler!=null){
@@ -106,23 +109,41 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
 
                 val language = it.request().getHeader(X_LANGUAGE_IN_HEADER)
 
-                var responseJson = when (failure) {
+                val (statusCode,responseJson) = when (failure) {
                     is BusinessLogicException -> {
                         val errorMsgI18n =
                             errorI18n.getMessage(failure.errorCode.errorCode(), failure.values, language).await()
 
-                        JsonObject()
+                        val responseJson = JsonObject()
                             .put(ERROR_CODE, failure.errorCode)
                             .put(ERROR_MSG, errorMsgI18n)
+
+                        Pair(HTTP_400_RESPONSE,responseJson)
                     }
-                    is BadRequestException -> JsonObject()
-                        .put(ERROR_CODE, BAD_REQUEST)
-                        .put(ERROR_MSG, failure.localizedMessage)
-                    else -> JsonObject()
-                        .put(ERROR_CODE, OTHER_ERROR)
-                        .put(ERROR_MSG, failure.localizedMessage)
+                    is BadRequestException -> {
+                        val responseJson = JsonObject()
+                            .put(ERROR_CODE, BAD_REQUEST)
+                            .put(ERROR_MSG, failure.localizedMessage)
+
+                        Pair(HTTP_400_RESPONSE,responseJson)
+                    }
+                    is BadAuthorizationException -> {
+                        val responseJson = JsonObject()
+                            .put(ERROR_CODE, BAD_AUTHORIZATION)
+
+                        Pair(HTTP_403_RESPONSE,responseJson)
+                    }
+                    else -> {
+                        val responseJson = JsonObject()
+                            .put(ERROR_CODE, OTHER_ERROR)
+                            .put(ERROR_MSG, failure.localizedMessage)
+
+                        Pair(HTTP_400_RESPONSE,responseJson)
+                    }
                 }
-                it.response().setStatusCode(HTTP_400_RESPONSE).end(responseJson.toBuffer())
+
+                it.response().setStatusCode(statusCode).end(responseJson.toBuffer())
+
             }
         }
     }

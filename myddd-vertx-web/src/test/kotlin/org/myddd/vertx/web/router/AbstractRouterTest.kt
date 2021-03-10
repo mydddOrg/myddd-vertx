@@ -19,8 +19,11 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.oauth2.api.OAuth2Application
+import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
+import org.myddd.vertx.oauth2.api.OAuth2ClientDTO
 import org.myddd.vertx.web.router.config.GlobalConfig
-import org.myddd.vertx.web.router.handler.IPFilterHandle
+import org.myddd.vertx.web.router.handler.IPFilterHandler
 import java.util.*
 import kotlin.Exception
 
@@ -38,6 +41,9 @@ class AbstractRouterTest {
         private lateinit var deployId:String
 
         private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
+
+        private val oAuth2Application:OAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }
+        private val oAuth2ClientApplication:OAuth2ClientApplication by lazy { InstanceFactory.getInstance(OAuth2ClientApplication::class.java) }
 
         @BeforeAll
         @JvmStatic
@@ -72,10 +78,10 @@ class AbstractRouterTest {
 
     @BeforeEach
     fun disableIpFilter(vertx: Vertx,testContext: VertxTestContext){
-        Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
-        Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.BLACK_LIST_ENABLE)).thenReturn(false)
+        Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE)).thenReturn(false)
+        Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.BLACK_LIST_ENABLE)).thenReturn(false)
         GlobalConfig.configObject = jsonConfig
-        IPFilterHandle.reloadCache()
+        IPFilterHandler.reloadCache()
 
         testContext.completeNow()
     }
@@ -92,6 +98,42 @@ class AbstractRouterTest {
                 testContext.failNow(e)
             }
 
+        }
+    }
+
+    @Test
+    fun testAuthorizationGetRoute(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                var response = webClient.get(port,host,"/v1/authorization/users").send().await()
+                testContext.verify {
+                    Assertions.assertEquals(403,response.statusCode())
+                }
+
+                response = webClient.get(port,host,"/v1/authorization/users?accessToken=${UUID.randomUUID()}").send().await()
+                testContext.verify {
+                    Assertions.assertEquals(403,response.statusCode())
+                }
+
+                val clientDto = OAuth2ClientDTO(clientId = UUID.randomUUID().toString(),name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
+                val created = oAuth2ClientApplication.createClient(clientDto).await()
+
+                var userDTO = oAuth2Application.requestClientToken(created.clientId, created.clientSecret!!).await()
+
+                testContext.verify {
+                    Assertions.assertNotNull(userDTO)
+                    Assertions.assertFalse(userDTO!!.expired())
+                }
+
+                response = webClient.get(port,host,"/v1/authorization/users?accessToken=${userDTO!!.tokenDTO!!.accessToken}").send().await()
+                testContext.verify {
+                    Assertions.assertEquals(200,response.statusCode())
+                }
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
         }
     }
 
@@ -284,16 +326,16 @@ class AbstractRouterTest {
         GlobalScope.launch(vertx.dispatcher()) {
 
             try {
-                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE)).thenReturn(false)
                 GlobalConfig.configObject = jsonConfig
 
                 testContext.verify {
-                    Assertions.assertEquals(false,jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE))
+                    Assertions.assertEquals(false,jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE))
                     Assertions.assertEquals(false,
-                        GlobalConfig.getConfig()?.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE))
+                        GlobalConfig.getConfig()?.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE))
                 }
 
-                IPFilterHandle.reloadCache()
+                IPFilterHandler.reloadCache()
 
                 var response = webClient.get(port, host,"/v1/users").send().await()
                 testContext.verify {
@@ -312,11 +354,11 @@ class AbstractRouterTest {
 
             try {
                 //启用IP白名单,包括自己
-                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(true)
-                Mockito.`when`(jsonConfig.getString(IPFilterHandle.WHITE_LIST_VALUES)).thenReturn("127.0.0.1")
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE)).thenReturn(true)
+                Mockito.`when`(jsonConfig.getString(IPFilterHandler.WHITE_LIST_VALUES)).thenReturn("127.0.0.1")
                 GlobalConfig.configObject = jsonConfig
 
-                IPFilterHandle.reloadCache()
+                IPFilterHandler.reloadCache()
 
                 var response = webClient.get(port, host,"/v1/users").send().await()
                 testContext.verify {
@@ -335,10 +377,10 @@ class AbstractRouterTest {
 
             try {
                 //启用IP白名单,包括自己
-                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(true)
-                Mockito.`when`(jsonConfig.getString(IPFilterHandle.WHITE_LIST_VALUES)).thenReturn("127.0.0.2")
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE)).thenReturn(true)
+                Mockito.`when`(jsonConfig.getString(IPFilterHandler.WHITE_LIST_VALUES)).thenReturn("127.0.0.2")
                 GlobalConfig.configObject = jsonConfig
-                IPFilterHandle.reloadCache()
+                IPFilterHandler.reloadCache()
 
 
                 var response = webClient.get(port, host,"/v1/users").send().await()
@@ -359,12 +401,12 @@ class AbstractRouterTest {
 
             try {
                 //启用IP白名单,包括自己
-                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
-                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.BLACK_LIST_ENABLE)).thenReturn(true)
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE)).thenReturn(false)
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.BLACK_LIST_ENABLE)).thenReturn(true)
 
-                Mockito.`when`(jsonConfig.getString(IPFilterHandle.BLACK_LIST_VALUES)).thenReturn("127.0.0.1")
+                Mockito.`when`(jsonConfig.getString(IPFilterHandler.BLACK_LIST_VALUES)).thenReturn("127.0.0.1")
                 GlobalConfig.configObject = jsonConfig
-                IPFilterHandle.reloadCache()
+                IPFilterHandler.reloadCache()
 
                 var response = webClient.get(port, host,"/v1/users").send().await()
                 testContext.verify {
@@ -383,12 +425,12 @@ class AbstractRouterTest {
 
             try {
                 //启用IP白名单,包括自己
-                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.WHITE_LIST_ENABLE)).thenReturn(false)
-                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandle.BLACK_LIST_ENABLE)).thenReturn(true)
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE)).thenReturn(false)
+                Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.BLACK_LIST_ENABLE)).thenReturn(true)
 
-                Mockito.`when`(jsonConfig.getString(IPFilterHandle.BLACK_LIST_VALUES)).thenReturn("127.0.0.2")
+                Mockito.`when`(jsonConfig.getString(IPFilterHandler.BLACK_LIST_VALUES)).thenReturn("127.0.0.2")
                 GlobalConfig.configObject = jsonConfig
-                IPFilterHandle.reloadCache()
+                IPFilterHandler.reloadCache()
 
                 var response = webClient.get(port, host,"/v1/users").send().await()
                 testContext.verify {

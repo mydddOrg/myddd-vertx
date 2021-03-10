@@ -13,6 +13,33 @@ import java.util.*
 class TestOAuth2Token : AbstractTest() {
 
     @Test
+    fun testValidAccessToken(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val client = createClient()
+                client.clientId = UUID.randomUUID().toString()
+                val createdClient = client.createClient().await()
+                val token = OAuth2Token.createTokenFromClient(createdClient).await()
+
+                val clientId = OAuth2Token.queryValidClientIdByAccessToken(token.accessToken).await()
+                testContext.verify {
+                    Assertions.assertNotNull(client)
+                    Assertions.assertEquals(client.clientId,clientId)
+                }
+
+                try {
+                    OAuth2Token.queryValidClientIdByAccessToken(UUID.randomUUID().toString()).await()
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testCreateTokenFromClient(vertx: Vertx, testContext: VertxTestContext){
         executeWithTryCatch(testContext){
             GlobalScope.launch(vertx.dispatcher()) {
