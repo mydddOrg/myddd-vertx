@@ -219,12 +219,14 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
   # 查询组织下的子部门
-  /organizations/{orgId}/children:
+  /organizations/{orgId}/children?limit={limit}&skip={skip}:
     get:
       tags:
         - "组织"
       summary: 获取指定组织下的子组织
-      description: 查询指定部门下的子部门信息，这个接口只返回部门，如需雇员或雇员+部门请使用其它接口
+      description: 查询指定部门下的子部门信息，这个接口只返回部门，如需雇员或雇员+部门请使用其它接口<br/>
+                   <font color='red'>这是个分页接口，没有一次性查出所有子组织的接口</font><br/>
+                   如果返回的条数等于指定的每页数额，则表明需要查询下一页
       parameters:
         - name: orgId
           in: path
@@ -232,6 +234,21 @@ paths:
           schema:
             type: string
           description: 如果传空，则返回当前组织根组织信息
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+          description: 指定每一页的组织数，不传默认为50
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+          description: 查询的开始数
+
       responses:
         200:
           content:
@@ -243,12 +260,14 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
   # 查询组织下的雇员
-  /organizations/{orgId}/employees:
+  /organizations/{orgId}/employees?limit={limit}&skip={skip}:
     get:
       tags:
         - "组织"
       summary: 获取组织下的雇员信息
       description: 此接口会返回指定部门下的雇员信息,这个接口只包含雇员信息
+                   <font color='red'>这是个分页接口，没有一次性查出所有雇员数</font><br/>
+                   如果返回的条数等于指定的每页数额，则表明需要查询下一页
       parameters:
         - name: orgId
           in: path
@@ -256,6 +275,20 @@ paths:
           schema:
             type: string
           description: 如果传空，则返回当前组织根组织信息
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+          description: 指定每一页的组织数，不传默认为50
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+          description: 查询的开始数
       responses:
         200:
           content:
@@ -341,38 +374,17 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
 
-        # 分页查询雇员
-  # 分页查询雇员
-  /employees/pages:
+  # 搜索雇员
+  /employee?query={query}:
     get:
       tags:
         - "雇员"
-      summary: 分页获取雇员
-      description: 调用此接口可以批量获取雇员信息
+      summary: 搜索雇员
+      description: 根据username来搜索雇员，不能传空
       parameters:
-        - name: skip
-          in: query
-          required: false
-          description: 开始数
-          schema:
-            type: integer
-            default: 0
-        - name: limit
-          in: query
-          required: false
-          schema:
-            type: integer
-            default: 100
-          description: 每页记录数
-        - name: orgId
-          in: query
-          required: false
-          schema:
-            type: string
-          description: 组织ID,传入此值表示分页查询指定组织下的雇员
         - name: query
           in: query
-          required: false
+          required: true
           schema:
             type: string
           description: 搜索字符，传入此值，表示查询符合条件的雇员
@@ -382,21 +394,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: 总数
-                  skip:
-                    type: integer
-                    description: 当前开始数
-                  limit:
-                    type: integer
-                    description: 分页条数
-                  datas:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/employee"
+                type: array
+                items:
+                  $ref: "#/components/schemas/employee"
         400:
           $ref: "#/components/responses/errorResponse"
 

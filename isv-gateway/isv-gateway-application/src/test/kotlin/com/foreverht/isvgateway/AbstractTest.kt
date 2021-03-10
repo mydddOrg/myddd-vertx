@@ -1,11 +1,13 @@
 package com.foreverht.isvgateway
 
 import com.foreverht.isvgateway.api.AccessTokenApplication
+import com.foreverht.isvgateway.api.EmployeeApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.OrganizationApplication
 import com.foreverht.isvgateway.application.ISVClientApplicationImpl
-import com.foreverht.isvgateway.application.workplus.WorkPlusAccessTokenApplication
-import com.foreverht.isvgateway.application.workplus.WorkPlusOrganizationApplication
+import com.foreverht.isvgateway.application.workplus.AccessTokenApplicationWorkPlus
+import com.foreverht.isvgateway.application.workplus.EmployeeApplicationWorkPlus
+import com.foreverht.isvgateway.application.workplus.OrganizationApplicationWorkPlus
 import com.foreverht.isvgateway.domain.ISVClientRepository
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
 import com.google.inject.AbstractModule
@@ -60,9 +62,9 @@ abstract class AbstractTest {
                     bind(ISVClientRepository::class.java).to(ISVClientRepositoryHibernate::class.java)
                     bind(ISVClientApplication::class.java).to(ISVClientApplicationImpl::class.java)
 
-                    bind(AccessTokenApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(WorkPlusAccessTokenApplication::class.java)
-                    bind(OrganizationApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to((WorkPlusOrganizationApplication::class.java))
-
+                    bind(AccessTokenApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(AccessTokenApplicationWorkPlus::class.java)
+                    bind(OrganizationApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to((OrganizationApplicationWorkPlus::class.java))
+                    bind(EmployeeApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(EmployeeApplicationWorkPlus::class.java)
                 }
             })))
 

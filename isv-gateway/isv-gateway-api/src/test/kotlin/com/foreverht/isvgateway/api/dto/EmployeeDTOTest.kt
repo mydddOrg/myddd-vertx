@@ -14,7 +14,7 @@ class EmployeeDTOTest {
 
         val jsonObject =  json {
             obj(
-                "id" to UUID.randomUUID().toString(),
+                "user_id" to UUID.randomUUID().toString(),
                 "nickname" to UUID.randomUUID().toString(),
                 "avatar" to UUID.randomUUID().toString(),
                 "mobile" to UUID.randomUUID().toString(),

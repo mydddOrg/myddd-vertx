@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 
-class WorkPlusOrganizationApplicationTest : AbstractWorkPlusTest() {
+class OrganizationApplicationWorkPlusTest : AbstractWorkPlusTest() {
 
     companion object {
         private val organizationApplication:OrganizationApplication by lazy { InstanceFactory.getInstance(OrganizationApplication::class.java,"WorkPlusApp") }

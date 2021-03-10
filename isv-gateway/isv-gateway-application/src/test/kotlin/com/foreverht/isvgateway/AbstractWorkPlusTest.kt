@@ -4,7 +4,7 @@ import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
-import com.foreverht.isvgateway.workplus.WorkPlusAccessTokenApplicationTest
+import com.foreverht.isvgateway.workplus.AccessTokenApplicationWorkPlusTest
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.client.WebClient
@@ -25,7 +25,7 @@ abstract class AbstractWorkPlusTest : AbstractTest() {
 
         val isvClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
 
-        val logger = LoggerFactory.getLogger(WorkPlusAccessTokenApplicationTest::class.java)
+        val logger = LoggerFactory.getLogger(AccessTokenApplicationWorkPlusTest::class.java)
 
         const val api = "http://test248.workplus.io/api4/v1"
 

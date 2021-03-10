@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 
-class WorkPlusAccessTokenApplicationTest : AbstractWorkPlusTest() {
+class AccessTokenApplicationWorkPlusTest : AbstractWorkPlusTest() {
 
     @Test
     fun testInstance(vertx: Vertx,testContext: VertxTestContext){

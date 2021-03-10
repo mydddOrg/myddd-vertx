@@ -9,7 +9,6 @@ import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusApp
 import io.vertx.core.Future
 import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
-import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
@@ -19,9 +18,9 @@ import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
 
-class WorkPlusAccessTokenApplication : AccessTokenApplication{
+class AccessTokenApplicationWorkPlus : AccessTokenApplication{
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
-    val logger: Logger by lazy { LoggerFactory.getLogger(WorkPlusAccessTokenApplication::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(AccessTokenApplicationWorkPlus::class.java) }
 
     override suspend fun requestRequestAccessToken(clientId: String): Future<String?> {
         return try {
