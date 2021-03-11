@@ -4,6 +4,7 @@ import com.google.inject.Guice
 import io.vertx.config.ConfigRetriever
 import io.vertx.config.ConfigRetrieverOptions
 import io.vertx.config.ConfigStoreOptions
+import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
@@ -26,6 +27,9 @@ import org.myddd.vertx.web.router.config.GlobalConfig
 import org.myddd.vertx.web.router.handler.IPFilterHandler
 import java.util.*
 import kotlin.Exception
+import io.vertx.core.Handler
+import org.mockito.Mockito.mock
+import java.lang.RuntimeException
 
 @ExtendWith(VertxExtension::class)
 class AbstractRouterTest {
@@ -43,7 +47,6 @@ class AbstractRouterTest {
         private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
         private val oAuth2Application:OAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }
-        private val oAuth2ClientApplication:OAuth2ClientApplication by lazy { InstanceFactory.getInstance(OAuth2ClientApplication::class.java) }
 
         @BeforeAll
         @JvmStatic
@@ -102,9 +105,59 @@ class AbstractRouterTest {
     }
 
     @Test
+    fun testAsyncMock(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val future = mock(Future::class.java)
+                Mockito.`when`(future.succeeded()).thenReturn(true)
+                Mockito.`when`(future.failed()).thenReturn(false)
+                Mockito.`when`(future.result()).thenReturn(UUID.randomUUID().toString())
+
+                Mockito.`when`(oAuth2Application.queryValidClientIdByAccessToken(any())).thenReturn(future as Future<String>?)
+
+
+                val clientId = oAuth2Application.queryValidClientIdByAccessToken(UUID.randomUUID().toString()).await()
+
+                testContext.verify {
+                    Assertions.assertNotNull(clientId)
+                }
+
+                Mockito.`when`(future.succeeded()).thenReturn(false)
+                Mockito.`when`(future.failed()).thenReturn(true)
+                Mockito.`when`(future.cause()).thenReturn(RuntimeException())
+
+                try {
+                    oAuth2Application.queryValidClientIdByAccessToken(UUID.randomUUID().toString()).await()
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
+                testContext.completeNow()
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    private fun <T> any(): T {
+        Mockito.any<T>()
+        return uninitialized()
+    }
+
+    private fun <T> uninitialized(): T = null as T
+
+    @Test
     fun testAuthorizationGetRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
+
+                val future = mock(Future::class.java)
+                Mockito.`when`(future.succeeded()).thenReturn(false)
+                Mockito.`when`(future.failed()).thenReturn(true)
+                Mockito.`when`(future.cause()).thenReturn(RuntimeException())
+                Mockito.`when`(oAuth2Application.queryValidClientIdByAccessToken(any())).thenReturn(future as Future<String>?)
+
                 var response = webClient.get(port,host,"/v1/authorization/users").send().await()
                 testContext.verify {
                     Assertions.assertEquals(403,response.statusCode())
@@ -115,17 +168,11 @@ class AbstractRouterTest {
                     Assertions.assertEquals(403,response.statusCode())
                 }
 
-                val clientDto = OAuth2ClientDTO(clientId = UUID.randomUUID().toString(),name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
-                val created = oAuth2ClientApplication.createClient(clientDto).await()
+                Mockito.`when`(future.succeeded()).thenReturn(true)
+                Mockito.`when`(future.failed()).thenReturn(false)
+                Mockito.`when`(future.result()).thenReturn(UUID.randomUUID().toString())
 
-                var userDTO = oAuth2Application.requestClientToken(created.clientId, created.clientSecret!!).await()
-
-                testContext.verify {
-                    Assertions.assertNotNull(userDTO)
-                    Assertions.assertFalse(userDTO!!.expired())
-                }
-
-                response = webClient.get(port,host,"/v1/authorization/users?accessToken=${userDTO!!.tokenDTO!!.accessToken}").send().await()
+                response = webClient.get(port,host,"/v1/authorization/users?accessToken=${UUID.randomUUID()}").send().await()
                 testContext.verify {
                     Assertions.assertEquals(200,response.statusCode())
                 }

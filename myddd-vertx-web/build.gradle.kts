@@ -50,9 +50,4 @@ dependencies {
     testImplementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
     testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
 
-    testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-domain"))
-    testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-application"))
-    testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-infra"))
-
-
 }
