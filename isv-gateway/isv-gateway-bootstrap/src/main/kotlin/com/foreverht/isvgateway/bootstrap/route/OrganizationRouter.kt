@@ -4,7 +4,6 @@ import com.foreverht.isvgateway.api.dto.OrganizationDTO
 import com.foreverht.isvgateway.bootstrap.ext.mapperTo
 import com.foreverht.isvgateway.bootstrap.validation.OrganizationValidationHandler
 import io.vertx.core.Vertx
-import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.await
