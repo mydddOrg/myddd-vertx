@@ -21,6 +21,8 @@ import java.util.*
 
 open class AbstractISVRouterTest : AbstractRouteTest() {
 
+    val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
+
     companion object {
 
         private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java)}
@@ -28,7 +30,6 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
 
         var accessToken:String? = null
 
-        val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
         @BeforeAll
         @JvmStatic
@@ -100,6 +101,10 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
                 val testRoute = object : AbstractISVRouter(vertx = vertx,router = Router.router(vertx)){}
                 val organizationApplication = testRoute.getOrganizationApplication(accessToken!!).await()
                 testContext.verify { Assertions.assertNotNull(organizationApplication) }
+
+                val employeeApplication = testRoute.getEmployeeApplication(accessToken!!).await()
+                testContext.verify { Assertions.assertNotNull(employeeApplication) }
+
             }catch (t:Throwable){
                 testContext.failNow(t)
             }

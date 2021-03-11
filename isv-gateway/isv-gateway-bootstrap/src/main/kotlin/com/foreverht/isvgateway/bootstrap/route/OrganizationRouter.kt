@@ -22,7 +22,9 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
     private fun queryOrganizationEmployeeRoute(){
 
-        createGetRoute(path = "/$version/organizations/:orgCode/employees",validationHandler = OrganizationValidationHandler().queryOrganizationValidation()){ route ->
+        createGetRoute(path = "/$version/organizations/:orgCode/employees"){ route ->
+
+            route.handler(OrganizationValidationHandler().queryOrganizationValidation())
 
             route.handler(AccessTokenAuthorizationHandler(vertx))
 
@@ -58,7 +60,9 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
 
     private fun queryOrganizationChildrenRoute(){
-        createGetRoute(path = "/$version/organizations/:orgCode/children",validationHandler = OrganizationValidationHandler().queryOrganizationChildrenOrEmployeeValidation()){ route ->
+        createGetRoute(path = "/$version/organizations/:orgCode/children"){ route ->
+
+            route.handler(OrganizationValidationHandler().queryOrganizationChildrenOrEmployeeValidation())
 
             route.handler(AccessTokenAuthorizationHandler(vertx))
 
@@ -92,7 +96,9 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
     }
 
     private fun queryOrganizationRoute(){
-        createGetRoute(path = "/$version/organizations/:orgCode",validationHandler = OrganizationValidationHandler().queryOrganizationValidation()){ route ->
+        createGetRoute(path = "/$version/organizations/:orgCode"){ route ->
+
+            route.handler(OrganizationValidationHandler().queryOrganizationValidation())
 
             route.handler(AccessTokenAuthorizationHandler(vertx))
 

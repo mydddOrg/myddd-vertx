@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.bootstrap.route
 
+import com.foreverht.isvgateway.api.EmployeeApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.OrganizationApplication
 import com.foreverht.isvgateway.domain.ISVErrorCode
@@ -23,16 +24,28 @@ abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(v
         WorkPlusApp to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkPlusApp)
     )
 
+    private val employeeApplicationMap:Map<String,EmployeeApplication> = mapOf(
+        WorkPlusApp to InstanceFactory.getInstance(EmployeeApplication::class.java,WorkPlusApp)
+    )
+
     private val oauth2Application:OAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }
 
     private val isvClientApplication:ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
 
     suspend fun getOrganizationApplication(accessToken:String):Future<OrganizationApplication>{
+        return getApplicationByClientType(applicationMap = organizationApplicationMap,accessToken = accessToken)
+    }
+
+    suspend fun getEmployeeApplication(accessToken: String):Future<EmployeeApplication>{
+        return getApplicationByClientType(applicationMap = employeeApplicationMap,accessToken = accessToken)
+    }
+
+    private suspend fun <T>  getApplicationByClientType(applicationMap:Map<String,T>,accessToken: String):Future<T>{
         return try {
             val clientId = oauth2Application.queryValidClientIdByAccessToken(accessToken).await()
             val isvClient = isvClientApplication.queryClientByClientId(clientId).await()
             if(Objects.nonNull(isvClient)){
-                Future.succeededFuture(organizationApplicationMap[isvClient!!.extra.clientType])
+                Future.succeededFuture(applicationMap[isvClient!!.extra.clientType])
             }else{
                 throw BusinessLogicException(ISVErrorCode.CLIENT_ID_NOT_FOUND)
             }
@@ -40,6 +53,5 @@ abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(v
             Future.failedFuture(t)
         }
     }
-
 
 }

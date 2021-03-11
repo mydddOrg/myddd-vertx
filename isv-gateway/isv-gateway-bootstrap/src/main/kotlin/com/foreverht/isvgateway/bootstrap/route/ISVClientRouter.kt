@@ -43,7 +43,10 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
     }
 
     private fun createISVClientRoute(){
-        createPostRoute("/$version/clients",ISVClientValidationHandler().createISVClientValidation()){ route ->
+        createPostRoute("/$version/clients"){ route ->
+
+            route.handler(ISVClientValidationHandler().createISVClientValidation())
+
             route.handler {
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
@@ -85,7 +88,10 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
     }
 
     private fun updateISVClientRoute(){
-        createPatchRoute("/$version/clients/:clientId",ISVClientValidationHandler().updateISVClientValidation()){ route ->
+        createPatchRoute("/$version/clients/:clientId"){ route ->
+
+            route.handler(ISVClientValidationHandler().updateISVClientValidation())
+
             route.handler {
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
@@ -105,7 +111,10 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
     }
 
     private fun requestClientTokenRoute(){
-        createPostRoute("/$version/clients/token",ISVClientValidationHandler().requestAccessTokenValidation()){ route ->
+        createPostRoute("/$version/clients/token"){ route ->
+
+            route.handler(ISVClientValidationHandler().requestAccessTokenValidation())
+
             route.handler {
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
@@ -125,7 +134,8 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
     }
 
     private fun refreshClientTokenToken(){
-        createPostRoute("/$version/clients/refreshToken",ISVClientValidationHandler().refreshTokenValidation()){ route ->
+        createPostRoute("/$version/clients/refreshToken"){ route ->
+            route.handler(ISVClientValidationHandler().refreshTokenValidation())
             route.handler {
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {

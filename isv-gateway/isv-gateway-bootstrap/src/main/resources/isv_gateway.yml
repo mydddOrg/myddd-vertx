@@ -353,12 +353,19 @@ paths:
 
   # ===== 雇员 =======
   # 查询单个雇员详情
-  /employees/{employeeId}:
+  /organizations/{orgCode}/employees/{employeeId}:
     get:
       tags:
         - "雇员"
       summary: 获取指定雇员的信息
       description: 传入雇员ID，查询一个指定的雇员信息
+      parameters:
+        - name: orgCode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 组织OrgCode码，必传
       responses:
         200:
           content:
@@ -368,14 +375,20 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
   # 查询多个雇员
-  /employees/batch:
+  /organizations/{orgCode}/employeesBatch?userIds={userIds}:
     get:
       tags:
         - "雇员"
       summary: 查询多个雇员
       description: 传入一批雇员ID，返回多个雇员ID信息，限制每次最多100
       parameters:
-        - name: userIdList
+        - name: orgCode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 组织OrgCode码，必传
+        - name: userIds
           in: query
           required: true
           schema:
@@ -393,7 +406,7 @@ paths:
           $ref: "#/components/responses/errorResponse"
 
   # 搜索雇员
-  /employee?query={query}:
+  /organizations/{orgCode}/employeesSearch?query={query}:
     get:
       tags:
         - "雇员"

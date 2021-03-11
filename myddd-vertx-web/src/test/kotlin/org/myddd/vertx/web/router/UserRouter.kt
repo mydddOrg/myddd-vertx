@@ -45,7 +45,8 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
     }
 
     private fun createUserPostRoute(){
-        createPostRoute("/$version/users",UserRouterValidation.postUserValidation()) { route ->
+        createPostRoute("/$version/users") { route ->
+            route.handler(UserRouterValidation().postUserValidation())
             route.handler {
                 val bodyJson = it.bodyAsJson
                 val userId = bodyJson.getString("userId")

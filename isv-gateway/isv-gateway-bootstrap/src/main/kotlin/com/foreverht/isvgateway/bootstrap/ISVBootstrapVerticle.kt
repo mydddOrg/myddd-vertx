@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.bootstrap
 
+import com.foreverht.isvgateway.bootstrap.route.EmployeesRouter
 import com.foreverht.isvgateway.bootstrap.route.ISVClientRouter
 import com.foreverht.isvgateway.bootstrap.route.OrganizationRouter
 import com.google.inject.AbstractModule
@@ -20,6 +21,7 @@ class ISVBootstrapVerticle (private val port:Int = 8080) : BootstrapVerticle(por
         return {
             ISVClientRouter(vertx,router)
             OrganizationRouter(vertx,router)
+            EmployeesRouter(vertx,router)
         }
     }
 
