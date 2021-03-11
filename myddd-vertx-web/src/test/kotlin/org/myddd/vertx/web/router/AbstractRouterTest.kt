@@ -21,13 +21,10 @@ import org.mockito.Mockito
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.oauth2.api.OAuth2Application
-import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
-import org.myddd.vertx.oauth2.api.OAuth2ClientDTO
 import org.myddd.vertx.web.router.config.GlobalConfig
 import org.myddd.vertx.web.router.handler.IPFilterHandler
 import java.util.*
 import kotlin.Exception
-import io.vertx.core.Handler
 import org.mockito.Mockito.mock
 import java.lang.RuntimeException
 
