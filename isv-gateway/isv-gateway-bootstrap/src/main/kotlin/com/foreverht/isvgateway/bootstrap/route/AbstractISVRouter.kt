@@ -15,8 +15,12 @@ import java.util.*
 
 abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(vertx = vertx,router = router) {
 
+    companion object {
+        const val WorkPlusApp = "WorkPlusApp"
+    }
+
     private val organizationApplicationMap:Map<String,OrganizationApplication> = mapOf(
-        "WorkPlusApp" to InstanceFactory.getInstance(OrganizationApplication::class.java,"WorkPlusApp")
+        WorkPlusApp to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkPlusApp)
     )
 
     private val oauth2Application:OAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }

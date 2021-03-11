@@ -1,8 +1,9 @@
 package com.foreverht.isvgateway.bootstrap.route
 
-import com.foreverht.isvgateway.api.OrganizationApplication
+import com.foreverht.isvgateway.api.dto.OrganizationDTO
 import com.foreverht.isvgateway.bootstrap.validation.OrganizationValidationHandler
 import io.vertx.core.Vertx
+import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.await
@@ -15,10 +16,83 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
     init {
         queryOrganizationRoute()
+        queryOrganizationChildrenRoute()
+        queryOrganizationEmployeeRoute()
+    }
+
+    private fun queryOrganizationEmployeeRoute(){
+
+        createGetRoute(path = "/$version/organizations/:orgCode/employees",validationHandler = OrganizationValidationHandler().queryOrganizationValidation()){ route ->
+
+            route.handler(AccessTokenAuthorizationHandler(vertx))
+
+            route.handler {
+
+                GlobalScope.launch(vertx.dispatcher()) {
+                    try {
+                        val clientId = it.get<String>("clientId")
+                        val accessToken = it.get<String>("accessToken")
+                        val orgCode = it.pathParam("orgCode")
+
+                        val orgId = if(it.queryParam("orgId").isNotEmpty()) it.queryParam("orgId")[0] else null
+                        val limit = if(it.queryParam("limit").isNotEmpty()) it.queryParam("limit")[0].toInt() else 50
+                        val skip = if(it.queryParam("skip").isNotEmpty()) it.queryParam("skip")[0].toInt() else 0
+
+                        val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
+
+                        val employeeList =  organizationApplication.queryOrganizationEmployees(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip).await()
+
+                        val jsonArray = JsonArray()
+                        employeeList.forEach {
+                            jsonArray.add(JsonObject.mapFrom(it))
+                        }
+                        it.end(jsonArray.toBuffer())
+                    }catch (t:Throwable){
+                        it.fail(t)
+                    }
+                }
+
+            }
+        }
+    }
+
+
+    private fun queryOrganizationChildrenRoute(){
+        createGetRoute(path = "/$version/organizations/:orgCode/children",validationHandler = OrganizationValidationHandler().queryOrganizationChildrenOrEmployeeValidation()){ route ->
+
+            route.handler(AccessTokenAuthorizationHandler(vertx))
+
+            route.handler {
+                GlobalScope.launch(vertx.dispatcher()) {
+                    try {
+                        val clientId = it.get<String>("clientId")
+                        val accessToken = it.get<String>("accessToken")
+                        val orgCode = it.pathParam("orgCode")
+
+                        val orgId = if(it.queryParam("orgId").isNotEmpty()) it.queryParam("orgId")[0] else null
+                        val limit = if(it.queryParam("limit").isNotEmpty()) it.queryParam("limit")[0].toInt() else 50
+                        val skip = if(it.queryParam("skip").isNotEmpty()) it.queryParam("skip")[0].toInt() else 0
+
+                        val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
+
+                        val organizationList: List<OrganizationDTO> =  organizationApplication.queryChildrenOrganizations(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip).await()
+
+                        val jsonArray = JsonArray()
+                        organizationList.forEach {
+                            jsonArray.add(JsonObject.mapFrom(it))
+                        }
+                        it.end(jsonArray.toBuffer())
+                    }catch (t:Throwable){
+                        it.fail(t)
+                    }
+                }
+            }
+
+        }
     }
 
     private fun queryOrganizationRoute(){
-        createGetRoute(path = "/$version/organizations",validationHandler = OrganizationValidationHandler().queryOrganizationValidation()){ route ->
+        createGetRoute(path = "/$version/organizations/:orgCode",validationHandler = OrganizationValidationHandler().queryOrganizationValidation()){ route ->
 
             route.handler(AccessTokenAuthorizationHandler(vertx))
 
@@ -28,7 +102,7 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
                         val orgList = it.queryParam("orgId")
                         val orgId = if(orgList.isNotEmpty()) orgList[0] else null
 
-                        val orgCode = it.queryParam("orgCode")?.get(0)!!
+                        val orgCode = it.pathParam("orgCode")
                         val clientId = it.get<String>("clientId")
                         val accessToken = it.get<String>("accessToken")
 
@@ -39,9 +113,9 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
                     }catch (t:Throwable){
                         it.fail(t)
                     }
-
                 }
             }
+
         }
     }
 }

@@ -198,12 +198,18 @@ paths:
 
   # ===== 组织 =======
   # 查询单个组织信息
-  /organizations?orgId={orgId}:
+  /organizations/{orgCode}?orgId={orgId}:
     get:
       tags:
         - "组织"
       summary: 获取指定组织的详情
       parameters:
+        - name: orgCode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 组织OrgCode码，必传
         - name: orgId
           in: query
           required: false
@@ -219,7 +225,7 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
   # 查询组织下的子部门
-  /organizations/children?orgId={orgId}&limit={limit}&skip={skip}:
+  /organizations/{orgCode}/children?orgId={orgId}&limit={limit}&skip={skip}:
     get:
       tags:
         - "组织"
@@ -228,6 +234,12 @@ paths:
                    <font color='red'>这是个分页接口，没有一次性查出所有子组织的接口</font><br/>
                    如果返回的条数等于指定的每页数额，则表明需要查询下一页
       parameters:
+        - name: orgCode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 组织OrgCode码，必传
         - name: orgId
           in: query
           required: false
@@ -260,7 +272,7 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
   # 查询组织下的雇员
-  /organizations/{orgId}/employees?limit={limit}&skip={skip}:
+  /organizations/{orgCode}/employees?orgId={orgId}&limit={limit}&skip={skip}:
     get:
       tags:
         - "组织"
@@ -269,8 +281,14 @@ paths:
                    <font color='red'>这是个分页接口，没有一次性查出所有雇员数</font><br/>
                    如果返回的条数等于指定的每页数额，则表明需要查询下一页
       parameters:
-        - name: orgId
+        - name: orgCode
           in: path
+          required: true
+          schema:
+            type: string
+          description: 组织OrgCode码，必传
+        - name: orgId
+          in: query
           required: false
           schema:
             type: string
