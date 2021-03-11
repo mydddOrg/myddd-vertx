@@ -1,9 +1,9 @@
 package com.foreverht.isvgateway.bootstrap.route
 
 import com.foreverht.isvgateway.api.dto.OrganizationDTO
-import com.foreverht.isvgateway.bootstrap.ext.mapperTo
 import com.foreverht.isvgateway.bootstrap.validation.OrganizationValidationHandler
 import io.vertx.core.Vertx
+import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.await
@@ -44,7 +44,7 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
                         val employeeList =  organizationApplication.queryOrganizationEmployees(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip).await()
 
-                        it.end(employeeList.mapperTo().toBuffer())
+                        it.end(JsonArray(employeeList.map { JsonObject.mapFrom(it) }).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -77,7 +77,7 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
                         val organizationList: List<OrganizationDTO> =  organizationApplication.queryChildrenOrganizations(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip).await()
 
-                        it.end(organizationList.mapperTo().toBuffer())
+                        it.end(JsonArray(organizationList.map { JsonObject.mapFrom(it) }).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }

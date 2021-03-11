@@ -1,8 +1,8 @@
 package com.foreverht.isvgateway.bootstrap.route
 
-import com.foreverht.isvgateway.bootstrap.ext.mapperTo
 import com.foreverht.isvgateway.bootstrap.validation.EmployeeValidationHandler
 import io.vertx.core.Vertx
+import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.await
@@ -36,7 +36,7 @@ class EmployeesRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = ve
                         val query = it.queryParam("query")[0]
 
                         val employeeList = employeeApplication.searchEmployees(clientId = clientId,orgCode = orgCode,query = query).await()
-                        it.end(employeeList.mapperTo().toBuffer())
+                        it.end(JsonArray(employeeList.map { JsonObject.mapFrom(it) }).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -63,7 +63,7 @@ class EmployeesRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = ve
                         val userIds = it.queryParam("userIds")[0]
 
                         val employeeList = employeeApplication.batchQueryEmployeeByIds(clientId = clientId,orgCode = orgCode,userIdList = userIds.split(",")).await()
-                        it.end(employeeList.mapperTo().toBuffer())
+                        it.end(JsonArray(employeeList.map { JsonObject.mapFrom(it) }).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
