@@ -39,6 +39,7 @@ dependencies {
 
     api("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     api("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
+    implementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
 
     implementation(project(":myddd-vertx-web"))
     implementation(project(":isv-gateway:isv-gateway-domain"))
@@ -66,6 +67,5 @@ dependencies {
 
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    testImplementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
 
 }

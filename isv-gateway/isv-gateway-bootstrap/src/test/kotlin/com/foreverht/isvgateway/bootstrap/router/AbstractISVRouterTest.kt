@@ -8,6 +8,7 @@ import com.foreverht.isvgateway.bootstrap.route.AbstractISVRouter
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
@@ -18,14 +19,16 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import java.util.*
 
-class AbstractISVRouterTest : AbstractRouteTest() {
+open class AbstractISVRouterTest : AbstractRouteTest() {
 
     companion object {
 
         private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java)}
         private val isvClientApplication:ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
-        private var accessToken:String? = null
 
+        var accessToken:String? = null
+
+        val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
         @BeforeAll
         @JvmStatic
@@ -43,7 +46,7 @@ class AbstractISVRouterTest : AbstractRouteTest() {
 
         private suspend fun createISVClientAndRequestAccessToken(vertx: Vertx,testContext: VertxTestContext):Future<Unit>{
             return try {
-                val isvClientDTO = randomISVClient()
+                val isvClientDTO = realISVClient()
                 val created = isvClientApplication.createISVClient(isvClientDTO).await()
 
                 var userDTO = databaseOAuth2Application.requestClientToken(created.clientId!!,created.clientSecret!!).await()
@@ -62,16 +65,30 @@ class AbstractISVRouterTest : AbstractRouteTest() {
             }
         }
 
-        private fun randomISVClient() : ISVClientDTO {
+        const val api = "http://test248.workplus.io/api4/v1"
+
+        const val domainId = "workplus"
+
+        const val clientId = "02018e570da2f42bf598d2f5628183d158e22a72"
+
+        const val clientSecret = "63d3237269214272be13fbab7da791f3"
+
+        const val ownerId = "2975ff5f83a34f458280fd25fbd3a356"
+
+        const val orgId = "aHexITjYkEurKyyxpKMgFh"
+
+        lateinit var isvClientId:String
+
+        private fun realISVClient() : ISVClientDTO {
             val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
-                clientId = UUID.randomUUID().toString(),
-                clientSecret = UUID.randomUUID().toString(),
-                domainId = UUID.randomUUID().toString(),
-                api = UUID.randomUUID().toString(),
-                ownerId = UUID.randomUUID().toString()
+                clientId = clientId,
+                clientSecret = clientSecret,
+                domainId = domainId,
+                api = api,
+                ownerId = ownerId
             )
 
-            return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())
+            return ISVClientDTO(clientName = "WorkPlus Test App",extra = isvClientExtraDTO,callback = api)
         }
 
     }

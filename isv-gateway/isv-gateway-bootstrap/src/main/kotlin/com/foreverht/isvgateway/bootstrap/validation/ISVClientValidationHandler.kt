@@ -1,27 +1,18 @@
 package com.foreverht.isvgateway.bootstrap.validation
 
-import io.vertx.core.Vertx
 import io.vertx.ext.web.validation.ValidationHandler
 import io.vertx.ext.web.validation.builder.Bodies
-import io.vertx.ext.web.validation.builder.Parameters
-import io.vertx.ext.web.validation.builder.Parameters.param
-import io.vertx.json.schema.SchemaParser
-import io.vertx.json.schema.SchemaRouter
-import io.vertx.json.schema.SchemaRouterOptions
 import io.vertx.json.schema.common.dsl.GenericSchemaBuilder
 import io.vertx.json.schema.common.dsl.ObjectSchemaBuilder
 import io.vertx.json.schema.common.dsl.Schemas
-import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.web.router.AbstractValidationHandler
 
-object ISVClientValidationHandler {
+class ISVClientValidationHandler : AbstractValidationHandler() {
 
-    private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
+    companion object {
+        private const val ALIAS_EXTRA_FOR_WORKPLUS = "extraForWorkPlus"
+    }
 
-    private val schemaRouter: SchemaRouter by lazy { SchemaRouter.create(vertx, SchemaRouterOptions())}
-
-    val schemaParser: SchemaParser by lazy { SchemaParser.createOpenAPI3SchemaParser(schemaRouter) }
-
-    private const val ALIAS_EXTRA_FOR_WORKPLUS = "extraForWorkPlus"
 
     internal val extraForWorkPlus: ObjectSchemaBuilder? by lazy {
         Schemas.objectSchema()

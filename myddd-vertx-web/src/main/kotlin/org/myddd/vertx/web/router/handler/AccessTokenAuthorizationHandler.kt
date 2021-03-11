@@ -26,6 +26,8 @@ class AccessTokenAuthorizationHandler(private val vertx: Vertx) : Handler<Routin
                 }
                 val clientId = oAuth2Application.queryValidClientIdByAccessToken(accessToken!!).await()
                 clientId.also {
+                    rc.put("accessToken",accessToken)
+                    rc.put("clientId",clientId)
                     rc.next()
                 }
             }catch (t:Throwable){

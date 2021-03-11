@@ -41,14 +41,11 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
         }
     }
 
-    private suspend fun initHttpServer(): Future<HttpServer> {
+    private fun initHttpServer(): Future<HttpServer> {
         val server = vertx.createHttpServer()
         val router = Router.router(vertx)
-
         NotExistsRouter(vertx,router)
-
         routers(vertx,router)()
-
         return server.requestHandler(router).listen(port)
     }
 

@@ -13,6 +13,7 @@ import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
 import com.google.inject.AbstractModule
 import com.google.inject.name.Names
 import io.vertx.core.Vertx
+import io.vertx.ext.web.client.WebClient
 import org.hibernate.reactive.mutiny.Mutiny
 import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.i18n.provider.I18NVertxProvider
@@ -40,10 +41,12 @@ class ISVClientGuice(private val vertx: Vertx) : AbstractModule() {
     }
     override fun configure(){
         bind(Vertx::class.java).toInstance(vertx)
+        bind(WebClient::class.java).toInstance(WebClient.create(vertx))
 
         bind(Mutiny.SessionFactory::class.java).toInstance(
             Persistence.createEntityManagerFactory("default")
                 .unwrap(Mutiny.SessionFactory::class.java))
+
 
         bind(EntityRepository::class.java).to(EntityRepositoryHibernate::class.java)
 

@@ -1,6 +1,7 @@
 package com.foreverht.isvgateway.bootstrap
 
 import com.foreverht.isvgateway.bootstrap.route.ISVClientRouter
+import com.foreverht.isvgateway.bootstrap.route.OrganizationRouter
 import com.google.inject.AbstractModule
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
@@ -18,6 +19,7 @@ class ISVBootstrapVerticle (private val port:Int = 8080) : BootstrapVerticle(por
     override fun routers(vertx: Vertx, router: Router): () -> Unit {
         return {
             ISVClientRouter(vertx,router)
+            OrganizationRouter(vertx,router)
         }
     }
 

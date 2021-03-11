@@ -42,7 +42,7 @@ class ISVClientValidationHandlerTest {
     fun testExtraForWorkPlusValidation(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val extraForWorkPlusValidation = ISVClientValidationHandler.extraForWorkPlus?.build(ISVClientValidationHandler.schemaParser)
+                val extraForWorkPlusValidation = ISVClientValidationHandler().extraForWorkPlus?.build(ISVClientValidationHandler().schemaParser)
 
                 val extraForWorkPlusJson = JsonObject()
                     .put("clientId", UUID.randomUUID().toString())
@@ -80,7 +80,7 @@ class ISVClientValidationHandlerTest {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
 
-                val createISVClientValidation = ISVClientValidationHandler.createISVClientSchema?.build(ISVClientValidationHandler.schemaParser)
+                val createISVClientValidation = ISVClientValidationHandler().createISVClientSchema?.build(ISVClientValidationHandler().schemaParser)
 
                 val extraForWorkPlusJson = JsonObject()
                     .put("clientId", UUID.randomUUID().toString())
@@ -147,7 +147,7 @@ class ISVClientValidationHandlerTest {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
 
-                val updateISVClientValidation = ISVClientValidationHandler.updateISVClientSchema?.build(ISVClientValidationHandler.schemaParser)
+                val updateISVClientValidation = ISVClientValidationHandler().updateISVClientSchema?.build(ISVClientValidationHandler().schemaParser)
 
 
                 val createISVClientJson = JsonObject()
@@ -184,7 +184,7 @@ class ISVClientValidationHandlerTest {
     fun testRequestAccessTokenValidation(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val requestAccessTokenValidation = ISVClientValidationHandler.requestAccessTokenSchema.build(ISVClientValidationHandler.schemaParser)
+                val requestAccessTokenValidation = ISVClientValidationHandler().requestAccessTokenSchema.build(ISVClientValidationHandler().schemaParser)
                 val requestJsonObject = JsonObject()
                     .put("clientId",UUID.randomUUID().toString())
                     .put("clientSecret",UUID.randomUUID().toString())
@@ -225,7 +225,7 @@ class ISVClientValidationHandlerTest {
     fun testRefreshTokenValidation(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val refreshTokenValidation = ISVClientValidationHandler.refreshTokenSchema.build(ISVClientValidationHandler.schemaParser)
+                val refreshTokenValidation = ISVClientValidationHandler().refreshTokenSchema.build(ISVClientValidationHandler().schemaParser)
                 val requestJsonObject = JsonObject()
                     .put("clientId",UUID.randomUUID().toString())
                     .put("refreshToken",UUID.randomUUID().toString())
@@ -261,7 +261,7 @@ class ISVClientValidationHandlerTest {
     fun testResetSecretValidation(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val resetSecretValidation = ISVClientValidationHandler.resetClientSecretSchema.build(ISVClientValidationHandler.schemaParser)
+                val resetSecretValidation = ISVClientValidationHandler().resetClientSecretSchema.build(ISVClientValidationHandler().schemaParser)
                 val requestJsonObject = JsonObject()
                     .put("clientId",UUID.randomUUID().toString())
                     .put("clientSecret",UUID.randomUUID().toString())
