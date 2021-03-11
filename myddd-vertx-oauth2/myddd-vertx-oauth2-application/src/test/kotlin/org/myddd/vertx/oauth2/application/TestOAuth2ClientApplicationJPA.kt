@@ -25,7 +25,8 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
     fun testCreateClient(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try{
-                val clientDto = OAuth2ClientDTO(clientId = "NEW_CLIENT",name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
+                val clientId = UUID.randomUUID().toString()
+                val clientDto = OAuth2ClientDTO(clientId = clientId,name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
                 val created = oAuth2ClientApplication.createClient(clientDto).await()
                 testContext.verify {
                     Assertions.assertNotNull(created.id)
@@ -33,7 +34,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
                 }
 
                 try {
-                    val notValidClientDTO = OAuth2ClientDTO(clientId = "NEW_CLIENT",name = "测试应用",description = "这是一个测试应用，没有任何其它意义",clientSecret = UUID.randomUUID().toString(),id = 1,version =1)
+                    val notValidClientDTO = OAuth2ClientDTO(clientId = clientId,name = "测试应用",description = "这是一个测试应用，没有任何其它意义",clientSecret = UUID.randomUUID().toString(),id = 1,version =1)
                     oAuth2ClientApplication.createClient(notValidClientDTO).await()
                     testContext.failNow("不能新增成功")
                 }catch (e:Exception){
@@ -52,7 +53,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
     fun testQueryClient(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val clientDto = OAuth2ClientDTO(clientId = "NEW_CLIENT",name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
+                val clientDto = OAuth2ClientDTO(clientId = UUID.randomUUID().toString(),name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
                 val created = oAuth2ClientApplication.createClient(clientDto).await()
                 testContext.verify {
                     Assertions.assertNotNull(created.id)
@@ -89,7 +90,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
                     testContext.verify { Assertions.assertNotNull(e) }
                 }
 
-                val clientDto = OAuth2ClientDTO(clientId = "NEW_CLIENT",name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
+                val clientDto = OAuth2ClientDTO(clientId = UUID.randomUUID().toString(),name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
                 val created = oAuth2ClientApplication.createClient(clientDto).await()
                 testContext.verify {
                     Assertions.assertNotNull(created.id)
@@ -127,7 +128,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
                     testContext.verify { Assertions.assertNotNull(e) }
                 }
 
-                val clientDto = OAuth2ClientDTO(clientId = "NEW_CLIENT",name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
+                val clientDto = OAuth2ClientDTO(clientId = UUID.randomUUID().toString(),name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
                 val created = oAuth2ClientApplication.createClient(clientDto).await()
                 testContext.verify {
                     Assertions.assertNotNull(created.id)
