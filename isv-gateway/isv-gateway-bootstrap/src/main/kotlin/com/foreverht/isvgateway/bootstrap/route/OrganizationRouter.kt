@@ -44,7 +44,9 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
                         val employeeList =  organizationApplication.queryOrganizationEmployees(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip).await()
 
-                        it.end(JsonArray(employeeList.map { JsonObject.mapFrom(it) }).toBuffer())
+                        it.end(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
+
+                        it.end(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -77,7 +79,7 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
                         val organizationList: List<OrganizationDTO> =  organizationApplication.queryChildrenOrganizations(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip).await()
 
-                        it.end(JsonArray(organizationList.map { JsonObject.mapFrom(it) }).toBuffer())
+                        it.end(JsonArray(organizationList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }

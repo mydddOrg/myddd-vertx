@@ -22,6 +22,7 @@ dependencies {
     api("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     api("io.vertx:vertx-lang-kotlin:${rootProject.extra["vertx_version"]}")
     api("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
+    implementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
 
     api(project(":isv-gateway:isv-gateway-api"))
     implementation(project(":isv-gateway:isv-gateway-domain"))
@@ -31,7 +32,7 @@ dependencies {
     //查询通道实现
     api(project(":myddd-vertx-querychannel:myddd-vertx-querychannel-hibernate"))
 
-    implementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
+    implementation("commons-codec:commons-codec:1.15")
 
     //依赖注入
     implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))

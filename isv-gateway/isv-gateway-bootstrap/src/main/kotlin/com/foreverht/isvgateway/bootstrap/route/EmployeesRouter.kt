@@ -36,7 +36,7 @@ class EmployeesRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = ve
                         val query = it.queryParam("query")[0]
 
                         val employeeList = employeeApplication.searchEmployees(clientId = clientId,orgCode = orgCode,query = query).await()
-                        it.end(JsonArray(employeeList.map { JsonObject.mapFrom(it) }).toBuffer())
+                        it.end(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -63,7 +63,7 @@ class EmployeesRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = ve
                         val userIds = it.queryParam("userIds")[0]
 
                         val employeeList = employeeApplication.batchQueryEmployeeByIds(clientId = clientId,orgCode = orgCode,userIdList = userIds.split(",")).await()
-                        it.end(JsonArray(employeeList.map { JsonObject.mapFrom(it) }).toBuffer())
+                        it.end(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
