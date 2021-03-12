@@ -2,12 +2,12 @@ package org.myddd.vertx.web.router
 
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpMethod
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.validation.BadRequestException
-import io.vertx.ext.web.validation.ValidationHandler
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -20,12 +20,13 @@ import org.myddd.vertx.web.router.handler.IPFilterHandler
 
 abstract class AbstractRouter constructor(protected val vertx: Vertx,protected val router:Router,protected val version:String = "v1") {
 
-    private val bodyHandler = BodyHandler.create()
-
     private val errorI18n: I18N by lazy { InstanceFactory.getInstance(I18N::class.java) }
 
 
     companion object {
+
+        private val logger by lazy {LoggerFactory.getLogger(AbstractRouter::class.java)}
+
         const val ERROR_CODE = "errorCode"
         const val ERROR_MSG = "errorMsg"
         const val OTHER_ERROR = "OTHER_ERROR"
@@ -72,7 +73,8 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
         val route = router.route(httpMethod,path)
 
         if(httpMethod != HttpMethod.DELETE && httpMethod != HttpMethod.GET){
-            route.handler(bodyHandler)
+            logger.debug(System.getProperty("java.io.tmpdir"))
+            route.handler(BodyHandler.create().setUploadsDirectory(System.getProperty("java.io.tmpdir")))
             route.consumes(CONTENT_TYPE_JSON)
         }
         route.produces(CONTENT_TYPE_JSON)

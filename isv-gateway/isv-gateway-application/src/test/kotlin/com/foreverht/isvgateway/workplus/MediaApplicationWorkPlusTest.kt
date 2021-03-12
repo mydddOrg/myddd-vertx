@@ -28,8 +28,11 @@ class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testDownloadFile(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val destFilePath = mediaApplication.downloadFile(clientId = isvClientId, mediaId = mediaId).await()
-                testContext.verify { Assertions.assertNotNull(destFilePath) }
+                val mediaDTO = mediaApplication.downloadFile(clientId = isvClientId, mediaId = mediaId).await()
+                testContext.verify {
+                    Assertions.assertNotNull(mediaDTO)
+                    Assertions.assertEquals(648421,mediaDTO.size)
+                }
 
                 try {
                     mediaApplication.downloadFile(clientId = isvClientId, mediaId = UUID.randomUUID().toString()).await()
@@ -38,7 +41,7 @@ class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
                 }
 
                 try {
-                    mediaApplication.downloadFile(clientId = UUID.randomUUID().toString(), mediaId = mediaId).await()
+                     mediaApplication.downloadFile(clientId = UUID.randomUUID().toString(), mediaId = mediaId).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }

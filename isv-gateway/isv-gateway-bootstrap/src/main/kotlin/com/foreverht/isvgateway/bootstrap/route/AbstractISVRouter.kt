@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.bootstrap.route
 
 import com.foreverht.isvgateway.api.EmployeeApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
+import com.foreverht.isvgateway.api.MediaApplication
 import com.foreverht.isvgateway.api.OrganizationApplication
 import com.foreverht.isvgateway.domain.ISVErrorCode
 import io.vertx.core.Future
@@ -13,6 +14,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.web.router.AbstractRouter
 import java.util.*
+import javax.print.attribute.standard.Media
 
 abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(vertx = vertx,router = router) {
 
@@ -25,6 +27,10 @@ abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(v
 
         private val employeeApplicationMap:Map<String,EmployeeApplication> = mapOf(
             WorkPlusApp to InstanceFactory.getInstance(EmployeeApplication::class.java,WorkPlusApp)
+        )
+
+        private val mediaApplicationMap:Map<String,MediaApplication> = mapOf(
+            WorkPlusApp to InstanceFactory.getInstance(MediaApplication::class.java,WorkPlusApp)
         )
 
         private val oauth2Application:OAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }
@@ -40,6 +46,10 @@ abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(v
 
     suspend fun getEmployeeApplication(accessToken: String):Future<EmployeeApplication>{
         return getApplicationByClientType(applicationMap = employeeApplicationMap,accessToken = accessToken)
+    }
+
+    suspend fun getMediaApplication(accessToken: String):Future<MediaApplication>{
+        return getApplicationByClientType(applicationMap = mediaApplicationMap,accessToken = accessToken)
     }
 
     private suspend fun <T>  getApplicationByClientType(applicationMap:Map<String,T>,accessToken: String):Future<T>{

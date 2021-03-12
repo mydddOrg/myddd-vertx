@@ -1,6 +1,7 @@
 package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.api.MediaApplication
+import com.foreverht.isvgateway.api.dto.MediaDTO
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
@@ -75,7 +76,7 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
         }
     }
 
-    override suspend fun downloadFile(clientId:String,mediaId: String): Future<String> {
+    override suspend fun downloadFile(clientId:String,mediaId: String): Future<MediaDTO> {
 
         var detFile:AsyncFile? = null
         return try {
@@ -87,9 +88,17 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
                 .`as`(BodyCodec.pipe(detFile))
                 .send()
                 .await()
+            logger.debug(response.headers())
             val contentType = response.getHeader("Content-Type")
             if(response.statusCode() == 200 && contentType != "application/json"){
-                Future.succeededFuture(destFilePath)
+                Future.succeededFuture(
+                    MediaDTO(
+                        mediaId = mediaId,
+                        contentType = response.getHeader("Content-Type"),
+                        size =  response.getHeader("Content-Length").toLong(),
+                        contentDisposition = response.getHeader("Content-Disposition"),
+                        destPath = destFilePath
+                    ))
             }else{
                 Future.failedFuture(response.bodyAsString())
             }

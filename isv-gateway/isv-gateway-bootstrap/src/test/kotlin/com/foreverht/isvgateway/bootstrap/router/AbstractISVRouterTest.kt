@@ -105,6 +105,8 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
                 val employeeApplication = testRoute.getEmployeeApplication(accessToken!!).await()
                 testContext.verify { Assertions.assertNotNull(employeeApplication) }
 
+                val mediaApplication = testRoute.getMediaApplication(accessToken!!).await()
+                testContext.verify { Assertions.assertNotNull(mediaApplication) }
             }catch (t:Throwable){
                 testContext.failNow(t)
             }
