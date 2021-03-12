@@ -26,12 +26,13 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
 
         GlobalScope.launch(vertx.dispatcher()) {
             try {
+                initGlobalConfig().await()
+
                 vertx.executeBlocking<Unit> {
                     initIOC()
                     it.complete()
                 }.await()
 
-                initGlobalConfig().await()
                 initHttpServer().await()
 
                 startFuture?.complete()
@@ -54,7 +55,7 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
     }
 
     private suspend fun initGlobalConfig(): Future<Unit> {
-        return GlobalConfig.loadGlobalConfig()
+        return GlobalConfig.loadGlobalConfig(vertx)
     }
 
     abstract fun abstractModules(vertx: Vertx):AbstractModule

@@ -13,7 +13,7 @@ import java.util.*
 
 object GlobalConfig {
 
-    private val vertx by lazy {InstanceFactory.getInstance(Vertx::class.java)}
+    private lateinit var vertx:Vertx
 
     internal var configObject : JsonObject? = null
 
@@ -21,7 +21,8 @@ object GlobalConfig {
         return configObject
     }
 
-    suspend fun loadGlobalConfig():Future<Unit>{
+    suspend fun loadGlobalConfig(vertx: Vertx):Future<Unit>{
+        this.vertx = vertx
         val promise = PromiseImpl<Unit>()
 
         if(Objects.isNull(configObject)){

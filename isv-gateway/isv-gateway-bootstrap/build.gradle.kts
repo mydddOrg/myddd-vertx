@@ -49,16 +49,11 @@ dependencies {
 
 
 
-    implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
-    implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-api"))
-    implementation(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
+    api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
+    api(project(":myddd-vertx-i18n:myddd-vertx-i18n-api"))
+    api(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
+
     implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-api"))
-
-
-    implementation(project(":myddd-vertx-repository:myddd-vertx-repository-hibernate"))
-    implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
-    implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-provider"))
-    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-application"))
 
 
     implementation("io.vertx:vertx-json-schema:${rootProject.extra["vertx_version"]}")

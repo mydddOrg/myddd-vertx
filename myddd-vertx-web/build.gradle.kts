@@ -23,6 +23,7 @@ dependencies {
     //base
     api("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     api("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
+    implementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
 
     //framework
     api("io.vertx:vertx-web:${rootProject.extra["vertx_version"]}")
@@ -37,12 +38,17 @@ dependencies {
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     api(project(":myddd-vertx-i18n:myddd-vertx-i18n-api"))
     api(project(":myddd-vertx-base:myddd-vertx-base-api"))
+    api(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-api"))
+    api("org.eclipse.persistence:javax.persistence:${rootProject.extra["javax_persistence_version"]}")
 
     //api implement
-    implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
+    api(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
     implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-provider"))
     implementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
-    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-api"))
+    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-domain"))
+    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-infra"))
+    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-application"))
+    implementation(project(":myddd-vertx-repository:myddd-vertx-repository-hibernate"))
 
 
     //test
