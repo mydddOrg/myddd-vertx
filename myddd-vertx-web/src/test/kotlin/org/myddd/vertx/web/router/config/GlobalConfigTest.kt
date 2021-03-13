@@ -21,6 +21,7 @@ class GlobalConfigTest {
 
     companion object {
 
+
         @BeforeAll
         @JvmStatic
         fun beforeAll(vertx:Vertx,testContext: VertxTestContext){
@@ -56,11 +57,8 @@ class GlobalConfigTest {
                 System.setProperty("config","META-INF/config.properties")
 
                 GlobalConfig.loadGlobalConfig(vertx).await()
-                testContext.verify {
-                    Assertions.assertNotNull(GlobalConfig.getConfig())
-                }
 
-                val enableWhiteIPFilter = GlobalConfig.getConfig()?.getBoolean("ipFilter.whitelist.enable")
+                val enableWhiteIPFilter = GlobalConfig.getBoolean("ipFilter.whitelist.enable")
 
                 testContext.verify {
                     Assertions.assertEquals(false,enableWhiteIPFilter)

@@ -62,14 +62,14 @@ abstract class AbstractWebModule(private val vertx: Vertx) : AbstractModule() {
 
     private fun persistenceProps():Map<String,Any>{
         return mapOf(
-            JDBC_URL to GlobalConfig.getConfig()!!.getString(JDBC_URL),
-            JDBC_USER to GlobalConfig.getConfig()!!.getString(JDBC_USER),
-            JDBC_PASSWORD to GlobalConfig.getConfig()!!.getString(JDBC_PASSWORD),
-            POOL_SIZE to GlobalConfig.getConfig()!!.getInteger(POOL_SIZE),
-            DATABASE_ACTION to GlobalConfig.getConfig()!!.getString(DATABASE_ACTION),
-            IS_SHOW_SQL to GlobalConfig.getConfig()!!.getBoolean(IS_SHOW_SQL,false),
-            IS_FORMAT_SQL to GlobalConfig.getConfig()!!.getBoolean(IS_FORMAT_SQL,false),
-            IS_HIGHLIGHT_SQL to GlobalConfig.getConfig()!!.getBoolean(IS_HIGHLIGHT_SQL,false)
+            JDBC_URL to GlobalConfig.getString(JDBC_URL),
+            JDBC_USER to GlobalConfig.getString(JDBC_USER),
+            JDBC_PASSWORD to GlobalConfig.getString(JDBC_PASSWORD),
+            POOL_SIZE to GlobalConfig.getInteger(POOL_SIZE),
+            DATABASE_ACTION to GlobalConfig.getString(DATABASE_ACTION),
+            IS_SHOW_SQL to GlobalConfig.getBoolean(IS_SHOW_SQL,false),
+            IS_FORMAT_SQL to GlobalConfig.getBoolean(IS_FORMAT_SQL,false),
+            IS_HIGHLIGHT_SQL to GlobalConfig.getBoolean(IS_HIGHLIGHT_SQL,false)
         )
     }
 }

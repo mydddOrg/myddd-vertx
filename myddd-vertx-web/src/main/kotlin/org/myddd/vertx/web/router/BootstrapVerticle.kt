@@ -47,7 +47,7 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
         val router = Router.router(vertx)
         NotExistsRouter(vertx,router)
         routers(vertx,router)()
-        val configPort = GlobalConfig.getConfig()!!.getInteger("port",port)
+        val configPort = GlobalConfig.getInteger("port",port)
         return server.requestHandler(router).listen(configPort)
     }
 

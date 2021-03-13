@@ -41,10 +41,10 @@ class IPFilterHandler : Handler<RoutingContext> {
         private var blackList:List<String>? = emptyList()
 
         fun reloadCache(){
-            enableWhiteList = GlobalConfig.getConfig()?.getBoolean(WHITE_LIST_ENABLE) == true
-            enableBlackList = GlobalConfig.getConfig()?.getBoolean(BLACK_LIST_ENABLE) == true
-            whiteList = GlobalConfig.getConfig()?.getString(WHITE_LIST_VALUES)?.split(",")
-            blackList = GlobalConfig.getConfig()?.getString(BLACK_LIST_VALUES)?.split(",")
+            enableWhiteList = GlobalConfig.getBoolean(WHITE_LIST_ENABLE) == true
+            enableBlackList = GlobalConfig.getBoolean(BLACK_LIST_ENABLE) == true
+            whiteList = GlobalConfig.getString(WHITE_LIST_VALUES).split(",")
+            blackList = GlobalConfig.getString(BLACK_LIST_VALUES).split(",")
         }
 
     }

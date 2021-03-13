@@ -17,9 +17,18 @@ object GlobalConfig {
 
     internal var configObject : JsonObject? = null
 
-    fun getConfig():JsonObject? {
-        return configObject
+    fun getString(key:String,def:String? = ""):String {
+        return configObject!!.getString(key,def)
     }
+
+    fun getBoolean(key:String,def:Boolean? = false):Boolean {
+        return configObject!!.getBoolean(key,def)
+    }
+
+    fun getInteger(key:String,def:Int? = 0):Int {
+        return configObject!!.getInteger(key,def)
+    }
+
 
     suspend fun loadGlobalConfig(vertx: Vertx):Future<Unit>{
         this.vertx = vertx
