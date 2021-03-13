@@ -47,17 +47,29 @@ abstract class AbstractWebModule(private val vertx: Vertx) : AbstractModule() {
         bind(I18N::class.java).to(I18NVertxProvider::class.java)
     }
 
+    companion object {
+        private const val JDBC_URL = "javax.persistence.jdbc.url"
+        private const val JDBC_USER = "javax.persistence.jdbc.user"
+        private const val JDBC_PASSWORD = "javax.persistence.jdbc.password"
+        private const val POOL_SIZE = "hibernate.connection.pool_size"
+        private const val DATABASE_ACTION = "javax.persistence.schema-generation.database.action"
+        private const val IS_SHOW_SQL = "hibernate.show_sql"
+        private const val IS_FORMAT_SQL = "hibernate.format_sql"
+        private const val IS_HIGHLIGHT_SQL = "hibernate.highlight_sql"
+
+
+    }
 
     private fun persistenceProps():Map<String,Any>{
         return mapOf(
-            "javax.persistence.jdbc.url" to GlobalConfig.getConfig()!!.getString("javax.persistence.jdbc.url"),
-            "javax.persistence.jdbc.user" to GlobalConfig.getConfig()!!.getString("javax.persistence.jdbc.user"),
-            "javax.persistence.jdbc.password" to GlobalConfig.getConfig()!!.getString("javax.persistence.jdbc.password"),
-            "hibernate.connection.pool_size" to GlobalConfig.getConfig()!!.getInteger("hibernate.connection.pool_size"),
-            "javax.persistence.schema-generation.database.action" to GlobalConfig.getConfig()!!.getString("javax.persistence.schema-generation.database.action"),
-            "hibernate.show_sql" to GlobalConfig.getConfig()!!.getBoolean("hibernate.show_sql",false),
-            "hibernate.format_sql" to GlobalConfig.getConfig()!!.getBoolean("hibernate.format_sql",false),
-            "hibernate.highlight_sql" to GlobalConfig.getConfig()!!.getBoolean("hibernate.highlight_sql",false)
+            JDBC_URL to GlobalConfig.getConfig()!!.getString(JDBC_URL),
+            JDBC_USER to GlobalConfig.getConfig()!!.getString(JDBC_USER),
+            JDBC_PASSWORD to GlobalConfig.getConfig()!!.getString(JDBC_PASSWORD),
+            POOL_SIZE to GlobalConfig.getConfig()!!.getInteger(POOL_SIZE),
+            DATABASE_ACTION to GlobalConfig.getConfig()!!.getString(DATABASE_ACTION),
+            IS_SHOW_SQL to GlobalConfig.getConfig()!!.getBoolean(IS_SHOW_SQL,false),
+            IS_FORMAT_SQL to GlobalConfig.getConfig()!!.getBoolean(IS_FORMAT_SQL,false),
+            IS_HIGHLIGHT_SQL to GlobalConfig.getConfig()!!.getBoolean(IS_HIGHLIGHT_SQL,false)
         )
     }
 }

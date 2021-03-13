@@ -42,9 +42,11 @@ object GlobalConfig {
         val promise = PromiseImpl<JsonObject>()
 
         try {
-
-
-            val path = "META-INF/config.properties"
+            //从外部读取变量
+            var path = System.getProperty("config")
+            if(path.isNullOrEmpty()){
+                path = "META-INF/config.properties"
+            }
 
             val configFileStore = ConfigStoreOptions()
                 .setType("file")

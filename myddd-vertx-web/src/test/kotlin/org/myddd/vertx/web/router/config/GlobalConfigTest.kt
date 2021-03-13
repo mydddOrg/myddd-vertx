@@ -32,10 +32,30 @@ class GlobalConfigTest {
     }
 
     @Test
+    fun testLoadConfigFromEnvPath(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+
+                System.setProperty("config","/a.config")
+                try {
+                    GlobalConfig.loadGlobalConfig(vertx).await()
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testGlobalConfig(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                GlobalConfig.loadGlobalConfig().await()
+                System.setProperty("config","META-INF/config.properties")
+
+                GlobalConfig.loadGlobalConfig(vertx).await()
                 testContext.verify {
                     Assertions.assertNotNull(GlobalConfig.getConfig())
                 }
