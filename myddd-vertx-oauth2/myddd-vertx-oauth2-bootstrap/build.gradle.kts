@@ -50,6 +50,7 @@ dependencies {
     implementation("io.vertx:vertx-web:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-config:${rootProject.extra["vertx_version"]}")
 
+
     implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
 
