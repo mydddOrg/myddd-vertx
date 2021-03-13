@@ -7,9 +7,7 @@ import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.Router
 import org.myddd.vertx.web.router.BootstrapVerticle
 
-class ISVBootstrapVerticle (private val port:Int = 8080) : BootstrapVerticle(port = port){
-
-    private val logger by lazy { LoggerFactory.getLogger(ISVBootstrapVerticle::class.java) }
+class ISVBootstrapVerticle (port:Int = 8080) : BootstrapVerticle(port = port){
 
     override fun abstractModules(vertx: Vertx): AbstractModule {
         return ISVClientGuice(vertx)

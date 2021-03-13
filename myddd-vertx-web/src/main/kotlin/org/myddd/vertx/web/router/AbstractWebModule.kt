@@ -56,8 +56,6 @@ abstract class AbstractWebModule(private val vertx: Vertx) : AbstractModule() {
         private const val IS_SHOW_SQL = "hibernate.show_sql"
         private const val IS_FORMAT_SQL = "hibernate.format_sql"
         private const val IS_HIGHLIGHT_SQL = "hibernate.highlight_sql"
-
-
     }
 
     private fun persistenceProps():Map<String,Any>{

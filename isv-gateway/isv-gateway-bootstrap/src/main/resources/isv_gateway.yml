@@ -3,8 +3,8 @@ info:
   title: ISV 网关API
   version: "1.0"
 servers:
-  - url: http://127.0.0.1:8080/v1
-    description: 本地服务器
+  - url: http://isvgateway.workplus.io:8080/v1
+    description: 测试服务器
 paths:
   # ==== clients ======
   # 申请token
