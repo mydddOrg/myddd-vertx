@@ -10,6 +10,7 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.myddd.vertx.web.router.ext.singleQueryParam
 import org.myddd.vertx.web.router.handler.AccessTokenAuthorizationHandler
 
 class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = vertx,router = router) {
@@ -36,9 +37,9 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
                         val accessToken = it.get<String>("accessToken")
                         val orgCode = it.pathParam("orgCode")
 
-                        val orgId = if(it.queryParam("orgId").isNotEmpty()) it.queryParam("orgId")[0] else null
-                        val limit = if(it.queryParam("limit").isNotEmpty()) it.queryParam("limit")[0].toInt() else 50
-                        val skip = if(it.queryParam("skip").isNotEmpty()) it.queryParam("skip")[0].toInt() else 0
+                        val orgId = it.singleQueryParam("orgId")
+                        val limit = it.singleQueryParam("limit","50")!!.toInt()
+                        val skip = it.singleQueryParam("skip","0")!!.toInt()
 
                         val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
 
@@ -71,9 +72,9 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
                         val accessToken = it.get<String>("accessToken")
                         val orgCode = it.pathParam("orgCode")
 
-                        val orgId = if(it.queryParam("orgId").isNotEmpty()) it.queryParam("orgId")[0] else null
-                        val limit = if(it.queryParam("limit").isNotEmpty()) it.queryParam("limit")[0].toInt() else 50
-                        val skip = if(it.queryParam("skip").isNotEmpty()) it.queryParam("skip")[0].toInt() else 0
+                        val orgId = it.singleQueryParam("orgId")
+                        val limit = it.singleQueryParam("limit","50")!!.toInt()
+                        val skip = it.singleQueryParam("skip","0")!!.toInt()
 
                         val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
 
