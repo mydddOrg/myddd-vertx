@@ -183,9 +183,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                 GlobalScope.launch(vertx.dispatcher()) {
                     try{
                         val clientId = it.pathParam("clientId")
-                        val body = it.bodyAsJson
                         val resetSecret = oAuth2ClientApplication.resetClientSecret(clientId).await()
-
                         it.end(JsonObject().put("clientSecret",resetSecret).toBuffer())
 
                     }catch (e:Exception){
