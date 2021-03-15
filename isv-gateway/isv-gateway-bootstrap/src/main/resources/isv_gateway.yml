@@ -518,84 +518,28 @@ paths:
             schema:
               type: object
               properties:
-                msgType:
-                  type: string
-                  description: 消息类型
-                  enum:
-                    - text
-                    - image
-                    - file
-                    - voice
-                    - textcard
-                    - template
-                    - markdown
                 forAll:
                   type: boolean
                   description: 是否推送所有人员(关注此app范围内)
                   default: false
-                toUsers:
-                  type: string
-                  default: 推送的用户标识ID,以 | 间隔
-                text:
-                  type: object
-                  description: 推送文本的消息内容
-                  properties:
-                    content:
-                      type: string
-                      default: 推送的文本消息内容'
-                image:
-                  type: object
-                  description: 推送的消息为图片时的body内容
-                  properties:
-                    mediaId:
-                      type: string
-                      description: 图片mediaId
-                    isGif:
-                      type: boolean
-                      default: false
-                      description: 是否GIT，默认false
-                    height:
-                      type: number
-                      description: 图片高度
-                    width:
-                      type: number
-                      description: 图片宽度
-                voice:
-                  type: object
-                  properties:
-                    mediaId:
-                      type: string
-                      description: 语音的媒体ID
-                file:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                      description: 文件名
-                    mediaId:
-                      type: string
-                      description: 文件媒体ID
-                textcard:
-                  type: object
-                  properties:
-                    title:
-                      type: string
-                      description: 卡片标题
-                    description:
-                      type: string
-                      description: 卡片内容
-                    url:
-                      type: string
-                      description: 跳转URL
-                    btntxt:
-                      type: string
-                      description: 按钮标题
-                markdown:
-                  type: object
-                  properties:
-                    content:
-                      type: string
-                      description: markdown内容
+                toUserList:
+                  type: array
+                  default: 推送的用户标识集合
+                  items:
+                    type: string
+                toOrgList:
+                  type: array
+                  default: 推送的组织ID集合
+                  items:
+                    type: string
+                extra:
+                  anyof:
+                    - $ref: "#/components/schemas/textMessageBody"
+                    - $ref: "#/components/schemas/imageMessageBody"
+                    - $ref: "#/components/schemas/voiceMessageBody"
+                    - $ref: "#/components/schemas/fileMessageBody"
+                    - $ref: "#/components/schemas/textcardMessageBody"
+
       responses:
         200:
           content:
@@ -726,6 +670,100 @@ paths:
 
 components:
   schemas:
+    textMessageBody:
+      type: object
+      description: 文本消息BODY
+      properties:
+        msgType:
+          type: string
+          enum:
+            - TEXT
+          description: TEXT表示推送文本
+        content:
+          type: string
+          default: 推送的文本消息内容'
+
+    imageMessageBody:
+      type: object
+      description: 图片消息BODY
+      properties:
+        msgType:
+          type: string
+          enum:
+            - IMAGE
+          description: IMAGE表示推送图片
+          mediaId:
+            type: string
+            description: 图片mediaId
+          isGif:
+            type: boolean
+            default: false
+            description: 是否GIT，默认false
+          height:
+            type: number
+            description: 图片高度
+          width:
+            type: number
+            description: 图片宽度
+
+
+    voiceMessageBody:
+      type: object
+      description: 语音消息BODY
+      properties:
+        msgType:
+          type: string
+          enum:
+            - VOICE
+          description: VOICE表示推送文本
+          mediaId:
+            type: string
+            description: 语音的媒体ID
+          duration:
+            type: int
+            description: 语音长度
+
+    fileMessageBody:
+        type: object
+        description: 文件消息BODY
+        properties:
+          msgType:
+            type: string
+            enum:
+              - FILE
+            description: FILE表示推送文件
+            name:
+              type: string
+              description: 文件名
+            mediaId:
+              type: string
+              description: 文件媒体ID
+            size:
+              type: int
+              description: 文件大小
+    textcardMessageBody:
+      type: object
+      description: 消息卡片消息BODY（微信专用）
+      properties:
+        msgType:
+          type: string
+          enum:
+            - TEXTCARD
+          description: TEXTCARD表示推送文本卡片
+        title:
+          type: string
+          description: 卡片标题
+        content:
+          type: string
+          description: 卡片内容
+        url:
+          type: string
+          description: 跳转URL
+        btntxt:
+          type: string
+          description: 按钮标题
+
+
     extraForWorkWeiXin:
       type: object
       description: 填写必要的属性，当clientId类型为Work_WeiXin时必填
