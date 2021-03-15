@@ -19,6 +19,7 @@ class ISVBootstrapVerticle (port:Int = 8080) : BootstrapVerticle(port = port){
             OrganizationRouter(vertx,router)
             EmployeesRouter(vertx,router)
             MediaRouter(vertx,router)
+            AppRouter(vertx,router)
             StaticResourceRouter(vertx,router)
         }
     }

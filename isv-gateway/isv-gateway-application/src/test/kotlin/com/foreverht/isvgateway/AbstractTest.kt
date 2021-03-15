@@ -2,10 +2,7 @@ package com.foreverht.isvgateway
 
 import com.foreverht.isvgateway.api.*
 import com.foreverht.isvgateway.application.ISVClientApplicationImpl
-import com.foreverht.isvgateway.application.workplus.AccessTokenApplicationWorkPlus
-import com.foreverht.isvgateway.application.workplus.EmployeeApplicationWorkPlus
-import com.foreverht.isvgateway.application.workplus.MediaApplicationWorkPlus
-import com.foreverht.isvgateway.application.workplus.OrganizationApplicationWorkPlus
+import com.foreverht.isvgateway.application.workplus.*
 import com.foreverht.isvgateway.domain.ISVClientRepository
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
 import com.google.inject.AbstractModule
@@ -64,6 +61,8 @@ abstract class AbstractTest {
                     bind(OrganizationApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to((OrganizationApplicationWorkPlus::class.java))
                     bind(EmployeeApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(EmployeeApplicationWorkPlus::class.java)
                     bind(MediaApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(MediaApplicationWorkPlus::class.java)
+                    bind(AppApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(AppApplicationWorkPlus::class.java)
+
                 }
             })))
 

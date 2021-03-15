@@ -78,8 +78,6 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
 
         const val orgId = "aHexITjYkEurKyyxpKMgFh"
 
-        lateinit var isvClientId:String
-
         private fun realISVClient() : ISVClientDTO {
             val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
                 clientId = clientId,
@@ -107,6 +105,9 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
 
                 val mediaApplication = testRoute.getMediaApplication(accessToken!!).await()
                 testContext.verify { Assertions.assertNotNull(mediaApplication) }
+
+                val appApplication = testRoute.getAppApplication(accessToken!!).await()
+                testContext.verify { Assertions.assertNotNull(appApplication) }
             }catch (t:Throwable){
                 testContext.failNow(t)
             }

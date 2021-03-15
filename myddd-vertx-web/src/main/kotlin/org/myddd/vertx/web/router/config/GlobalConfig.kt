@@ -18,7 +18,6 @@ object GlobalConfig {
     internal var configObject : JsonObject? = null
 
     fun getString(key:String,def:String = ""):String {
-        println("obj:$configObject")
         return configObject!!.getString(key,def)
     }
 
