@@ -101,6 +101,7 @@ class AbstractRouterTest {
             try {
                 val response = webClient.get(port,host,"/${UUID.randomUUID()}")
                     .send().await()
+                logger.debug(response.getHeader("Content-Type"))
                 testContext.verify { Assertions.assertEquals(404,response.statusCode()) }
                 testContext.completeNow()
             }catch (e:Exception){

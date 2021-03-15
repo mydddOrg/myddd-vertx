@@ -14,11 +14,10 @@ class NotExistsRouter(vertx: Vertx,router:Router) : AbstractRouter(vertx = vertx
     private fun createNotExistsRouter(){
         router.route().order(Int.MAX_VALUE).respond { ctx ->
             val response = ctx.response()
-            response.putHeader("content-type","application/json")
             response.statusCode = 404
             Future.succeededFuture(
                 JsonObject()
                 .put("errorCode", "API_NOT_FOUND"))
-        }
+        }.produces("application/json")
     }
 }

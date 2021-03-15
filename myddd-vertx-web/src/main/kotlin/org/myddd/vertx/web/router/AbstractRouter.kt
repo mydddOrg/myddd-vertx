@@ -129,6 +129,7 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
                     }
                 }
 
+                it.response().putHeader("Content-Type",CONTENT_TYPE_JSON)
                 it.response().setStatusCode(statusCode).end(responseJson.toBuffer())
 
             }
