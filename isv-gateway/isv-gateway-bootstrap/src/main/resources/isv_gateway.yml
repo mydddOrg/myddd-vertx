@@ -104,6 +104,7 @@ paths:
                     - $ref: "#/components/schemas/extraForWorkPlusISV"
                     - $ref: "#/components/schemas/extraForWorkPlus"
                   description: extra是全量更新，不能只填写其中一个属性这种方式
+
       responses:
         200:
           content:
@@ -532,13 +533,16 @@ paths:
                   default: 推送的组织ID集合
                   items:
                     type: string
-                extra:
-                  anyof:
+                body:
+                  oneOf:
                     - $ref: "#/components/schemas/textMessageBody"
                     - $ref: "#/components/schemas/imageMessageBody"
                     - $ref: "#/components/schemas/voiceMessageBody"
                     - $ref: "#/components/schemas/fileMessageBody"
                     - $ref: "#/components/schemas/textcardMessageBody"
+              required:
+                - body
+
 
       responses:
         200:
@@ -692,19 +696,19 @@ components:
           enum:
             - IMAGE
           description: IMAGE表示推送图片
-          mediaId:
-            type: string
-            description: 图片mediaId
-          isGif:
-            type: boolean
-            default: false
-            description: 是否GIT，默认false
-          height:
-            type: number
-            description: 图片高度
-          width:
-            type: number
-            description: 图片宽度
+        mediaId:
+          type: string
+          description: 图片mediaId
+        isGif:
+          type: boolean
+          default: false
+          description: 是否GIT，默认false
+        height:
+          type: number
+          description: 图片高度
+        width:
+          type: number
+          description: 图片宽度
 
 
     voiceMessageBody:
@@ -716,12 +720,12 @@ components:
           enum:
             - VOICE
           description: VOICE表示推送文本
-          mediaId:
-            type: string
-            description: 语音的媒体ID
-          duration:
-            type: int
-            description: 语音长度
+        mediaId:
+          type: string
+          description: 语音的媒体ID
+        duration:
+          type: int
+          description: 语音长度
 
     fileMessageBody:
         type: object
@@ -732,15 +736,15 @@ components:
             enum:
               - FILE
             description: FILE表示推送文件
-            name:
-              type: string
-              description: 文件名
-            mediaId:
-              type: string
-              description: 文件媒体ID
-            size:
-              type: int
-              description: 文件大小
+          name:
+            type: string
+            description: 文件名
+          mediaId:
+            type: string
+            description: 文件媒体ID
+          size:
+            type: int
+            description: 文件大小
     textcardMessageBody:
       type: object
       description: 消息卡片消息BODY（微信专用）

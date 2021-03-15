@@ -183,7 +183,7 @@ class MessageValidationHandlerTest {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
 
-                val textMessageValidation = messageValidationHandler.testMessageBody.build(messageValidationHandler.schemaParser)
+                val textMessageValidation = messageValidationHandler.textMessageBody.build(messageValidationHandler.schemaParser)
                 val textJson = json {
                     obj(
                         "msgType" to "TEXT",
