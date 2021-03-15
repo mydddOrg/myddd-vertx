@@ -616,7 +616,7 @@ paths:
 
   # ===== 应用 =======
   # 获取应用管理员
-  /get_admin_list:
+  /app/admins:
     get:
       tags:
         - "应用"
@@ -635,7 +635,7 @@ paths:
 
    #获取一个应用明细
   # 获取应用详情
-  /apps/{appId}:
+  /app/detail:
     get:
       tags:
         - "应用"
@@ -660,6 +660,9 @@ paths:
                   name:
                     type: string
                     description: app名称
+                  icon:
+                    type: string
+                    description: 应用的图标ID
 
         400:
           $ref: "#/components/responses/errorResponse"
