@@ -62,6 +62,7 @@ abstract class AbstractTest {
                     bind(EmployeeApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(EmployeeApplicationWorkPlus::class.java)
                     bind(MediaApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(MediaApplicationWorkPlus::class.java)
                     bind(AppApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(AppApplicationWorkPlus::class.java)
+                    bind(MessageApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(MessageApplicationWorkPlus::class.java)
 
                 }
             })))

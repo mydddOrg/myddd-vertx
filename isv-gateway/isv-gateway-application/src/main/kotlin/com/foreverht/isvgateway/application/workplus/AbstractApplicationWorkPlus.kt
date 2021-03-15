@@ -13,10 +13,13 @@ import java.util.*
 
 abstract class AbstractApplicationWorkPlus {
 
-    private val accessTokenApplication: AccessTokenApplication by lazy { InstanceFactory.getInstance(
-        AccessTokenApplication::class.java,"WorkPlusApp") }
+    private val accessTokenApplication: AccessTokenApplication by lazy {
+        InstanceFactory.getInstance(AccessTokenApplication::class.java,"WorkPlusApp")
+    }
+
     private val isvClientApplication: ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
-    private val logger: Logger by lazy { LoggerFactory.getLogger(AbstractApplicationWorkPlus::class.java) }
+
+    val logger: Logger by lazy { LoggerFactory.getLogger(AbstractApplicationWorkPlus::class.java) }
 
     suspend fun getRemoteAccessToken(clientId: String): Pair<ISVClientExtraForWorkPlusDTO, String?> {
         val isvClient = isvClientApplication.queryClientByClientId(clientId).await()

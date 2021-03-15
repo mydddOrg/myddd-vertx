@@ -14,7 +14,6 @@ class AppApplicationWorkPlus :AbstractApplicationWorkPlus(),AppApplication {
 
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
-    private val logger by lazy {LoggerFactory.getLogger(AppApplicationWorkPlus::class.java)}
 
     override suspend fun getAdminList(clientId:String): Future<List<EmployeeDTO>> {
         return try {

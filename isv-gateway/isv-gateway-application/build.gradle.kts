@@ -39,6 +39,7 @@ dependencies {
     //依赖注入实现（仅测试下）
     testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
 
+    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:${rootProject.extra["jackson_version"]}")
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation(project(":isv-gateway:isv-gateway-infra"))
 }

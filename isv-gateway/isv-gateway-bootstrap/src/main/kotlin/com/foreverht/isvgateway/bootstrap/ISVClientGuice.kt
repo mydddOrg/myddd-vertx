@@ -25,6 +25,7 @@ class ISVClientGuice(vertx: Vertx) : AbstractWebModule(vertx = vertx) {
         bind(EmployeeApplication::class.java).annotatedWith(Names.named(ANNOTATED_WORKPLUS_APP)).to(EmployeeApplicationWorkPlus::class.java)
         bind(MediaApplication::class.java).annotatedWith(Names.named(ANNOTATED_WORKPLUS_APP)).to(MediaApplicationWorkPlus::class.java)
         bind(AppApplication::class.java).annotatedWith(Names.named(ANNOTATED_WORKPLUS_APP)).to(AppApplicationWorkPlus::class.java)
+        bind(MessageApplication::class.java).annotatedWith(Names.named(ANNOTATED_WORKPLUS_APP)).to(MessageApplicationWorkPlus::class.java)
 
     }
 

@@ -26,5 +26,6 @@ dependencies {
     api(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-api"))
     implementation("com.fasterxml.jackson.core:jackson-annotations:${rootProject.extra["jackson_version"]}")
 
+    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:${rootProject.extra["jackson_version"]}")
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
 }

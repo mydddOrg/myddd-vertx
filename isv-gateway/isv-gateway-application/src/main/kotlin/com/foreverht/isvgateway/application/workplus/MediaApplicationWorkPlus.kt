@@ -22,9 +22,6 @@ import java.util.*
 class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
 
     private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
-
-    private val logger:Logger by lazy {LoggerFactory.getLogger(MediaApplicationWorkPlus::class.java)}
-
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
     override suspend fun uploadFile(clientId:String,path: String): Future<String> {
         return try {

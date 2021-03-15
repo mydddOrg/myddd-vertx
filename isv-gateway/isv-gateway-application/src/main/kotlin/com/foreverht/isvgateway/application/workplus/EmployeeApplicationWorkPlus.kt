@@ -14,8 +14,6 @@ class EmployeeApplicationWorkPlus :AbstractApplicationWorkPlus(),EmployeeApplica
 
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
-    private val logger:Logger by lazy { LoggerFactory.getLogger(EmployeeApplicationWorkPlus::class.java) }
-
     companion object {
         private const val API_BATCH_QUERY_EMPLOYEE = "%s/admin/organizations/%s/employees?access_token=%s&matching=true&query=%s"
         private const val API_QUERY_EMPLOYEE = "%s/admin/organizations/%s/employees?access_token=%s&type=username&query=%s"

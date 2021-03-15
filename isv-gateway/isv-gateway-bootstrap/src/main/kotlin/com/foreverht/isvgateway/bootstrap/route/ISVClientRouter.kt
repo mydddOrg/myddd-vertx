@@ -185,7 +185,6 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                         val clientId = it.pathParam("clientId")
                         val resetSecret = oAuth2ClientApplication.resetClientSecret(clientId).await()
                         it.end(JsonObject().put("clientSecret",resetSecret).toBuffer())
-
                     }catch (e:Exception){
                         it.fail(HTTP_400_RESPONSE,e)
                     }

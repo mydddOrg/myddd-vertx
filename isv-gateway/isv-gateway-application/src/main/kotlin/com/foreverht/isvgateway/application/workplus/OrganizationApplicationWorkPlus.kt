@@ -15,8 +15,6 @@ class OrganizationApplicationWorkPlus :AbstractApplicationWorkPlus(),Organizatio
 
     private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
-    private val logger:Logger by lazy { LoggerFactory.getLogger(OrganizationApplicationWorkPlus::class.java) }
-
     override suspend fun queryOrganizationById(
         clientId:String,
         orgCode: String,

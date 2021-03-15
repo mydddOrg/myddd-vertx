@@ -7,6 +7,7 @@ import com.foreverht.isvgateway.bootstrap.AbstractRouteTest
 import com.foreverht.isvgateway.bootstrap.route.AbstractISVRouter
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
@@ -24,6 +25,8 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
     val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
     companion object {
+
+        val logger = LoggerFactory.getLogger(AbstractISVRouterTest::class.java)
 
         private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java)}
         private val isvClientApplication:ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
@@ -108,6 +111,9 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
 
                 val appApplication = testRoute.getAppApplication(accessToken!!).await()
                 testContext.verify { Assertions.assertNotNull(appApplication) }
+
+                val messageApplication = testRoute.getMessageApplication(accessToken!!).await()
+                testContext.verify { Assertions.assertNotNull(messageApplication) }
             }catch (t:Throwable){
                 testContext.failNow(t)
             }

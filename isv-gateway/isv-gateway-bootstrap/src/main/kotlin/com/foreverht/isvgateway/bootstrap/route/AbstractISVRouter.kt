@@ -34,6 +34,10 @@ abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(v
             WorkPlusApp to InstanceFactory.getInstance(AppApplication::class.java,WorkPlusApp)
         )
 
+        private val messageApplicationMap:Map<String,MessageApplication> = mapOf(
+            WorkPlusApp to InstanceFactory.getInstance(MessageApplication::class.java,WorkPlusApp)
+        )
+
         private val oauth2Application:OAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }
 
         private val isvClientApplication:ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
@@ -42,6 +46,9 @@ abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(v
     }
 
 
+    suspend fun getMessageApplication(accessToken: String):Future<MessageApplication>{
+        return getApplicationByClientType(applicationMap = messageApplicationMap,accessToken = accessToken)
+    }
 
     suspend fun getOrganizationApplication(accessToken:String):Future<OrganizationApplication>{
         return getApplicationByClientType(applicationMap = organizationApplicationMap,accessToken = accessToken)

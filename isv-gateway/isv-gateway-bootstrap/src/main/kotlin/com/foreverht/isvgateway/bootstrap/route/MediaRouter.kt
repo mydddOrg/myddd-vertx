@@ -6,7 +6,6 @@ import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.Router
-import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
