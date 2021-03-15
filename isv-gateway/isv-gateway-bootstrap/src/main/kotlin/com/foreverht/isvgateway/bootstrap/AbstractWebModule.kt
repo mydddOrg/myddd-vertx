@@ -1,4 +1,4 @@
-package org.myddd.vertx.web.router
+package com.foreverht.isvgateway.bootstrap
 
 import com.google.inject.AbstractModule
 import io.vertx.core.Vertx

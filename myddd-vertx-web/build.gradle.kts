@@ -45,10 +45,7 @@ dependencies {
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
     implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-provider"))
     implementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
-    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-domain"))
-    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-infra"))
     implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-application"))
-    implementation(project(":myddd-vertx-repository:myddd-vertx-repository-hibernate"))
 
 
     //test

@@ -54,7 +54,10 @@ dependencies {
     api(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
 
     implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-api"))
-
+    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-infra"))
+    implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-application"))
+    implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-provider"))
+    implementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
 
     implementation("io.vertx:vertx-json-schema:${rootProject.extra["vertx_version"]}")
     implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
