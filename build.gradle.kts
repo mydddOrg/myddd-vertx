@@ -12,7 +12,7 @@ plugins {
 }
 
 extra["version"] = "1.0.0-SNAPSHOT"
-extra["vertx_version"] = "4.0.2"
+extra["vertx_version"] = "4.0.3"
 
 extra["log4j_version"] = "2.14.0"
 extra["jackson_version"] = "2.12.1"
@@ -43,12 +43,6 @@ sonarqube {
 
 allprojects {
     repositories {
-        maven {
-            setUrl("https://maven.aliyun.com/repository/public/")
-        }
-        maven {
-            setUrl("https://maven.aliyun.com/repository/spring/")
-        }
         mavenCentral()
     }
 
@@ -58,12 +52,6 @@ allprojects {
 }
 
 repositories {
-    maven {
-        setUrl("https://maven.aliyun.com/repository/public/")
-    }
-    maven {
-        setUrl("https://maven.aliyun.com/repository/spring/")
-    }
     mavenCentral()
 }
 
