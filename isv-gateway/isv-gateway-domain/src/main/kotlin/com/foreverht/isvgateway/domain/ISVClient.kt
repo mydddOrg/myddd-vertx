@@ -13,7 +13,8 @@ import javax.persistence.*
 @Entity
 @Table(name = "isv_client",
     indexes = [
-        Index(name = "index_client_id",columnList = "client_id")
+        Index(name = "index_client_id",columnList = "client_id"),
+        Index(name = "index_primary_id",columnList = "primary_id")
     ],
     uniqueConstraints = [UniqueConstraint(columnNames = ["client_id"])])
 class ISVClient : BaseEntity() {
@@ -23,6 +24,9 @@ class ISVClient : BaseEntity() {
 
     @Column(name = "client_type",nullable = false,length = 20)
     lateinit var clientType:ISVClientType
+
+    @Column(name = "primary_id",nullable = false,length = 64)
+    lateinit var primaryId:String
 
     @OneToOne(fetch = FetchType.EAGER,cascade = [CascadeType.ALL])
     @JoinColumn(name = "relate_id", referencedColumnName = "id",nullable = false)
@@ -67,6 +71,7 @@ class ISVClient : BaseEntity() {
             client.description = description
 
             client.clientType = extra.clientType
+            client.primaryId = extra.primaryId()
 
             return client
         }
@@ -78,7 +83,7 @@ class ISVClient : BaseEntity() {
     }
 
     suspend fun createISVClient():Future<ISVClient>{
-        return repository.createISVClient(this)
+        return repository.save(this)
     }
 
     suspend fun updateISVClient():Future<ISVClient>{
@@ -88,8 +93,8 @@ class ISVClient : BaseEntity() {
             val client = queryClient(this.clientId).await()
             requireNotNull(client)
 
-            if(!this.clientName.isNullOrEmpty())client.clientName = this.clientName
-            if(!this.callback.isNullOrEmpty())client.callback = this.callback
+            if(this.clientName.isNotEmpty())client.clientName = this.clientName
+            if(this.callback.isNotEmpty())client.callback = this.callback
             if(!this.description.isNullOrEmpty())client.description = this.description
             if(Objects.nonNull(this.extra))client.extra = extra
 

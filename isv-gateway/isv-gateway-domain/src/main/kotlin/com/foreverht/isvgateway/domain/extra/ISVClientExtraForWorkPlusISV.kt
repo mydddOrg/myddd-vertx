@@ -19,4 +19,8 @@ class ISVClientExtraForWorkPlusISV : ISVClientExtra() {
 
     lateinit var isvApi:String
 
+    override fun primaryId(): String {
+        return suiteKey
+    }
+
 }

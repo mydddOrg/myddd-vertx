@@ -19,4 +19,8 @@ class ISVClientExtraForWorkPlusApp : ISVClientExtra() {
 
     lateinit var ownerId:String
 
+    override fun primaryId(): String {
+        return clientId
+    }
+
 }

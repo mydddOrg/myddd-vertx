@@ -98,7 +98,11 @@ class ISVClientAssemblerTest : AbstractTest() {
         Assertions.assertNotNull(isvClientExtra)
         Assertions.assertEquals(ISVClientExtraForWorkPlusDTO::class.java,isvClientExtraDTO!!::class.java)
 
-        val notExistsExtra = object : ISVClientExtra() {}
+        val notExistsExtra = object : ISVClientExtra() {
+            override fun primaryId(): String {
+                return UUID.randomUUID().toString()
+            }
+        }
         val notExistsExtraDTO = toISVClientExtraDTO(notExistsExtra)
 
         Assertions.assertNull(notExistsExtraDTO)

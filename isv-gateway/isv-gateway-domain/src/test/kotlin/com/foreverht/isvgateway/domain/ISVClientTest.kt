@@ -162,10 +162,6 @@ class ISVClientTest : AbstractTest() {
                     Assertions.assertTrue(created.getId() > 0)
                 }
 
-                val queryISVSuite = ISVSuiteForW6S.queryBySuiteKey(suiteKey = (created.extra as ISVClientExtraForWorkPlusISV).suiteKey).await()
-                testContext.verify {
-                    Assertions.assertNotNull(queryISVSuite)
-                }
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
