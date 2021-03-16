@@ -10,7 +10,7 @@
         <class>org.myddd.vertx.oauth2.domain.OAuth2Token</class>
         <class>com.foreverht.isvgateway.domain.ISVClient</class>
         <class>com.foreverht.isvgateway.domain.ISVClientToken</class>
-        <class>com.foreverht.isvgateway.domain.ISVSuiteForW6S</class>
+        <class>com.foreverht.isvgateway.domain.ISVSuiteTicket</class>
 
         <properties>
 
