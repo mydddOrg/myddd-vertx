@@ -8,6 +8,8 @@ import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -24,6 +26,7 @@ class ISVClientValidationHandlerTest {
 
     private val logger by lazy { LoggerFactory.getLogger(ISVClientValidationHandlerTest::class.java) }
 
+    private val isvClientValidationHandler = ISVClientValidationHandler()
     companion object {
         @BeforeAll
         @JvmStatic
@@ -39,10 +42,57 @@ class ISVClientValidationHandlerTest {
     }
 
     @Test
+    fun testExtraForWorkPlusISVValidation(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val extraForISVValidation = isvClientValidationHandler.extraForWorkPlusISV.build(isvClientValidationHandler.schemaParser)
+
+                var extraForISVJson = json {
+                    obj(
+                        "suiteKey" to "njVwg-pgkeI5nK11iAdduH",
+                        "suiteSecret" to "o0jF8HfNXNYE53o3kV22Vcag2oejnM1n",
+                        "vendorKey" to "k2n23vwy0gEKxpS_Bb237h",
+                        "token" to "KSbiWeOKpLQeyyVuJUT2X6JOM2iqlWAgosk0d0xXIEL",
+                        "encryptSecret" to "CoOREEhw6KPCAyfIRLqVFyysEim0dUkWpC5rmDKaLYR",
+                        "isvApi" to "http://172.16.1.248:8000/v1/isv",
+                        "appId" to "Pu-xt6AREHB67AznU9ReDd",
+                        "clientType" to "WorkPlusISV"
+                    )
+                }
+
+                extraForISVValidation.validateAsync(extraForISVJson).await()
+
+                try {
+                    extraForISVJson = json {
+                        obj(
+                            "suiteKey" to "njVwg-pgkeI5nK11iAdduH",
+                            "suiteSecret" to "o0jF8HfNXNYE53o3kV22Vcag2oejnM1n",
+                            "token" to "KSbiWeOKpLQeyyVuJUT2X6JOM2iqlWAgosk0d0xXIEL",
+                            "encryptSecret" to "CoOREEhw6KPCAyfIRLqVFyysEim0dUkWpC5rmDKaLYR",
+                            "isvApi" to "http://172.16.1.248:8000/v1/isv",
+                            "appId" to "Pu-xt6AREHB67AznU9ReDd",
+                            "clientType" to "WorkPlusISV"
+                        )
+                    }
+
+                    extraForISVValidation.validateAsync(extraForISVJson).await()
+
+                }catch (t:Throwable){
+                    logger.warn(t.localizedMessage)
+                }
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testExtraForWorkPlusValidation(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val extraForWorkPlusValidation = ISVClientValidationHandler().extraForWorkPlus?.build(ISVClientValidationHandler().schemaParser)
+                val extraForWorkPlusValidation = isvClientValidationHandler.extraForWorkPlus?.build(isvClientValidationHandler.schemaParser)
 
                 val extraForWorkPlusJson = JsonObject()
                     .put("clientId", UUID.randomUUID().toString())

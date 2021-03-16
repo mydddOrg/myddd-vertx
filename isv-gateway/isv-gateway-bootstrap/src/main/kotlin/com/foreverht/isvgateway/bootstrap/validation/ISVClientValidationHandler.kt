@@ -16,7 +16,20 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
             .requiredProperty("domainId",Schemas.stringSchema())
             .requiredProperty("api",Schemas.stringSchema())
             .requiredProperty("ownerId",Schemas.stringSchema())
-            .requiredProperty("clientType",Schemas.enumSchema("WorkPlusISV","WorkPlusApp","WorkWeiXin"))
+            .requiredProperty("clientType",Schemas.enumSchema("WorkPlusApp"))
+    }
+
+    internal val extraForWorkPlusISV: ObjectSchemaBuilder by lazy {
+        Schemas.objectSchema()
+            .requiredProperty("suiteKey",Schemas.stringSchema())
+            .requiredProperty("suiteSecret",Schemas.stringSchema())
+            .requiredProperty("vendorKey",Schemas.stringSchema())
+            .requiredProperty("appId",Schemas.stringSchema())
+            .requiredProperty("token",Schemas.stringSchema())
+            .requiredProperty("encryptSecret",Schemas.stringSchema())
+            .requiredProperty("isvApi",Schemas.stringSchema())
+            .requiredProperty("clientType",Schemas.enumSchema("WorkPlusISV"))
+
     }
 
     internal val createISVClientSchema: ObjectSchemaBuilder? by lazy {

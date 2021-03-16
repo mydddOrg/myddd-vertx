@@ -78,7 +78,7 @@ class ISVClient : BaseEntity() {
     }
 
     suspend fun createISVClient():Future<ISVClient>{
-        return repository.save(this)
+        return repository.createISVClient(this)
     }
 
     suspend fun updateISVClient():Future<ISVClient>{

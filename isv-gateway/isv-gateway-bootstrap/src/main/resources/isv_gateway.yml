@@ -113,7 +113,7 @@ paths:
                 $ref: "#/components/schemas/client"
         400:
           $ref: "#/components/responses/errorResponse"
-
+  #重置client的密钥
   /clients/clientSecret:
     patch:
       tags:
@@ -140,7 +140,6 @@ paths:
               example:
                 clientId: 1Vdq19UzefUhjbSMnNx7mBoMVZJDsaZm
                 clientSecret: 9DSN4N14vEAuFjHNeDHWh4V8gtPzaOQO
-
   # 刷新token
   /clients/refreshToken:
     post:
@@ -351,7 +350,6 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
 
-
   # ===== 雇员 =======
   # 查询单个雇员详情
   /organizations/{orgCode}/employees/{employeeId}:
@@ -405,7 +403,6 @@ paths:
                   $ref: "#/components/schemas/employee"
         400:
           $ref: "#/components/responses/errorResponse"
-
   # 搜索雇员
   /organizations/{orgCode}/employeesSearch?query={query}:
     get:
@@ -431,7 +428,6 @@ paths:
                   $ref: "#/components/schemas/employee"
         400:
           $ref: "#/components/responses/errorResponse"
-
 
   # ===== 媒体 =======
   # 上传一个媒体文件
@@ -503,7 +499,6 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
 
-
   # ===== 消息 =======
   # 发送消息
   /message/send:
@@ -561,7 +556,6 @@ paths:
         400:
           $ref: "#/components/responses/errorResponse"
 
-
   # ===== 应用 =======
   # 获取应用管理员
   /app/admins:
@@ -614,7 +608,6 @@ paths:
 
         400:
           $ref: "#/components/responses/errorResponse"
-
   # ==== admin ======
   /admin/clients:
     post:
@@ -674,6 +667,7 @@ paths:
 
 components:
   schemas:
+    # 文本消息BODY
     textMessageBody:
       type: object
       description: 文本消息BODY
@@ -686,7 +680,7 @@ components:
         content:
           type: string
           default: 推送的文本消息内容'
-
+    # 图片消息BODY
     imageMessageBody:
       type: object
       description: 图片消息BODY
@@ -709,8 +703,7 @@ components:
         width:
           type: number
           description: 图片宽度
-
-
+    # 语音消息BODY
     voiceMessageBody:
       type: object
       description: 语音消息BODY
@@ -726,7 +719,7 @@ components:
         duration:
           type: int
           description: 语音长度
-
+    # 文件消息BODY
     fileMessageBody:
         type: object
         description: 文件消息BODY
@@ -745,6 +738,7 @@ components:
           size:
             type: int
             description: 文件大小
+    # 文本卡片消息BODY （微信专用）
     textcardMessageBody:
       type: object
       description: 消息卡片消息BODY（微信专用）
@@ -766,8 +760,7 @@ components:
         btntxt:
           type: string
           description: 按钮标题
-
-
+    # 创建ISV附加属性（WeiXin)
     extraForWorkWeiXin:
       type: object
       description: 填写必要的属性，当clientId类型为Work_WeiXin时必填
@@ -785,7 +778,7 @@ components:
         - corpid
         - suiteId
         - suiteSecret
-
+    # 创建ISV附加属性 （ISV）
     extraForWorkPlusISV:
       type: object
       description: 填写必要的属性,当clientId类型为WorkPlus_Isv时必填
@@ -796,18 +789,30 @@ components:
         suiteSecret:
           type: string
           description: WorkPlus ISV套件secret
-        vendorkey:
+        vendorKey:
           type: string
           description: WorkPlus ISV供应商KEY
         appId:
           type: string
           description: WorkPlus ISV的AppId
+        token:
+          type: string
+          description: 套件的TOKEN
+        encryptSecret:
+          type: string
+          description: 数据加密密钥
+        isvApi:
+          type: string
+          description: string
       required:
         - suiteKey
         - suiteSecret
         - vendorkey
         - appId
+        - token
+        - encrptSecret
 
+    # 创建ISV附加属性 (WorkPlus本地)
     extraForWorkPlus:
       type: object
       description: 填写必要的属性,当clientId
@@ -833,7 +838,7 @@ components:
         - domainId
         - api
         - ownerId
-
+    # 通用错误响应
     ErrorResponse:
       type: object
       properties:
@@ -843,7 +848,7 @@ components:
         errorMsg:
           type: string
           description: 错误详细描述
-
+    # client模型
     client:
       type: object
       properties:
@@ -864,8 +869,7 @@ components:
           description: client的详细描述
         extra:
           type: object
-
-
+    # token请求响应，在请求token及刷新token时返回
     tokenResponse:
       type: object
       properties:
@@ -881,7 +885,7 @@ components:
         refreshExpiredIn:
           type: integer
           description: refreshToken过期时间,单位 (豪秒)
-
+    # 组织
     organization:
       type: object
       properties:
@@ -897,7 +901,7 @@ components:
         logo:
           type: string
           description: 组织头像
-
+    # 雇员职位
     employeePosition:
       type: object
       properties:
@@ -913,7 +917,7 @@ components:
         primary:
           type: boolean
           description: 是否主部门
-
+    # 雇员
     employee:
       type: object
       properties:

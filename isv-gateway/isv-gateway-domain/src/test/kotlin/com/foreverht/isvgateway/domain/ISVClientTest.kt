@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
+import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
@@ -51,6 +52,8 @@ class ISVClientTest : AbstractTest() {
         }
 
     }
+
+
 
     @Test
     fun testQueryClient(vertx: Vertx,testContext: VertxTestContext){
@@ -146,6 +149,31 @@ class ISVClientTest : AbstractTest() {
         }
     }
 
+    @Test
+    fun testCreateISVClient(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val isvClient = ISVClient.createClient(clientName = UUID.randomUUID().toString(),extra = createISVExtra(),callback = "http://callback.workplus.io")
+
+                val created = isvClient.createISVClient().await()
+                testContext.verify {
+                    Assertions.assertNotNull(created)
+                    Assertions.assertNotNull(created.oauth2Client)
+                    Assertions.assertTrue(created.getId() > 0)
+                }
+
+                val queryISVSuite = ISVSuiteForW6S.queryBySuiteKey(suiteKey = (created.extra as ISVClientExtraForWorkPlusISV).suiteKey).await()
+                testContext.verify {
+                    Assertions.assertNotNull(queryISVSuite)
+                }
+                testContext.completeNow()
+            }catch (e:Exception){
+                testContext.failNow(e)
+            }
+            testContext.completeNow()
+        }
+    }
+
 
     private fun createExtra():ISVClientExtra {
         val extra = ISVClientExtraForWorkPlusApp()
@@ -155,6 +183,16 @@ class ISVClientTest : AbstractTest() {
         extra.domainId = "atwork"
         extra.ownerId = randomIdString.randomString()
 
+        return extra
+    }
+
+    private fun createISVExtra():ISVClientExtra {
+        val extra = ISVClientExtraForWorkPlusISV()
+        extra.suiteKey = randomString()
+        extra.suiteSecret = randomString()
+        extra.token = randomString()
+        extra.encryptSecret = randomString()
+        extra.isvApi = randomString()
         return extra
     }
 }

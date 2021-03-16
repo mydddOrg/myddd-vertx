@@ -1,11 +1,16 @@
 package com.foreverht.isvgateway.bootstrap.route
 
+
+import com.foreverht.isvgateway.api.OrganizationApplication
+import com.foreverht.isvgateway.api.dto.OrgPageQueryDTO
 import com.foreverht.isvgateway.api.dto.OrganizationDTO
 import com.foreverht.isvgateway.bootstrap.validation.OrganizationValidationHandler
+import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -33,20 +38,8 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
-                        val clientId = it.get<String>("clientId")
-                        val accessToken = it.get<String>("accessToken")
-                        val orgCode = it.pathParam("orgCode")
-
-                        val orgId = it.singleQueryParam("orgId")
-                        val limit = it.singleQueryParam("limit","50")!!.toInt()
-                        val skip = it.singleQueryParam("skip","0")!!.toInt()
-
-                        val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
-
-                        val employeeList =  organizationApplication.queryOrganizationEmployees(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip).await()
-
-                        it.end(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
-
+                        val (orgPageQueryDTO,organizationApplication) = parsePageQueryParam(it).await()
+                        val employeeList = organizationApplication.queryOrganizationEmployees(orgPageQueryDTO).await()
                         it.end(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
@@ -68,18 +61,8 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
             route.handler {
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
-                        val clientId = it.get<String>("clientId")
-                        val accessToken = it.get<String>("accessToken")
-                        val orgCode = it.pathParam("orgCode")
-
-                        val orgId = it.singleQueryParam("orgId")
-                        val limit = it.singleQueryParam("limit","50")!!.toInt()
-                        val skip = it.singleQueryParam("skip","0")!!.toInt()
-
-                        val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
-
-                        val organizationList: List<OrganizationDTO> =  organizationApplication.queryChildrenOrganizations(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip).await()
-
+                        val (orgPageQueryDTO,organizationApplication) = parsePageQueryParam(it).await()
+                        val organizationList: List<OrganizationDTO> =  organizationApplication.queryChildrenOrganizations(orgPageQueryDTO).await()
                         it.end(JsonArray(organizationList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
@@ -117,6 +100,24 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
                 }
             }
 
+        }
+    }
+
+    private suspend fun parsePageQueryParam(it:RoutingContext): Future<Pair<OrgPageQueryDTO,OrganizationApplication>> {
+        return try {
+            val clientId = it.get<String>("clientId")
+            val accessToken = it.get<String>("accessToken")
+            val orgCode = it.pathParam("orgCode")
+
+            val orgId = it.singleQueryParam("orgId")
+            val limit = it.singleQueryParam("limit","50")!!.toInt()
+            val skip = it.singleQueryParam("skip","0")!!.toInt()
+
+            val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
+
+            Future.succeededFuture(Pair(OrgPageQueryDTO(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip),organizationApplication))
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
     }
 }

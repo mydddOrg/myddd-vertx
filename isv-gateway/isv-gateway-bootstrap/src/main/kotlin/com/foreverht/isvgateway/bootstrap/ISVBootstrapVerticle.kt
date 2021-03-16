@@ -21,6 +21,8 @@ class ISVBootstrapVerticle (port:Int = 8080) : BootstrapVerticle(port = port){
             AppRouter(vertx,router)
             MessageRouter(vertx,router)
             StaticResourceRouter(vertx,router)
+
+            ISVCallBackRouter(vertx,router)
         }
     }
 

@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.workplus
 
 import com.foreverht.isvgateway.AbstractWorkPlusTest
 import com.foreverht.isvgateway.api.OrganizationApplication
+import com.foreverht.isvgateway.api.dto.OrgPageQueryDTO
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -56,18 +57,18 @@ class OrganizationApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testQueryChildrenOrganizations(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                var subOrganizationList = organizationApplication.queryChildrenOrganizations(clientId = isvClientId,orgCode = ownerId).await()
+                var subOrganizationList = organizationApplication.queryChildrenOrganizations(OrgPageQueryDTO(clientId = isvClientId,orgCode = ownerId)).await()
                 testContext.verify {
                     Assertions.assertNotNull(subOrganizationList)
                 }
 
-                subOrganizationList = organizationApplication.queryChildrenOrganizations(clientId = isvClientId,orgCode = ownerId,orgId = "aHexITjYkEurKyyxpKMgFh").await()
+                subOrganizationList = organizationApplication.queryChildrenOrganizations(OrgPageQueryDTO(clientId = isvClientId,orgCode = ownerId,orgId = "aHexITjYkEurKyyxpKMgFh")).await()
                 testContext.verify {
                     Assertions.assertNotNull(subOrganizationList)
                 }
 
                 try {
-                    organizationApplication.queryChildrenOrganizations(clientId = randomIDString.randomString(),orgCode = randomIDString.randomString())
+                    organizationApplication.queryChildrenOrganizations(OrgPageQueryDTO(clientId = randomIDString.randomString(),orgCode = randomIDString.randomString()))
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -83,19 +84,19 @@ class OrganizationApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testQueryOrganizationEmployees(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                var employees = organizationApplication.queryOrganizationEmployees(clientId = isvClientId,orgCode = ownerId).await()
+                var employees = organizationApplication.queryOrganizationEmployees(OrgPageQueryDTO(clientId = isvClientId,orgCode = ownerId)).await()
                 testContext.verify {
                     Assertions.assertNotNull(employees)
                 }
 
-                employees = organizationApplication.queryOrganizationEmployees(clientId = isvClientId,orgCode = ownerId, orgId = "aHexITjYkEurKyyxpKMgFh").await()
+                employees = organizationApplication.queryOrganizationEmployees(OrgPageQueryDTO(clientId = isvClientId,orgCode = ownerId,orgId = "aHexITjYkEurKyyxpKMgFh")).await()
                 testContext.verify {
                     logger.debug("COUNT:${employees.count()}")
                     Assertions.assertNotNull(employees)
                 }
 
                 try {
-                    organizationApplication.queryOrganizationEmployees(clientId = randomIDString.randomString(),orgCode = randomIDString.randomString())
+                    organizationApplication.queryOrganizationEmployees(OrgPageQueryDTO(clientId = randomIDString.randomString(),orgCode = randomIDString.randomString()))
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }

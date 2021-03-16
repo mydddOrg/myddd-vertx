@@ -9,7 +9,9 @@ data class AppDTO(var appId:String,var name:String,val icon:String? = null){
             val appId = jsonObject.getString("app_id")
             val name = jsonObject.getString("name")
             val icon = jsonObject.getString("icon")
+
             return AppDTO(appId = appId,name = name,icon = icon)
         }
     }
+
 }

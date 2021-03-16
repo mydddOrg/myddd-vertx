@@ -35,16 +35,7 @@ class EmployeeApplicationWorkPlus :AbstractApplicationWorkPlus(),EmployeeApplica
             val (extra, accessToken) = getRemoteAccessToken(clientId)
             val url = String.format(API_BATCH_QUERY_EMPLOYEE,extra.api,orgCode,accessToken,userIdList.joinToString(","))
             logger.debug("【Request URL】:$url")
-            val response = webClient.getAbs(url).send().await()
-            val bodyJson = response.bodyAsJsonObject()
-            if(response.resultSuccess()){
-                val result = bodyJson.getJsonArray("result")
-                val employeeList:MutableList<EmployeeDTO> = mutableListOf()
-                result.forEach { employeeList.add(EmployeeDTO.createInstanceFromJsomObject(it as JsonObject)) }
-                Future.succeededFuture(employeeList)
-            }else{
-                Future.failedFuture(bodyJson.toString())
-            }
+            queryEmployees(url)
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
@@ -58,18 +49,22 @@ class EmployeeApplicationWorkPlus :AbstractApplicationWorkPlus(),EmployeeApplica
             val (extra, accessToken) = getRemoteAccessToken(clientId)
             val url = String.format(API_QUERY_EMPLOYEE,extra.api,orgCode,accessToken,query)
             logger.debug("【Request URL】:$url")
-            val response = webClient.getAbs(url).send().await()
-            val bodyJson = response.bodyAsJsonObject()
-            if(response.resultSuccess()){
-                val result = bodyJson.getJsonArray("result")
-                val employeeList:MutableList<EmployeeDTO> = mutableListOf()
-                result.forEach { employeeList.add(EmployeeDTO.createInstanceFromJsomObject(it as JsonObject)) }
-                Future.succeededFuture(employeeList)
-            }else{
-                Future.failedFuture(bodyJson.toString())
-            }
+            queryEmployees(url)
         }catch (t:Throwable){
             Future.failedFuture(t)
+        }
+    }
+
+    private suspend fun queryEmployees(url: String): Future<List<EmployeeDTO>> {
+        val response = webClient.getAbs(url).send().await()
+        val bodyJson = response.bodyAsJsonObject()
+        return if (response.resultSuccess()) {
+            val result = bodyJson.getJsonArray("result")
+            val employeeList: MutableList<EmployeeDTO> = mutableListOf()
+            result.forEach { employeeList.add(EmployeeDTO.createInstanceFromJsomObject(it as JsonObject)) }
+            Future.succeededFuture(employeeList)
+        } else {
+            Future.failedFuture(bodyJson.toString())
         }
     }
 

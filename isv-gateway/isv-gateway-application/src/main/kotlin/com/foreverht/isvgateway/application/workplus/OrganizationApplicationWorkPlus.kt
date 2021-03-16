@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.api.OrganizationApplication
 import com.foreverht.isvgateway.api.dto.EmployeeDTO
+import com.foreverht.isvgateway.api.dto.OrgPageQueryDTO
 import com.foreverht.isvgateway.api.dto.OrganizationDTO
 import io.vertx.core.Future
 import io.vertx.core.impl.logging.Logger
@@ -46,18 +47,12 @@ class OrganizationApplicationWorkPlus :AbstractApplicationWorkPlus(),Organizatio
         }
     }
 
-    override suspend fun queryChildrenOrganizations(
-        clientId:String,
-        orgCode: String,
-        orgId: String?,
-        limit: Int,
-        skip: Int
-    ): Future<List<OrganizationDTO>> {
+    override suspend fun queryChildrenOrganizations(orgPageQueryDTO: OrgPageQueryDTO): Future<List<OrganizationDTO>> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(clientId)
+            val (extra, accessToken) = getRemoteAccessToken(orgPageQueryDTO.clientId)
 
-            val requestUrl = "${extra.api}/admin/organizations/$orgCode/view?employee_limit=0&org_limit=$limit&org_skip=$skip&org_id=$orgId&access_token=$accessToken"
-            logger.debug("【Request URL】:$requestUrl" )
+            val requestUrl = "${extra.api}/admin/organizations/${orgPageQueryDTO.orgCode}/view?employee_limit=0&org_limit=${orgPageQueryDTO.limit}&org_skip=${orgPageQueryDTO.skip}&org_id=${orgPageQueryDTO.orgId}&access_token=$accessToken"
+            logger.debug("【Request URL】:$requestUrl")
 
             val response = webClient.getAbs(requestUrl).send().await()
 
@@ -87,17 +82,11 @@ class OrganizationApplicationWorkPlus :AbstractApplicationWorkPlus(),Organizatio
         }
     }
 
-    override suspend fun queryOrganizationEmployees(
-        clientId:String,
-        orgCode: String,
-        orgId: String?,
-        limit: Int,
-        skip: Int
-    ): Future<List<EmployeeDTO>> {
+    override suspend fun queryOrganizationEmployees(orgPageQueryDTO: OrgPageQueryDTO): Future<List<EmployeeDTO>> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(clientId)
+            val (extra, accessToken) = getRemoteAccessToken(orgPageQueryDTO.clientId)
 
-            val requestUrl = "${extra.api}/admin/organizations/$orgCode/view?employee_limit=$limit&employee_skip=$skip&org_limit=0&org_skip=0&org_id=$orgId&access_token=$accessToken"
+            val requestUrl = "${extra.api}/admin/organizations/${orgPageQueryDTO.orgCode}/view?employee_limit=${orgPageQueryDTO.limit}&employee_skip=${orgPageQueryDTO.skip}&org_limit=0&org_skip=0&org_id=${orgPageQueryDTO.orgId}&access_token=$accessToken"
             logger.debug("【Request URL】:$requestUrl" )
 
             val response = webClient.getAbs(requestUrl).send().await()
