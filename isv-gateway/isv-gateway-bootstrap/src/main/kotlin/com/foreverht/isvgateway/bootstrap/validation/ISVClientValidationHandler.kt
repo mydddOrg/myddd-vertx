@@ -9,11 +9,6 @@ import org.myddd.vertx.web.router.AbstractValidationHandler
 
 class ISVClientValidationHandler : AbstractValidationHandler() {
 
-    companion object {
-        private const val ALIAS_EXTRA_FOR_WORKPLUS = "extraForWorkPlus"
-    }
-
-
     internal val extraForWorkPlus: ObjectSchemaBuilder? by lazy {
         Schemas.objectSchema()
             .requiredProperty("clientId",Schemas.stringSchema())
@@ -22,8 +17,6 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
             .requiredProperty("api",Schemas.stringSchema())
             .requiredProperty("ownerId",Schemas.stringSchema())
             .requiredProperty("clientType",Schemas.enumSchema("WorkPlusISV","WorkPlusApp","WorkWeiXin"))
-
-            .alias(ALIAS_EXTRA_FOR_WORKPLUS)
     }
 
     internal val createISVClientSchema: ObjectSchemaBuilder? by lazy {
@@ -34,7 +27,9 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
             .requiredProperty("clientName", Schemas.stringSchema())
             .requiredProperty("callback",Schemas.stringSchema())
             .optionalProperty("description",Schemas.stringSchema())
-            .requiredProperty("extra",Schemas.oneOf(Schemas.refToAlias(ALIAS_EXTRA_FOR_WORKPLUS)))
+            .requiredProperty("extra",Schemas.oneOf(
+                extraForWorkPlus
+            ))
     }
 
     internal val updateISVClientSchema : GenericSchemaBuilder? by lazy {
@@ -42,7 +37,9 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
             Schemas.objectSchema().requiredProperty("clientName",Schemas.stringSchema()),
             Schemas.objectSchema().requiredProperty("callback",Schemas.stringSchema()),
             Schemas.objectSchema().requiredProperty("description",Schemas.stringSchema()),
-            Schemas.objectSchema().requiredProperty("extra",Schemas.oneOf(Schemas.refToAlias(ALIAS_EXTRA_FOR_WORKPLUS)))
+            Schemas.objectSchema().requiredProperty("extra",Schemas.oneOf(
+                extraForWorkPlus
+            ))
         )
     }
 
@@ -63,15 +60,6 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
         Schemas.objectSchema()
             .requiredProperty("clientId",Schemas.stringSchema())
             .requiredProperty("clientSecret",Schemas.stringSchema())
-    }
-
-    init {
-        extraForWorkPlus?.build(schemaParser)
-        createISVClientSchema?.build(schemaParser)
-        updateISVClientSchema?.build(schemaParser)
-        requestAccessTokenSchema?.build(schemaParser)
-        refreshTokenSchema?.build(schemaParser)
-        resetClientSecretSchema?.build(schemaParser)
     }
 
     fun createISVClientValidation(): ValidationHandler {
