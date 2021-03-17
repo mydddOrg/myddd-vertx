@@ -20,7 +20,7 @@ class ISVSuiteTicketTest : AbstractTest() {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val randomSuiteTicket = randomSuiteTicket()
-                val created = randomSuiteTicket.updateSuiteTicket().await()
+                val created = randomSuiteTicket.saveSuiteTicket().await()
                 testContext.verify {
                     Assertions.assertNotNull(created)
                     Assertions.assertTrue(created.id > 0)
@@ -42,14 +42,14 @@ class ISVSuiteTicketTest : AbstractTest() {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val randomSuiteTicket = randomSuiteTicket()
-                val created = randomSuiteTicket.updateSuiteTicket().await()
+                val created = randomSuiteTicket.saveSuiteTicket().await()
                 testContext.verify {
                     Assertions.assertNotNull(created)
                     Assertions.assertTrue(created.id > 0)
                 }
 
                 created.suiteTicket = randomString()
-                val updated = randomSuiteTicket.updateSuiteTicket().await()
+                val updated = randomSuiteTicket.saveSuiteTicket().await()
 
                 testContext.verify {
                     Assertions.assertNotNull(updated)
@@ -57,7 +57,7 @@ class ISVSuiteTicketTest : AbstractTest() {
                 }
 
                 try {
-                    ISVSuiteTicket().updateSuiteTicket().await()
+                    ISVSuiteTicket().saveSuiteTicket().await()
                 }catch (t:Throwable){
                     logger.debug(t.message)
                 }

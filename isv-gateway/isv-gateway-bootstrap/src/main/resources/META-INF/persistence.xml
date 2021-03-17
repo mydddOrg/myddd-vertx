@@ -9,6 +9,8 @@
         <class>org.myddd.vertx.oauth2.domain.OAuth2Client</class>
         <class>org.myddd.vertx.oauth2.domain.OAuth2Token</class>
         <class>com.foreverht.isvgateway.domain.ISVClient</class>
+        <class>com.foreverht.isvgateway.domain.ISVClientToken</class>
+        <class>com.foreverht.isvgateway.domain.ISVSuiteTicket</class>
 
     </persistence-unit>
 

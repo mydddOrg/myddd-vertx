@@ -39,7 +39,7 @@ class ISVSuiteTicket : BaseEntity() {
         }
     }
 
-    suspend fun updateSuiteTicket():Future<ISVSuiteTicket>{
+    suspend fun saveSuiteTicket():Future<ISVSuiteTicket>{
         return try {
             val query = querySuiteTicket(suiteId = this.suiteId,clientType = this.clientType).await()
             return if(Objects.nonNull(query)){

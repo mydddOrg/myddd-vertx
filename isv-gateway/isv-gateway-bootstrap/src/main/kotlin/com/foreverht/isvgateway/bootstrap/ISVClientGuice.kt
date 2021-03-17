@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.bootstrap
 
 import com.foreverht.isvgateway.api.*
 import com.foreverht.isvgateway.application.ISVClientApplicationImpl
+import com.foreverht.isvgateway.application.ISVSuiteTicketApplicationImpl
 import com.foreverht.isvgateway.application.workplus.*
 import com.foreverht.isvgateway.domain.ISVClientRepository
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
@@ -18,6 +19,7 @@ class ISVClientGuice(vertx: Vertx) : AbstractWebModule(vertx = vertx) {
 
         bind(ISVClientRepository::class.java).to(ISVClientRepositoryHibernate::class.java)
         bind(ISVClientApplication::class.java).to(ISVClientApplicationImpl::class.java)
+        bind(ISVSuiteTicketApplication::class.java).to(ISVSuiteTicketApplicationImpl::class.java)
 
         bind(AccessTokenApplication::class.java).annotatedWith(Names.named(ANNOTATED_WORKPLUS_APP)).to(AccessTokenApplicationWorkPlus::class.java)
         bind(OrganizationApplication::class.java).annotatedWith(Names.named(ANNOTATED_WORKPLUS_APP)).to((OrganizationApplicationWorkPlus::class.java))

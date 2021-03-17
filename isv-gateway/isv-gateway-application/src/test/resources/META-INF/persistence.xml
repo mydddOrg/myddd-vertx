@@ -10,6 +10,7 @@
         <class>org.myddd.vertx.oauth2.domain.OAuth2Token</class>
         <class>com.foreverht.isvgateway.domain.ISVClient</class>
         <class>com.foreverht.isvgateway.domain.ISVClientToken</class>
+        <class>com.foreverht.isvgateway.domain.ISVSuiteTicket</class>
 
         <properties>
 
@@ -32,9 +33,9 @@
                       value="drop-and-create"/>
 
             <!-- SQL statement logging -->
-            <property name="hibernate.show_sql" value="false" />
+            <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="false"/>
-            <property name="hibernate.highlight_sql" value="false"/>
+            <property name="hibernate.highlight_sql" value="true"/>
 
         </properties>
 
