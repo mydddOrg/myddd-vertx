@@ -9,6 +9,8 @@ enum class ISVErrorCode : ErrorCode {
      */
     CLIENT_TYPE_NOT_SUPPORT,
 
-    CLIENT_ID_NOT_FOUND
+    CLIENT_ID_NOT_FOUND,
+
+    SUITE_ID_NOT_FOUND
 
 }

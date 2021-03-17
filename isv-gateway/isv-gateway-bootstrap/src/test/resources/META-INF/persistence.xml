@@ -11,7 +11,7 @@
         <class>com.foreverht.isvgateway.domain.ISVClient</class>
         <class>com.foreverht.isvgateway.domain.ISVClientToken</class>
         <class>com.foreverht.isvgateway.domain.ISVSuiteTicket</class>
-
+        <class>com.foreverht.isvgateway.domain.ISVAuthCode</class>
 
         <properties>
 

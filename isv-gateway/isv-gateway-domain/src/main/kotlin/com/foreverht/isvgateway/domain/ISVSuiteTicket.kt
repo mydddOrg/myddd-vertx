@@ -44,8 +44,10 @@ class ISVSuiteTicket : BaseEntity() {
             val query = querySuiteTicket(suiteId = this.suiteId,clientType = this.clientType).await()
             return if(Objects.nonNull(query)){
                 query!!.suiteTicket = this.suiteTicket
+                query.updated = System.currentTimeMillis()
                 repository.save(query)
             }else{
+                this.updated = System.currentTimeMillis()
                 repository.save(this)
             }
         }catch (t:Throwable){
