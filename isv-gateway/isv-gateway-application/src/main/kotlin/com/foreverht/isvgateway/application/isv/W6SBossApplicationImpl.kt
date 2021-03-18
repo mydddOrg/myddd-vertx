@@ -51,7 +51,7 @@ class W6SBossApplicationImpl:W6SBossApplication {
 
     override suspend fun requestPermanentCode(clientId: String, orgId: String): Future<ISVAuthCode> {
         return try {
-            val (isvClient,isvClientToken) = requestClientBaseInfo(clientId = clientId,orgId = orgId).await()
+            val (isvClient,isvClientToken) = requestClientBaseInfo(clientId = clientId).await()
 
             val extra = isvClient.extra as ISVClientExtraForWorkPlusISV
 
@@ -71,7 +71,7 @@ class W6SBossApplicationImpl:W6SBossApplication {
                     )
                 }
 
-                val requestUrl = String.format(PERMANENT_URL,extra.isvApi,isvClientToken!!.token)
+                val requestUrl = String.format(PERMANENT_URL,extra.isvApi, isvClientToken.token)
                 val response = webClient.postAbs(requestUrl)
                     .sendJsonObject(requestBody)
                     .await()
@@ -103,7 +103,7 @@ class W6SBossApplicationImpl:W6SBossApplication {
                     json {
                         obj(
                             SUITE_KEY to extra.suiteKey,
-                            PERMANENT_CODE to permanentAuthCode!!.permanentAuthCode
+                            PERMANENT_CODE to permanentAuthCode.permanentAuthCode
                         )
                     }
                 ).await()
@@ -150,7 +150,7 @@ class W6SBossApplicationImpl:W6SBossApplication {
         }
     }
 
-    private suspend fun requestClientBaseInfo(clientId: String,orgId: String):Future<Pair<ISVClient,ISVClientToken>>{
+    private suspend fun requestClientBaseInfo(clientId: String):Future<Pair<ISVClient,ISVClientToken>>{
         return try {
             val isvClient = ISVClient.queryClient(clientId = clientId).await()
             if (Objects.isNull(isvClient)) {
@@ -172,7 +172,7 @@ class W6SBossApplicationImpl:W6SBossApplication {
     private suspend fun requestClientInfo(clientId: String,orgId: String):Future<Triple<ISVClient,ISVClientToken,ISVAuthCode>>{
         return try {
 
-            val (isvClient,isvClientToken) = requestClientBaseInfo(clientId = clientId,orgId = orgId).await()
+            val (isvClient,isvClientToken) = requestClientBaseInfo(clientId = clientId).await()
 
             val extra = isvClient.extra as ISVClientExtraForWorkPlusISV
 
@@ -181,7 +181,7 @@ class W6SBossApplicationImpl:W6SBossApplication {
                 throw BusinessLogicException(ISVErrorCode.PERMANENT_CODE_NOT_FOUND)
             }
 
-            Future.succeededFuture(Triple(isvClient,isvClientToken!!,permanentAuthCode!!))
+            Future.succeededFuture(Triple(isvClient, isvClientToken,permanentAuthCode!!))
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
