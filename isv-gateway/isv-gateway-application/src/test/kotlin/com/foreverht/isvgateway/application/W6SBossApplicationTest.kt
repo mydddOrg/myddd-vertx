@@ -9,23 +9,76 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
-
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class W6SBossApplicationTest : AbstractW6SBossTest() {
 
     private val w6SBossApplication by lazy { InstanceFactory.getInstance(W6SBossApplication::class.java) }
 
+    companion object {
+        private const val ORG_ID = "2975ff5f83a34f458280fd25fbd3a356"
+    }
+
     @Test
-    @Disabled("换取ISV永久激活码只能运行一次，不能重复运行")
+    @Order(6)
+    fun testRequestApiAccessToken(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                try {
+                    w6SBossApplication.requestApiAccessToken(clientId = isvClientId,orgId = ORG_ID).await()
+                }catch (t:Throwable){
+                    Assertions.assertNotNull(t)
+                }
+
+                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,orgId = ORG_ID).await()
+                testContext.verify {
+                    Assertions.assertNotNull(permanent)
+                    Assertions.assertNotNull(permanent.permanentAuthCode)
+                }
+
+
+                val isvAuthCode = w6SBossApplication.requestApiAccessToken(clientId = isvClientId,orgId = ORG_ID).await()
+                testContext.verify {
+                    Assertions.assertNotNull(isvAuthCode)
+                    Assertions.assertNotNull(isvAuthCode.apiExtra)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    @Order(5)
+    fun testActiveSuite(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,orgId = ORG_ID).await()
+                testContext.verify {
+                    Assertions.assertNotNull(permanent)
+                    Assertions.assertNotNull(permanent.permanentAuthCode)
+                }
+
+                val success = w6SBossApplication.activeSuite(clientId = isvClientId,orgId = ORG_ID).await()
+                testContext.verify { Assertions.assertTrue(success) }
+            }catch (t:Throwable){
+                logger.error(t.message)
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    @Order(4)
     fun testRequestPermanentCode(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
 
-                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,orgId = "2975ff5f83a34f458280fd25fbd3a356").await()
+                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,orgId = ORG_ID).await()
                 testContext.verify {
                     Assertions.assertNotNull(permanent)
                     Assertions.assertNotNull(permanent.permanentAuthCode)
@@ -34,7 +87,7 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
 
 
                 try {
-                    w6SBossApplication.requestPermanentCode(clientId = UUID.randomUUID().toString(),orgId = "2975ff5f83a34f458280fd25fbd3a356").await()
+                    w6SBossApplication.requestPermanentCode(clientId = UUID.randomUUID().toString(),orgId = ORG_ID).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -53,6 +106,7 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
     }
 
     @Test
+    @Order(3)
     fun testGenerateToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -74,6 +128,7 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
         }
     }
     @Test
+    @Order(2)
     fun testRequestSuiteToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -97,6 +152,7 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
     }
 
     @Test
+    @Order(1)
     fun testRequestISVToken(vertx: Vertx, testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {

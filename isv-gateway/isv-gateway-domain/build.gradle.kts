@@ -20,6 +20,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     api("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
+    api("io.vertx:vertx-lang-kotlin:${rootProject.extra["vertx_version"]}")
     api("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
     api(project(":myddd-vertx-domain"))

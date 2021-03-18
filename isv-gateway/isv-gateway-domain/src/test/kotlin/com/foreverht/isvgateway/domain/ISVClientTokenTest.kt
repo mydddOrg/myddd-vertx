@@ -57,6 +57,13 @@ class ISVClientTokenTest : AbstractTest() {
                     Assertions.assertTrue(created.id > 0)
                 }
 
+                created.id = 0
+                val updated = created.saveClientToken().await()
+                testContext.verify {
+                    Assertions.assertNotNull(updated)
+                    Assertions.assertTrue(updated.id > 0)
+                }
+
                 val anotherCreated = randomISVExtraClientToken().saveClientToken().await()
                 testContext.verify {
                     Assertions.assertNotNull(anotherCreated)

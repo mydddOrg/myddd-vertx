@@ -11,6 +11,7 @@ import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
 import com.foreverht.isvgateway.domain.ISVClientType
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
@@ -38,12 +39,10 @@ abstract class AbstractW6SBossTest : AbstractTest() {
 
         lateinit var isvClientId:String
 
-        val logger by lazy { LoggerFactory.getLogger(AbstractW6SBossTest::class.java) }
+        val logger: Logger by lazy { LoggerFactory.getLogger(AbstractW6SBossTest::class.java) }
 
         private val isvClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
-
-        val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
-
+        
         private val isvSuiteTicketApplication by lazy { InstanceFactory.getInstance(ISVSuiteTicketApplication::class.java) }
 
         private val isvAuthCodeApplication by lazy { InstanceFactory.getInstance(ISVAuthCodeApplication::class.java) }
@@ -91,6 +90,7 @@ abstract class AbstractW6SBossTest : AbstractTest() {
                         temporaryAuthCode = body.getString("temporaryAuthCode")
                     )
 
+                    logger.info("temporaryAuthCode:${isvAuthCode.temporaryAuthCode}")
                     isvAuthCodeApplication.createTemporaryAuthCode(authCode = isvAuthCode).await()
                     Future.succeededFuture()
                 }else{

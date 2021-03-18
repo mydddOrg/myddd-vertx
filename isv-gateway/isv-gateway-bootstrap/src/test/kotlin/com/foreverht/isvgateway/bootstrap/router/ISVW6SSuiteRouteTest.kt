@@ -22,7 +22,14 @@ class ISVW6SSuiteRouteTest : AbstractRouteTest() {
     fun testISVTmpAuthCode(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val response = webClient.post(port,host,"/v1/w6s/isv")
+                var response = webClient.post(port,host,"/v1/w6s/isv")
+                    .sendJsonObject(JsonObject(ISV_TMP_CODE))
+                    .await()
+                testContext.verify {
+                    Assertions.assertEquals(200,response.statusCode())
+                }
+
+                response = webClient.post(port,host,"/v1/w6s/isv")
                     .sendJsonObject(JsonObject(ISV_TMP_CODE))
                     .await()
                 testContext.verify {

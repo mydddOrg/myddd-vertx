@@ -2,8 +2,10 @@ package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.domain.converter.ISVClientTokenExtraConverter
 import io.vertx.core.Future
+import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.BaseEntity
 import org.myddd.vertx.ioc.InstanceFactory
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -59,7 +61,18 @@ class ISVClientToken : BaseEntity() {
     }
 
     suspend fun saveClientToken():Future<ISVClientToken>{
-       return repository.save(this)
+        return try{
+            val exists = queryByClientId(clientId = this.clientId).await()
+            return if(Objects.isNull(exists)){
+                repository.save(this)
+            }else{
+                exists!!.extra = this.extra
+                exists.token = this.token
+                repository.save(exists)
+            }
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
 }

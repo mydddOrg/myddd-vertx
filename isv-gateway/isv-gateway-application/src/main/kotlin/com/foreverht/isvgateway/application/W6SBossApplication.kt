@@ -10,4 +10,7 @@ interface W6SBossApplication {
 
     suspend fun requestPermanentCode(clientId: String,orgId:String):Future<ISVAuthCode>
 
+    suspend fun activeSuite(clientId: String,orgId: String):Future<Boolean>
+
+    suspend fun requestApiAccessToken(clientId: String, orgId: String):Future<ISVAuthCode>
 }

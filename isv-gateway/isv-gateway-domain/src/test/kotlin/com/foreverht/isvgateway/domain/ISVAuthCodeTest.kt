@@ -1,8 +1,11 @@
 package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.AbstractTest
+import com.foreverht.isvgateway.domain.extra.ISVAuthExtraForISV
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -14,6 +17,66 @@ import java.util.*
 class ISVAuthCodeTest : AbstractTest() {
 
     @Test
+    fun testSaveAuthCodeExtra(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val created = randomISVAuthCode().createTemporaryAuth().await()
+                testContext.verify {
+                    Assertions.assertNotNull(created)
+                }
+
+                created.id = 0
+                created.temporaryAuthCode = randomString()
+                created.createTemporaryAuth().await()
+
+                try {
+                    ISVAuthCode.queryPermanentAuthCode(suiteId = created.suiteId,clientType = created.clientType,orgId = created.orgId).await()
+                }catch (t:Throwable){
+                    testContext.failNow(t)
+                }
+
+                created.permanentAuthCode = randomString()
+
+                val permanent = created.toPermanent().await()
+                testContext.verify { Assertions.assertNotNull(permanent) }
+
+                val json = json {
+                    obj(
+                        "api_access_token" to randomString(),
+                        "access_endpoint" to randomString(),
+                        "website_endpoint" to randomString(),
+                        "expire_time" to System.currentTimeMillis()
+                    )
+                }
+
+                val extra = ISVAuthExtraForISV.createInstanceFromJson(json)
+
+                val withExtra = permanent.saveApiExtra(extra).await()
+
+                testContext.verify { Assertions.assertNotNull(withExtra) }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testCreateISVAuthCodeExtra(){
+        val json = json {
+            obj(
+                "api_access_token" to randomString(),
+                "access_endpoint" to randomString(),
+                "website_endpoint" to randomString(),
+                "expire_time" to System.currentTimeMillis()
+            )
+        }
+
+        val extra = ISVAuthExtraForISV.createInstanceFromJson(json)
+        Assertions.assertNotNull(extra)
+    }
+
+    @Test
     fun testQueryPermanentAuthCode(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -21,6 +84,10 @@ class ISVAuthCodeTest : AbstractTest() {
                 testContext.verify {
                     Assertions.assertNotNull(created)
                 }
+
+                created.id = 0
+                created.temporaryAuthCode = randomString()
+                created.createTemporaryAuth().await()
 
                 try {
                     ISVAuthCode.queryPermanentAuthCode(suiteId = created.suiteId,clientType = created.clientType,orgId = created.orgId).await()
@@ -134,6 +201,14 @@ class ISVAuthCodeTest : AbstractTest() {
                     Assertions.assertNotNull(created)
                 }
 
+                val withApiAuth = randomISVAuthCode()
+                withApiAuth.apiExtra = randomAuthExtra()
+
+                val createWithAuth = withApiAuth.createTemporaryAuth().await()
+                testContext.verify {
+                    Assertions.assertNotNull(createWithAuth)
+                }
+
                 try {
                     val errorISVAuthCode = randomISVAuthCode()
                     errorISVAuthCode.suiteId = randomIDString.randomString(128)
@@ -147,6 +222,15 @@ class ISVAuthCodeTest : AbstractTest() {
             testContext.completeNow()
         }
 
+    }
+
+    private fun randomAuthExtra():ISVAuthExtra{
+        val extra = ISVAuthExtraForISV()
+        extra.accessEndpoint = randomString()
+        extra.apiAccessToken = randomString()
+        extra.expireTime = System.currentTimeMillis()
+        extra.websiteEndpoint = randomString()
+        return extra
     }
 
     private fun randomISVAuthCode():ISVAuthCode {

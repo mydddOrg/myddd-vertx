@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.domain
 
+import com.foreverht.isvgateway.domain.converter.ISVAuthExtraConverter
 import io.vertx.core.Future
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
@@ -40,6 +41,10 @@ class ISVAuthCode : BaseEntity() {
     @Column(name = "permanent_auth_code",length = 128)
     var permanentAuthCode:String? = null
 
+    @Column(name = "api_extra",length = 500)
+    @Convert(converter = ISVAuthExtraConverter::class)
+    var apiExtra:ISVAuthExtra? = null
+
     companion object {
         private val repository by lazy { InstanceFactory.getInstance(ISVClientRepository::class.java) }
 
@@ -68,6 +73,22 @@ class ISVAuthCode : BaseEntity() {
         }
     }
 
+
+    suspend fun saveApiExtra(extra: ISVAuthExtra):Future<ISVAuthCode>{
+        return try {
+            val authCode = queryPermanentAuthCode(suiteId = suiteId,orgId = orgId,clientType = clientType).await()
+            if(Objects.nonNull(authCode)){
+                authCode!!.apiExtra = extra
+                val updated = repository.save(authCode).await()
+                Future.succeededFuture(updated)
+            }else{
+                throw BusinessLogicException(ISVErrorCode.SUITE_AUTH_NOT_FOUND)
+            }
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
     suspend fun toPermanent():Future<ISVAuthCode>{
         return try {
             val authCode = repository.queryAuthCode(suiteId = suiteId,orgId = orgId,clientType = clientType).await()
@@ -85,9 +106,18 @@ class ISVAuthCode : BaseEntity() {
 
     suspend fun createTemporaryAuth():Future<ISVAuthCode>{
         return try {
-            this.authStatus = ISVAuthStatus.Temporary
-            this.created = System.currentTimeMillis()
-            return repository.save(this)
+            val exists = queryAuthCode(suiteId = this.suiteId,orgId = this.orgId,clientType = this.clientType).await()
+            return if(Objects.isNull(exists)){
+                this.authStatus = ISVAuthStatus.Temporary
+                this.created = System.currentTimeMillis()
+                repository.save(this)
+            }else{
+                exists!!.authStatus = ISVAuthStatus.Temporary
+                exists.temporaryAuthCode = this.temporaryAuthCode
+                exists.updated = System.currentTimeMillis()
+                repository.save(exists)
+            }
+
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
