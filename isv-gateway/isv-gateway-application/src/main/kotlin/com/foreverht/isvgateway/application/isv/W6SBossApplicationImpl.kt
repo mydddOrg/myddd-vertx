@@ -32,6 +32,8 @@ class W6SBossApplicationImpl:W6SBossApplication {
         private const val TEMPORARY_AUTH_CODE = "tmp_auth_code"
         private const val DOMAIN_ID = "domain_id"
         private const val ORG_ID = "org_id"
+        private const val EXPIRE_TIME = "expire_time"
+        private const val ACCESS_TOKEN = "access_token"
     }
 
     override suspend fun requestISVToken(clientId: String): Future<ISVClientToken?> {
@@ -231,7 +233,7 @@ class W6SBossApplicationImpl:W6SBossApplication {
                 .await()
             if(response.resultSuccess()){
                 val result = response.bodyAsJsonObject().getJsonObject("result")
-                Future.succeededFuture(Pair(result.getString("access_token"),result.getLong("expire_time")))
+                Future.succeededFuture(Pair(result.getString(ACCESS_TOKEN),result.getLong(EXPIRE_TIME)))
             }else{
                 Future.failedFuture(response.bodyAsString())
             }
