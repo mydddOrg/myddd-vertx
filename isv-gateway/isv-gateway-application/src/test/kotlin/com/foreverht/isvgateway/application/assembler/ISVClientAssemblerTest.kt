@@ -4,10 +4,12 @@ import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.ISVClientExtraDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
+import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
 import com.foreverht.isvgateway.domain.ISVClient
 import com.foreverht.isvgateway.domain.ISVClientExtra
 import com.foreverht.isvgateway.domain.ISVClientType
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
+import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.oauth2.domain.OAuth2Client
@@ -106,5 +108,37 @@ class ISVClientAssemblerTest : AbstractTest() {
         val notExistsExtraDTO = toISVClientExtraDTO(notExistsExtra)
 
         Assertions.assertNull(notExistsExtraDTO)
+    }
+
+    @Test
+    fun testToISVClientExtraISVDTO(){
+        val isvClientExtra = ISVClientExtraForWorkPlusISV()
+        isvClientExtra.suiteKey = UUID.randomUUID().toString()
+        isvClientExtra.suiteSecret = UUID.randomUUID().toString()
+        isvClientExtra.vendorKey = UUID.randomUUID().toString()
+        isvClientExtra.token = UUID.randomUUID().toString()
+        isvClientExtra.encryptSecret = UUID.randomUUID().toString()
+        isvClientExtra.isvApi = UUID.randomUUID().toString()
+        isvClientExtra.appId = UUID.randomUUID().toString()
+
+        val isvClientExtraDTO = toISVClientExtraDTO(isvClientExtra)
+        Assertions.assertNotNull(isvClientExtra)
+        Assertions.assertEquals(ISVClientExtraForWorkPlusISVDTO::class.java,isvClientExtraDTO!!::class.java)
+    }
+
+    @Test
+    fun testToISVClientExtraISV(){
+        val isvClientExtraDTO = ISVClientExtraForWorkPlusISVDTO(
+            suiteKey = randomString(),
+            suiteSecret = randomString(),
+            vendorKey = randomString(),
+            token = randomString(),
+            encryptSecret = randomString(),
+            isvApi = randomString(),
+            appId = randomString()
+        )
+
+        val isvClientExtraISV = toISVClientExtra(isvClientExtraDTO)
+        Assertions.assertNotNull(isvClientExtraISV)
     }
 }

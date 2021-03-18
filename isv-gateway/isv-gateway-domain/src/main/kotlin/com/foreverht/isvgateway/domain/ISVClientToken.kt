@@ -30,6 +30,15 @@ class ISVClientToken : BaseEntity() {
     companion object {
         private val repository by lazy { InstanceFactory.getInstance(ISVClientRepository::class.java) }
 
+        fun createInstanceByExtra(clientId: String,extra:ISVClientTokenExtra):ISVClientToken{
+            val clientToken = ISVClientToken()
+            clientToken.clientId = clientId
+            clientToken.clientType = extra.clientType
+            clientToken.extra = extra
+            clientToken.token = extra.accessToken()
+            return clientToken
+        }
+
         suspend fun queryByClientId(clientId:String):Future<ISVClientToken?>{
             return repository.singleQuery(ISVClientToken::class.java,"from ISVClientToken where clientId = :clientId",
                 mapOf("clientId" to clientId))

@@ -13,11 +13,15 @@ class ISVClientExtraForWorkPlusISV : ISVClientExtra() {
 
     lateinit var suiteSecret:String
 
+    lateinit var vendorKey:String
+
     lateinit var token:String
 
     lateinit var encryptSecret:String
 
     lateinit var isvApi:String
+
+    lateinit var appId:String
 
     override fun primaryId(): String {
         return suiteKey

@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusApp
+import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusISV
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
@@ -14,6 +15,22 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class ISVClientTokenTest : AbstractTest() {
+
+    @Test
+    fun testCreateInstance(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
+                val instance = ISVClientToken.createInstanceByExtra(clientId = randomString(),extra = isvClientTokenExtra)
+                testContext.verify {
+                    Assertions.assertNotNull(instance)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
 
     @Test
     fun testCreateClientTokenByExtra(vertx: Vertx,testContext: VertxTestContext){
@@ -39,6 +56,12 @@ class ISVClientTokenTest : AbstractTest() {
                     Assertions.assertNotNull(created)
                     Assertions.assertTrue(created.id > 0)
                 }
+
+                val anotherCreated = randomISVExtraClientToken().saveClientToken().await()
+                testContext.verify {
+                    Assertions.assertNotNull(anotherCreated)
+                    Assertions.assertTrue(anotherCreated.id > 0)
+                }
             }catch (t:Throwable){
                 testContext.failNow(t)
             }
@@ -62,6 +85,19 @@ class ISVClientTokenTest : AbstractTest() {
                 testContext.verify {
                     Assertions.assertNotNull(queryClientToken)
                 }
+
+                val anotherCreated = randomISVExtraClientToken().saveClientToken().await()
+                testContext.verify {
+                    Assertions.assertNotNull(anotherCreated)
+                    Assertions.assertTrue(anotherCreated.id > 0)
+                }
+
+                val anotherQuery = ISVClientToken.queryByClientId(clientId = anotherCreated.clientId).await()
+                testContext.verify {
+                    Assertions.assertNotNull(anotherQuery)
+                    Assertions.assertTrue(anotherCreated.id > 0)
+                }
+
 
             }catch (t:Throwable){
                 testContext.failNow(t)
@@ -117,14 +153,26 @@ class ISVClientTokenTest : AbstractTest() {
         isvClientToken.token = randomIDString.randomString()
         isvClientToken.clientType = ISVClientType.WorkPlusApp
 
-        val isvClientTokenExtra = ISVClientTokenExtraForWorkPlusApp()
-        isvClientTokenExtra.accessToken = randomIDString.randomString()
-        isvClientTokenExtra.clientId = randomIDString.randomString()
-        isvClientTokenExtra.expireTime = System.currentTimeMillis()
-        isvClientTokenExtra.issuedTime = System.currentTimeMillis()
-        isvClientTokenExtra.refreshToken = randomIDString.randomString()
-
+        val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
         isvClientToken.extra = isvClientTokenExtra
         return isvClientToken
+    }
+
+    private fun randomISVExtraClientToken():ISVClientToken {
+        val isvClientToken = ISVClientToken()
+        isvClientToken.clientId = randomIDString.randomString()
+        isvClientToken.token = randomIDString.randomString()
+        isvClientToken.clientType = ISVClientType.WorkPlusApp
+
+        val isvClientTokenExtra = isvClientTokenExtraForISV()
+        isvClientToken.extra = isvClientTokenExtra
+        return isvClientToken
+    }
+
+    private fun isvClientTokenExtraForISV():ISVClientTokenExtraForWorkPlusISV {
+        val extra = ISVClientTokenExtraForWorkPlusISV()
+        extra.accessToken = randomString()
+        extra.expireTime = System.currentTimeMillis() + 10000
+        return extra
     }
 }

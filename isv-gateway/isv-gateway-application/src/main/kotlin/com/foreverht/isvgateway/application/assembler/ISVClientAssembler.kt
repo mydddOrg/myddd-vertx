@@ -3,9 +3,11 @@ package com.foreverht.isvgateway.application.assembler
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.ISVClientExtraDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
+import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
 import com.foreverht.isvgateway.domain.ISVClient
 import com.foreverht.isvgateway.domain.ISVClientExtra
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
+import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
 
 
 fun toISVClientDTO(isvClient:ISVClient) : ISVClientDTO {
@@ -36,6 +38,17 @@ fun toISVClientExtra(isvExtraDTO: ISVClientExtraDTO):ISVClientExtra? {
             isvClientExtra.ownerId = isvExtraDTO.ownerId
             isvClientExtra
         }
+        is ISVClientExtraForWorkPlusISVDTO -> {
+            val isvClientExtra = ISVClientExtraForWorkPlusISV()
+            isvClientExtra.suiteKey = isvExtraDTO.suiteKey
+            isvClientExtra.suiteSecret = isvExtraDTO.suiteSecret
+            isvClientExtra.vendorKey = isvExtraDTO.vendorKey
+            isvClientExtra.token = isvExtraDTO.token
+            isvClientExtra.encryptSecret = isvExtraDTO.encryptSecret
+            isvClientExtra.isvApi = isvExtraDTO.isvApi
+            isvClientExtra.appId = isvExtraDTO.appId
+            isvClientExtra
+        }
         else -> null
     }
 }
@@ -49,6 +62,17 @@ fun toISVClientExtraDTO(isvClientExtra: ISVClientExtra) : ISVClientExtraDTO? {
                 api = isvClientExtra.api,
                 domainId = isvClientExtra.domainId,
                 ownerId = isvClientExtra.ownerId
+            )
+        }
+        is ISVClientExtraForWorkPlusISV -> {
+            ISVClientExtraForWorkPlusISVDTO(
+                suiteKey = isvClientExtra.suiteKey,
+                suiteSecret = isvClientExtra.suiteSecret,
+                vendorKey = isvClientExtra.vendorKey,
+                token = isvClientExtra.token,
+                encryptSecret = isvClientExtra.encryptSecret,
+                isvApi = isvClientExtra.isvApi,
+                appId = isvClientExtra.appId
             )
         }
         else -> null

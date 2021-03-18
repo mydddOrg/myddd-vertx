@@ -4,6 +4,7 @@ import com.foreverht.isvgateway.domain.ISVClientTokenExtra
 import com.foreverht.isvgateway.domain.ISVClientType
 import com.foreverht.isvgateway.domain.ISVErrorCode
 import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusApp
+import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusISV
 import io.vertx.core.json.JsonObject
 import org.myddd.vertx.base.BusinessLogicException
 import javax.persistence.AttributeConverter
@@ -18,6 +19,7 @@ class ISVClientTokenExtraConverter: AttributeConverter<ISVClientTokenExtra, Stri
 
         return when (jsonObject.getString("clientType").toUpperCase()){
             ISVClientType.WorkPlusApp.toString().toUpperCase() -> jsonObject.mapTo(ISVClientTokenExtraForWorkPlusApp::class.java)
+            ISVClientType.WorkPlusISV.toString().toUpperCase() -> jsonObject.mapTo(ISVClientTokenExtraForWorkPlusISV::class.java)
             else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
         }
     }

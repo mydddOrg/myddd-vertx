@@ -4,6 +4,8 @@ import com.foreverht.isvgateway.api.*
 import com.foreverht.isvgateway.application.ISVAuthCodeApplicationImpl
 import com.foreverht.isvgateway.application.ISVClientApplicationImpl
 import com.foreverht.isvgateway.application.ISVSuiteTicketApplicationImpl
+import com.foreverht.isvgateway.application.W6SBossApplication
+import com.foreverht.isvgateway.application.isv.W6SBossApplicationImpl
 import com.foreverht.isvgateway.application.workplus.*
 import com.foreverht.isvgateway.domain.ISVClientRepository
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
@@ -60,6 +62,7 @@ abstract class AbstractTest {
                     bind(ISVClientApplication::class.java).to(ISVClientApplicationImpl::class.java)
                     bind(ISVSuiteTicketApplication::class.java).to(ISVSuiteTicketApplicationImpl::class.java)
                     bind(ISVAuthCodeApplication::class.java).to(ISVAuthCodeApplicationImpl::class.java)
+                    bind(W6SBossApplication::class.java).to(W6SBossApplicationImpl::class.java)
 
                     bind(AccessTokenApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(AccessTokenApplicationWorkPlus::class.java)
                     bind(OrganizationApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to((OrganizationApplicationWorkPlus::class.java))

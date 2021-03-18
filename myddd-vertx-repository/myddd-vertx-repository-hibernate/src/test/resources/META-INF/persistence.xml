@@ -18,7 +18,7 @@
             <property name="javax.persistence.jdbc.user"
                       value="root"/>
             <property name="javax.persistence.jdbc.password"
-                      value="lingen"/>
+                      value="lingen0929"/>
 
             <!-- The Vert.x SQL Client connection pool size -->
             <property name="hibernate.connection.pool_size"

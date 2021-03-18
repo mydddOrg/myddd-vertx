@@ -189,6 +189,8 @@ class ISVClientTest : AbstractTest() {
         extra.token = randomString()
         extra.encryptSecret = randomString()
         extra.isvApi = randomString()
+        extra.appId = randomString()
+        extra.vendorKey = randomString()
         return extra
     }
 }

@@ -1,4 +1,4 @@
-package com.foreverht.isvgateway.workplus
+package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.AbstractWorkPlusTest
 import com.foreverht.isvgateway.api.EmployeeApplication

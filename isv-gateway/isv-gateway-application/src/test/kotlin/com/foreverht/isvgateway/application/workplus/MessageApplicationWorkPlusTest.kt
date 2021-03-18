@@ -1,4 +1,4 @@
-package com.foreverht.isvgateway.workplus
+package com.foreverht.isvgateway.application.workplus
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule

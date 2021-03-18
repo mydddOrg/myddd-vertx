@@ -4,6 +4,7 @@ import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
+import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -36,11 +37,17 @@ class ISVClientApplicationTest : AbstractTest() {
             try {
                 val isvClientDTO = randomISVClient()
                 val created = isvClientApplication.createISVClient(isvClientDTO).await()
-
                 testContext.verify {
                     Assertions.assertNotNull(created)
                     Assertions.assertNotNull(created.clientId)
                     Assertions.assertNotNull(created.clientSecret)
+                }
+
+                val w6sISVCreated = isvClientApplication.createISVClient(randomISVClient()).await()
+                testContext.verify {
+                    Assertions.assertNotNull(w6sISVCreated)
+                    Assertions.assertNotNull(w6sISVCreated.clientId)
+                    Assertions.assertNotNull(w6sISVCreated.clientSecret)
                 }
                 testContext.completeNow()
             }catch (t:Throwable){
@@ -119,4 +126,17 @@ class ISVClientApplicationTest : AbstractTest() {
         return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())
     }
 
+    private fun randomW6SISVClient() : ISVClientDTO {
+        val isvClientExtraDTO = ISVClientExtraForWorkPlusISVDTO(
+            suiteKey = randomString(),
+            suiteSecret = randomString(),
+            vendorKey = randomString(),
+            token = randomString(),
+            encryptSecret = randomString(),
+            isvApi = randomString(),
+            appId = randomString()
+        )
+
+        return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())
+    }
 }
