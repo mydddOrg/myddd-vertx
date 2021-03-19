@@ -88,7 +88,7 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
                     try {
                         val suiteId = it.pathParam("suiteId")
                         val orgId = it.pathParam("orgId")
-                        val authCodeDTO = isvAuthCodeApplication.queryTemporaryAuthCode(suiteId = suiteId,orgId = orgId,clientType = CLIENT_TYPE_WORKPLUS_ISV).await()
+                        val authCodeDTO = isvAuthCodeApplication.queryTemporaryAuthCode(suiteId = suiteId,domainId = "workplus",orgCode = orgId,clientType = CLIENT_TYPE_WORKPLUS_ISV).await()
                         it.end(JsonObject.mapFrom(authCodeDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
@@ -119,7 +119,7 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
             val isvAuthCodeDTO = ISVAuthCodeDTO(
                 suiteId = bodyJson.getString("suite_key"),
                 domainId = param.getString("domain_id"),
-                orgId = param.getString("org_code"),
+                orgCode = param.getString("org_code"),
                 temporaryAuthCode = param.getString("tmp_auth_code"),
                 clientType = CLIENT_TYPE_WORKPLUS_ISV,
                 authStatus = "Temporary"

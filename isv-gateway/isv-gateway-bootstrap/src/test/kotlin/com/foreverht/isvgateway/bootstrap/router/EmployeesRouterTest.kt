@@ -25,10 +25,11 @@ class EmployeesRouterTest : AbstractISVRouterTest() {
     fun testSearchEmployeeById(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                var response = webClient.get(port,host,"/v1/organizations/$ownerId/employeesSearch?query=$query&accessToken=$accessToken")
+                val response = webClient.get(port,host,"/v1/organizations/$ownerId/employeesSearch?query=$query&accessToken=$accessToken")
                     .send()
                     .await()
                 testContext.verify {
+                    logger.error(response.bodyAsString())
                     Assertions.assertEquals(200,response.statusCode())
                 }
 
@@ -61,7 +62,7 @@ class EmployeesRouterTest : AbstractISVRouterTest() {
     fun testBatchQueryEmployeeById(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                var response = webClient.get(port,host,"/v1/organizations/$ownerId/employeesBatch?userIds=$userId&accessToken=$accessToken")
+                val response = webClient.get(port,host,"/v1/organizations/$ownerId/employeesBatch?userIds=$userId&accessToken=$accessToken")
                     .send()
                     .await()
                 testContext.verify {
@@ -96,7 +97,7 @@ class EmployeesRouterTest : AbstractISVRouterTest() {
     fun testQueryEmployeeById(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                var response = webClient.get(port,host,"/v1/organizations/$ownerId/employees/$userId?accessToken=$accessToken")
+                val response = webClient.get(port,host,"/v1/organizations/$ownerId/employees/$userId?accessToken=$accessToken")
                     .send()
                     .await()
                 testContext.verify {

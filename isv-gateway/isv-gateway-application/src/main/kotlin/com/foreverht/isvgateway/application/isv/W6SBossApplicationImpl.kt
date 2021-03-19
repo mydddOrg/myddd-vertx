@@ -3,7 +3,7 @@ package com.foreverht.isvgateway.application.isv
 import com.foreverht.isvgateway.application.W6SBossApplication
 import com.foreverht.isvgateway.application.workplus.resultSuccess
 import com.foreverht.isvgateway.domain.*
-import com.foreverht.isvgateway.domain.extra.ISVAuthExtraForISV
+import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForISV
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
 import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusISV
 import io.vertx.core.Future
@@ -36,70 +36,67 @@ class W6SBossApplicationImpl:W6SBossApplication {
         private const val ACCESS_TOKEN = "access_token"
     }
 
-    override suspend fun requestISVToken(clientId: String): Future<ISVClientToken?> {
+    override suspend fun requestISVToken(clientId: String): Future<ISVClient> {
         return try {
-            val existsIsvClientToken = ISVClientToken.queryByClientId(clientId = clientId).await()
-            if (Objects.nonNull(existsIsvClientToken)){
-                Future.succeededFuture(existsIsvClientToken)
+
+            val isvClient = queryExistClient(clientId).await()
+
+            val clientAuthExtra = isvClient.clientAuthExtra as ISVClientAuthExtraForISV?
+
+            if (Objects.nonNull(clientAuthExtra) && clientAuthExtra!!.clientTokenValid()){
+                Future.succeededFuture(isvClient)
             }
             else{
-                val isvClientToken = generateToken(clientId).await()
-                Future.succeededFuture(isvClientToken)
+                val generated = generateToken(isvClient).await()
+                Future.succeededFuture(generated)
             }
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
     }
 
-    override suspend fun requestPermanentCode(clientId: String, orgId: String): Future<ISVAuthCode> {
+    override suspend fun requestPermanentCode(clientId: String, domainId: String, orgCode: String): Future<ISVAuthCode> {
         return try {
-            val (isvClient,isvClientToken) = requestClientBaseInfo(clientId = clientId).await()
-
+            val isvClient = requestISVToken(clientId).await()
             val extra = isvClient.extra as ISVClientExtraForWorkPlusISV
+            val clientAuthExtra = isvClient.clientAuthExtra as ISVClientAuthExtraForISV
 
-            val authCode = ISVAuthCode.queryAuthCode(suiteId = extra.suiteKey,orgId = orgId,clientType = ISVClientType.WorkPlusISV).await()
+            val authCode = ISVAuthCode.queryAuthCode(suiteId = extra.suiteKey,domainId = domainId,orgCode = orgCode,clientType = ISVClientType.WorkPlusISV).await()
             if(authCode?.authStatus == ISVAuthStatus.Permanent){
-                 Future.succeededFuture(authCode)
+                Future.succeededFuture(authCode)
             }else{
-                val tmpAuthCode = ISVAuthCode.queryTemporaryAuthCode(suiteId = extra.suiteKey,orgId = orgId,clientType = ISVClientType.WorkPlusISV).await()
-                if(Objects.isNull(tmpAuthCode)){
-                    throw BusinessLogicException(ISVErrorCode.TEMPORARY_CODE_NOT_FOUND)
-                }
-
                 val requestBody = json {
                     obj(
                         SUITE_KEY to extra.suiteKey,
-                        TEMPORARY_AUTH_CODE to tmpAuthCode!!.temporaryAuthCode
+                        TEMPORARY_AUTH_CODE to authCode!!.temporaryAuthCode
                     )
                 }
-
-                val requestUrl = String.format(PERMANENT_URL,extra.isvApi, isvClientToken.token)
+                val requestUrl = String.format(PERMANENT_URL,extra.isvApi, clientAuthExtra.accessToken)
                 val response = webClient.postAbs(requestUrl)
                     .sendJsonObject(requestBody)
                     .await()
                 if(response.resultSuccess()){
                     val body = response.bodyAsJsonObject()
-                    tmpAuthCode!!.permanentAuthCode = body.getJsonObject("result").getString("permanent_code")
-                    val permanentCode = tmpAuthCode.toPermanent().await()
+                    authCode!!.permanentAuthCode = body.getJsonObject("result").getString("permanent_code")
+                    val permanentCode = authCode.toPermanent().await()
                     Future.succeededFuture(permanentCode)
                 }else{
                     Future.failedFuture(response.bodyAsString())
                 }
             }
-
-
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
     }
 
-    override suspend fun activeSuite(clientId: String, orgId: String): Future<Boolean> {
+    override suspend fun activeSuite(clientId: String, domainId: String, orgCode: String): Future<Boolean> {
         return try {
-            val (isvClient,isvClientToken,permanentAuthCode) = requestClientInfo(clientId = clientId,orgId = orgId).await()
-
+            val (isvClient,permanentAuthCode) = queryPermanentSuite(clientId = clientId,domainId = domainId,orgCode = orgCode).await()
             val extra = isvClient.extra as ISVClientExtraForWorkPlusISV
+            val clientAuthExtra = isvClient.clientAuthExtra as ISVClientAuthExtraForISV?
+            requireNotNull(clientAuthExtra)
 
-            val requestUrl = String.format(ACTIVATE_SUITE_URL,extra.isvApi, isvClientToken.token)
+            val requestUrl = String.format(ACTIVATE_SUITE_URL,extra.isvApi, clientAuthExtra.accessToken)
             val response = webClient.postAbs(requestUrl)
                 .sendJsonObject(
                     json {
@@ -120,29 +117,33 @@ class W6SBossApplicationImpl:W6SBossApplication {
         }
     }
 
-    override suspend fun requestApiAccessToken(clientId: String, orgId: String): Future<ISVAuthCode> {
+    override suspend fun requestApiAccessToken(clientId: String, domainId:String, orgCode: String): Future<ISVClientToken> {
         return try {
-            val (isvClient,isvClientToken,permanentAuthCode) = requestClientInfo(clientId = clientId,orgId = orgId).await()
+            val (isvClient,permanentAuthCode) = queryPermanentSuite(clientId = clientId,domainId = domainId,orgCode = orgCode).await()
             val extra = isvClient.extra as ISVClientExtraForWorkPlusISV
+            val clientAuthExtra = isvClient.clientAuthExtra as ISVClientAuthExtraForISV?
+            requireNotNull(clientAuthExtra)
 
             val requestJson = json {
                 obj(
                     SUITE_KEY to extra.suiteKey,
                     PERMANENT_CODE to permanentAuthCode.permanentAuthCode,
                     DOMAIN_ID to permanentAuthCode.domainId,
-                    ORG_ID to permanentAuthCode.orgId,
+                    ORG_ID to permanentAuthCode.orgCode,
                 )
             }
-            val requestUrl = String.format(API_ACCESS_TOKEN,extra.isvApi,isvClientToken.token)
+            val requestUrl = String.format(API_ACCESS_TOKEN,extra.isvApi,clientAuthExtra.accessToken)
             val response = webClient.postAbs(requestUrl)
                 .sendJsonObject(requestJson)
                 .await()
 
             if(response.resultSuccess()){
                 val body = response.bodyAsJsonObject()
-                val isvAuthExtra = ISVAuthExtraForISV.createInstanceFromJson(body.getJsonObject("result"))
-                val saved = permanentAuthCode.saveApiExtra(isvAuthExtra).await()
-                Future.succeededFuture(saved)
+                val clientTokenExtra = ISVClientTokenExtraForWorkPlusISV.createInstanceFromJson(body.getJsonObject("result"))
+                val isvClientToken = ISVClientToken.createInstanceByExtra(client = isvClient,domainId = domainId,orgCode = orgCode,extra = clientTokenExtra)
+
+                val created = isvClientToken.createClientToken().await()
+                Future.succeededFuture(created)
             }else{
                 Future.failedFuture(response.bodyAsString())
             }
@@ -152,56 +153,43 @@ class W6SBossApplicationImpl:W6SBossApplication {
         }
     }
 
-    private suspend fun requestClientBaseInfo(clientId: String):Future<Pair<ISVClient,ISVClientToken>>{
+    private suspend fun queryExistClient(clientId: String):Future<ISVClient>{
         return try {
+
             val isvClient = ISVClient.queryClient(clientId = clientId).await()
-            if (Objects.isNull(isvClient)) {
+            if(Objects.isNull(isvClient)){
                 throw BusinessLogicException(ISVErrorCode.CLIENT_ID_NOT_FOUND)
             }
-
-            val isvClientToken = requestISVToken(clientId = clientId).await()
-            if(Objects.isNull(isvClientToken)){
-                throw BusinessLogicException(ISVErrorCode.REMOTE_CLIENT_TOKEN_REQUEST_FAIL)
-            }
-
-            Future.succeededFuture(Pair(isvClient!!, isvClientToken!!))
+            Future.succeededFuture(isvClient)
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
-
     }
 
-    private suspend fun requestClientInfo(clientId: String,orgId: String):Future<Triple<ISVClient,ISVClientToken,ISVAuthCode>>{
+    private suspend fun queryPermanentSuite(clientId: String, domainId: String, orgCode: String):Future<Pair<ISVClient,ISVAuthCode>>{
         return try {
 
-            val (isvClient,isvClientToken) = requestClientBaseInfo(clientId = clientId).await()
+            val isvClient = requestISVToken(clientId).await()
 
             val extra = isvClient.extra as ISVClientExtraForWorkPlusISV
 
-            val permanentAuthCode = ISVAuthCode.queryPermanentAuthCode(suiteId = extra.suiteKey,orgId = orgId,clientType = ISVClientType.WorkPlusISV).await()
+            val permanentAuthCode = ISVAuthCode.queryPermanentAuthCode(suiteId = extra.suiteKey,domainId = domainId, orgCode = orgCode,clientType = ISVClientType.WorkPlusISV).await()
             if(Objects.isNull(permanentAuthCode)){
                 throw BusinessLogicException(ISVErrorCode.PERMANENT_CODE_NOT_FOUND)
             }
 
-            Future.succeededFuture(Triple(isvClient, isvClientToken,permanentAuthCode!!))
+            Future.succeededFuture(Pair(isvClient,permanentAuthCode!!))
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
     }
 
-    internal suspend fun generateToken(clientId: String): Future<ISVClientToken?> {
+    private suspend fun generateToken(isvClient: ISVClient): Future<ISVClient> {
         return try {
-            val isvClient = ISVClient.queryClient(clientId = clientId).await()
-            if (Objects.isNull(isvClient)) {
-                throw BusinessLogicException(ISVErrorCode.CLIENT_ID_NOT_FOUND)
-            }
-            val (accessToken, expireTime) = requestSuiteToken(isvClient = isvClient!!).await()
-
-            val tokenExtra =ISVClientTokenExtraForWorkPlusISV.createInstance(accessToken = accessToken, expireTime = expireTime)
-            val isvClientToken = ISVClientToken.createInstanceByExtra(clientId = clientId, extra = tokenExtra)
-
-            val createdISVClientToken = isvClientToken.saveClientToken().await()
-            return Future.succeededFuture(createdISVClientToken)
+            val (accessToken, expireTime) = requestSuiteToken(isvClient = isvClient).await()
+            val clientAuthExtra = ISVClientAuthExtraForISV.createInstance(accessToken = accessToken, expireTime = expireTime)
+            val updated = isvClient.saveClientAuthExtra(clientAuthExtra).await()
+            return Future.succeededFuture(updated)
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

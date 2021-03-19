@@ -1,27 +1,64 @@
 package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.AbstractTest
+import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
+import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
 import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusApp
-import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusISV
-import io.vertx.core.Future
 import io.vertx.core.Vertx
-import io.vertx.core.json.JsonObject
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class ISVClientTokenTest : AbstractTest() {
+
+    companion object {
+
+        lateinit var createdISVClient:ISVClient
+
+
+        @BeforeAll
+        @JvmStatic
+        fun createISVClient(vertx: Vertx,testContext: VertxTestContext){
+
+            GlobalScope.launch(vertx.dispatcher()) {
+                try {
+                    val isvClient = ISVClient.createClient(clientName = UUID.randomUUID().toString(),extra = createISVExtra(),callback = "http://callback.workplus.io")
+                    createdISVClient = isvClient.createISVClient().await()
+                    testContext.verify { Assertions.assertNotNull(createdISVClient) }
+                }catch (t:Throwable){
+                    testContext.failNow(t)
+                }
+                testContext.completeNow()
+            }
+
+        }
+
+        private fun createISVExtra():ISVClientExtra {
+            val extra = ISVClientExtraForWorkPlusISV()
+            extra.suiteKey = randomIDString.randomString()
+            extra.suiteSecret = randomIDString.randomString()
+            extra.token = randomIDString.randomString()
+            extra.encryptSecret = randomIDString.randomString()
+            extra.isvApi = randomIDString.randomString()
+            extra.appId = randomIDString.randomString()
+            extra.vendorKey = randomIDString.randomString()
+            return extra
+        }
+    }
 
     @Test
     fun testCreateInstance(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
+
                 val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
-                val instance = ISVClientToken.createInstanceByExtra(clientId = randomString(),extra = isvClientTokenExtra)
+                val instance = ISVClientToken.createInstanceByExtra(client = createdISVClient,extra = isvClientTokenExtra,domainId = randomString(),orgCode = randomString())
                 testContext.verify {
                     Assertions.assertNotNull(instance)
                 }
@@ -33,41 +70,21 @@ class ISVClientTokenTest : AbstractTest() {
     }
 
     @Test
-    fun testCreateClientTokenByExtra(vertx: Vertx,testContext: VertxTestContext){
+    fun testCreateISVClientToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
-                val created = ISVClientToken.saveByExtraToken(isvClientTokenExtra, randomIDString.randomString()).await()
+                val instance = ISVClientToken.createInstanceByExtra(client = createdISVClient,extra = isvClientTokenExtra,domainId = randomString(),orgCode = randomString())
+
+                val created = instance.createClientToken().await()
                 testContext.verify { Assertions.assertNotNull(created) }
-            }catch (t:Throwable){
-                testContext.failNow(t)
-            }
-            testContext.completeNow()
-        }
-    }
 
-    @Test
-    fun testSaveClientToken(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val clientToken = randomClientToken()
-                val created = clientToken.saveClientToken().await()
-                testContext.verify {
-                    Assertions.assertNotNull(created)
-                    Assertions.assertTrue(created.id > 0)
-                }
-
-                created.id = 0
-                val updated = created.saveClientToken().await()
-                testContext.verify {
-                    Assertions.assertNotNull(updated)
-                    Assertions.assertTrue(updated.id > 0)
-                }
-
-                val anotherCreated = randomISVExtraClientToken().saveClientToken().await()
-                testContext.verify {
-                    Assertions.assertNotNull(anotherCreated)
-                    Assertions.assertTrue(anotherCreated.id > 0)
+                try {
+                    val errorInstance = ISVClientToken.createInstanceByExtra(client = createdISVClient,extra = isvClientTokenExtra,domainId = randomIDString.randomString(128),orgCode = created.orgCode)
+                    errorInstance.createClientToken().await()
+                    testContext.failNow("不能执行到这，会抛出异常")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
                 }
             }catch (t:Throwable){
                 testContext.failNow(t)
@@ -80,32 +97,18 @@ class ISVClientTokenTest : AbstractTest() {
     fun testQueryClientToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val notExists = ISVClientToken.queryByClientId(clientId = randomIDString.randomString()).await()
-                testContext.verify {
-                    Assertions.assertNull(notExists)
-                }
+                val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
+                val instance = ISVClientToken.createInstanceByExtra(client = createdISVClient,extra = isvClientTokenExtra,domainId = randomString(),orgCode = randomString())
 
-                val clientToken = randomClientToken()
-                val created = clientToken.saveClientToken().await()
+                val created = instance.createClientToken().await()
+                testContext.verify { Assertions.assertNotNull(created) }
 
-                val queryClientToken = ISVClientToken.queryByClientId(clientId = created.clientId).await()
-                testContext.verify {
-                    Assertions.assertNotNull(queryClientToken)
-                }
-
-                val anotherCreated = randomISVExtraClientToken().saveClientToken().await()
-                testContext.verify {
-                    Assertions.assertNotNull(anotherCreated)
-                    Assertions.assertTrue(anotherCreated.id > 0)
-                }
-
-                val anotherQuery = ISVClientToken.queryByClientId(clientId = anotherCreated.clientId).await()
-                testContext.verify {
-                    Assertions.assertNotNull(anotherQuery)
-                    Assertions.assertTrue(anotherCreated.id > 0)
-                }
+                val query = ISVClientToken.queryClientToken(clientId = createdISVClient.clientId,domainId = created.domainId,orgCode = created.orgCode).await()
+                testContext.verify { Assertions.assertNotNull(query) }
 
 
+                val noExists = ISVClientToken.queryClientToken(clientId = randomString(),domainId = created.domainId,orgCode = created.orgCode).await()
+                testContext.verify { Assertions.assertNull(noExists) }
             }catch (t:Throwable){
                 testContext.failNow(t)
             }
@@ -114,34 +117,59 @@ class ISVClientTokenTest : AbstractTest() {
     }
 
     @Test
-    fun testCreateInstanceFormJsonObject(vertx: Vertx,testContext: VertxTestContext){
+    fun testUpdateISVClientToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val json = JsonObject("{\"access_token\":\"8b53c657c3be9973da527f43a8165b15fb09f1b12a9de59a0ac0475732336ee4\",\"refresh_token\":\"8b53c657c3be9973da527f43a8165b15fb09f1b12a9de59a0ac0475732336ee4\",\"client_id\":\"02018e570da2f42bf598d2f5628183d158e22a72\",\"expire_time\":1617864984591,\"issued_time\":1615272984591}")
-                val extra = ISVClientTokenExtraForWorkPlusApp.createInstanceFormJsonObject(json)
+                val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
+                val instance = ISVClientToken.createInstanceByExtra(client = createdISVClient,extra = isvClientTokenExtra,domainId = randomString(),orgCode = randomString())
+
+                val created = instance.createClientToken().await()
+                testContext.verify { Assertions.assertNotNull(created) }
+
+                val newToken = randomString()
+                isvClientTokenExtra.accessToken = newToken
+
+                val updated = instance.updateByExtraToken(isvClientTokenExtra).await()
                 testContext.verify {
-                    Assertions.assertNotNull(extra)
-                    Assertions.assertEquals("8b53c657c3be9973da527f43a8165b15fb09f1b12a9de59a0ac0475732336ee4",extra.accessToken)
+                    Assertions.assertNotNull(updated)
+                    Assertions.assertEquals(newToken,updated.extra.accessToken())
                 }
+
+                try {
+                    isvClientTokenExtra.accessToken = randomIDString.randomString(200)
+                    instance.updateByExtraToken(isvClientTokenExtra).await()
+                    testContext.failNow("ERROR：TOKEN长度过长，不可能成功存储到数据训")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
             }catch (t:Throwable){
                 testContext.failNow(t)
             }
             testContext.completeNow()
         }
-
     }
 
     @Test
-    fun testIsTokenValid(vertx: Vertx,testContext: VertxTestContext){
-        val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
+    fun testQueryByToken(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
+                val instance = ISVClientToken.createInstanceByExtra(client = createdISVClient,extra = isvClientTokenExtra,domainId = randomString(),orgCode = randomString())
+                val created = instance.createClientToken().await()
+                testContext.verify { Assertions.assertNotNull(created) }
 
-        Assertions.assertTrue(isvClientTokenExtra.accessTokenValid())
+                val query = ISVClientToken.queryByToken(token = created.token).await()
 
-        isvClientTokenExtra.expireTime = System.currentTimeMillis() - 1
-        Assertions.assertFalse(isvClientTokenExtra.accessTokenValid())
+                testContext.verify { Assertions.assertNotNull(query) }
 
-        testContext.completeNow()
-
+                val notExists = ISVClientToken.queryByToken(token = randomString()).await()
+                testContext.verify { Assertions.assertNull(notExists) }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
     }
 
     private fun isvClientTokenExtraForWorkPlusApp(): ISVClientTokenExtraForWorkPlusApp {
@@ -154,32 +182,5 @@ class ISVClientTokenTest : AbstractTest() {
         return isvClientTokenExtra
     }
 
-    private fun randomClientToken():ISVClientToken {
-        val isvClientToken = ISVClientToken()
-        isvClientToken.clientId = randomIDString.randomString()
-        isvClientToken.token = randomIDString.randomString()
-        isvClientToken.clientType = ISVClientType.WorkPlusApp
 
-        val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
-        isvClientToken.extra = isvClientTokenExtra
-        return isvClientToken
-    }
-
-    private fun randomISVExtraClientToken():ISVClientToken {
-        val isvClientToken = ISVClientToken()
-        isvClientToken.clientId = randomIDString.randomString()
-        isvClientToken.token = randomIDString.randomString()
-        isvClientToken.clientType = ISVClientType.WorkPlusApp
-
-        val isvClientTokenExtra = isvClientTokenExtraForISV()
-        isvClientToken.extra = isvClientTokenExtra
-        return isvClientToken
-    }
-
-    private fun isvClientTokenExtraForISV():ISVClientTokenExtraForWorkPlusISV {
-        val extra = ISVClientTokenExtraForWorkPlusISV()
-        extra.accessToken = randomString()
-        extra.expireTime = System.currentTimeMillis() + 10000
-        return extra
-    }
 }

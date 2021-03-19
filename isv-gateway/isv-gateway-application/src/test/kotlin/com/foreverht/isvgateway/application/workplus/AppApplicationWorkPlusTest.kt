@@ -20,7 +20,7 @@ class AppApplicationWorkPlusTest: AbstractWorkPlusTest()  {
     fun testGetAdmins(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val admins = appApplication.getAdminList(clientId = isvClientId).await()
+                val admins = appApplication.getAdminList(isvAccessToken = isvAccessToken).await()
                 testContext.verify {
                     Assertions.assertTrue(admins.isNotEmpty())
                 }
@@ -35,7 +35,7 @@ class AppApplicationWorkPlusTest: AbstractWorkPlusTest()  {
     fun testGetAppDetail(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val appDTO = appApplication.getAppDetail(clientId = isvClientId).await()
+                val appDTO = appApplication.getAppDetail(isvAccessToken = isvAccessToken).await()
                 testContext.verify {
                     logger.debug(appDTO)
                     Assertions.assertNotNull(appDTO)

@@ -1,11 +1,9 @@
 package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.AbstractTest
-import com.foreverht.isvgateway.domain.extra.ISVAuthExtraForISV
+import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForISV
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
-import io.vertx.kotlin.core.json.json
-import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -30,7 +28,7 @@ class ISVAuthCodeTest : AbstractTest() {
                 created.createTemporaryAuth().await()
 
                 try {
-                    ISVAuthCode.queryPermanentAuthCode(suiteId = created.suiteId,clientType = created.clientType,orgId = created.orgId).await()
+                    ISVAuthCode.queryPermanentAuthCode(suiteId = created.suiteId,clientType = created.clientType,domainId = created.domainId,orgCode = created.orgCode).await()
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }
@@ -39,21 +37,6 @@ class ISVAuthCodeTest : AbstractTest() {
 
                 val permanent = created.toPermanent().await()
                 testContext.verify { Assertions.assertNotNull(permanent) }
-
-                val json = json {
-                    obj(
-                        "api_access_token" to randomString(),
-                        "access_endpoint" to randomString(),
-                        "website_endpoint" to randomString(),
-                        "expire_time" to System.currentTimeMillis()
-                    )
-                }
-
-                val extra = ISVAuthExtraForISV.createInstanceFromJson(json)
-
-                val withExtra = permanent.saveApiExtra(extra).await()
-
-                testContext.verify { Assertions.assertNotNull(withExtra) }
             }catch (t:Throwable){
                 testContext.failNow(t)
             }
@@ -63,16 +46,7 @@ class ISVAuthCodeTest : AbstractTest() {
 
     @Test
     fun testCreateISVAuthCodeExtra(){
-        val json = json {
-            obj(
-                "api_access_token" to randomString(),
-                "access_endpoint" to randomString(),
-                "website_endpoint" to randomString(),
-                "expire_time" to System.currentTimeMillis()
-            )
-        }
-
-        val extra = ISVAuthExtraForISV.createInstanceFromJson(json)
+        val extra = ISVClientAuthExtraForISV.createInstance(randomString(),System.currentTimeMillis())
         Assertions.assertNotNull(extra)
     }
 
@@ -90,7 +64,7 @@ class ISVAuthCodeTest : AbstractTest() {
                 created.createTemporaryAuth().await()
 
                 try {
-                    ISVAuthCode.queryPermanentAuthCode(suiteId = created.suiteId,clientType = created.clientType,orgId = created.orgId).await()
+                    ISVAuthCode.queryPermanentAuthCode(suiteId = created.suiteId,clientType = created.clientType,domainId = created.domainId,orgCode = created.orgCode).await()
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }
@@ -100,10 +74,10 @@ class ISVAuthCodeTest : AbstractTest() {
                 val permanent = created.toPermanent().await()
                 testContext.verify { Assertions.assertNotNull(permanent) }
 
-                val query = ISVAuthCode.queryPermanentAuthCode(suiteId = permanent.suiteId,clientType = permanent.clientType,orgId = permanent.orgId).await()
+                val query = ISVAuthCode.queryPermanentAuthCode(suiteId = permanent.suiteId,clientType = permanent.clientType,domainId = created.domainId,orgCode = permanent.orgCode).await()
                 testContext.verify { Assertions.assertNotNull(query) }
 
-                val notExists = ISVAuthCode.queryPermanentAuthCode(suiteId = UUID.randomUUID().toString(),clientType = permanent.clientType,orgId = permanent.orgId).await()
+                val notExists = ISVAuthCode.queryPermanentAuthCode(suiteId = UUID.randomUUID().toString(),clientType = permanent.clientType,domainId = created.domainId,orgCode = permanent.orgCode).await()
                 testContext.verify { Assertions.assertNull(notExists) }
             }catch (t:Throwable){
                 testContext.failNow(t)
@@ -121,12 +95,12 @@ class ISVAuthCodeTest : AbstractTest() {
                     Assertions.assertNotNull(created)
                 }
 
-                val temporary = ISVAuthCode.queryTemporaryAuthCode(suiteId = created.suiteId,orgId = created.orgId,clientType = ISVClientType.WorkPlusISV).await()
+                val temporary = ISVAuthCode.queryTemporaryAuthCode(suiteId = created.suiteId,domainId = created.domainId,orgCode = created.orgCode,clientType = ISVClientType.WorkPlusISV).await()
                 testContext.verify {
                     Assertions.assertNotNull(temporary)
                 }
 
-                val noExists = ISVAuthCode.queryTemporaryAuthCode(suiteId = UUID.randomUUID().toString(),orgId = created.orgId,clientType = ISVClientType.WorkPlusISV).await()
+                val noExists = ISVAuthCode.queryTemporaryAuthCode(suiteId = UUID.randomUUID().toString(),domainId = created.domainId,orgCode = created.orgCode,clientType = ISVClientType.WorkPlusISV).await()
                 testContext.verify { Assertions.assertNull(noExists) }
             }catch (t:Throwable){
                 testContext.failNow(t)
@@ -144,13 +118,13 @@ class ISVAuthCodeTest : AbstractTest() {
                     Assertions.assertNotNull(created)
                 }
 
-                val query = ISVAuthCode.queryAuthCode(suiteId = created.suiteId,clientType = created.clientType,orgId = created.orgId).await()
+                val query = ISVAuthCode.queryAuthCode(suiteId = created.suiteId,clientType = created.clientType,domainId = created.domainId,orgCode = created.orgCode).await()
                 testContext.verify {
                     Assertions.assertNotNull(query)
                 }
 
                 try {
-                    ISVAuthCode.queryAuthCode(suiteId = UUID.randomUUID().toString(),clientType = ISVClientType.WorkPlusISV,orgId = created.orgId).await()
+                    ISVAuthCode.queryAuthCode(suiteId = UUID.randomUUID().toString(),clientType = ISVClientType.WorkPlusISV,domainId = created.domainId,orgCode = created.orgCode).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -201,14 +175,6 @@ class ISVAuthCodeTest : AbstractTest() {
                     Assertions.assertNotNull(created)
                 }
 
-                val withApiAuth = randomISVAuthCode()
-                withApiAuth.apiExtra = randomAuthExtra()
-
-                val createWithAuth = withApiAuth.createTemporaryAuth().await()
-                testContext.verify {
-                    Assertions.assertNotNull(createWithAuth)
-                }
-
                 try {
                     val errorISVAuthCode = randomISVAuthCode()
                     errorISVAuthCode.suiteId = randomIDString.randomString(128)
@@ -224,12 +190,10 @@ class ISVAuthCodeTest : AbstractTest() {
 
     }
 
-    private fun randomAuthExtra():ISVAuthExtra{
-        val extra = ISVAuthExtraForISV()
-        extra.accessEndpoint = randomString()
-        extra.apiAccessToken = randomString()
+    private fun randomAuthExtra():ISVClientAuthExtra{
+        val extra = ISVClientAuthExtraForISV()
         extra.expireTime = System.currentTimeMillis()
-        extra.websiteEndpoint = randomString()
+        extra.accessToken = randomString()
         return extra
     }
 
@@ -239,7 +203,7 @@ class ISVAuthCodeTest : AbstractTest() {
         isvAuthCode.clientType = ISVClientType.WorkPlusISV
         isvAuthCode.authStatus = ISVAuthStatus.Temporary
         isvAuthCode.domainId = randomString()
-        isvAuthCode.orgId = randomString()
+        isvAuthCode.orgCode = randomString()
         isvAuthCode.temporaryAuthCode = randomString()
         return isvAuthCode
     }

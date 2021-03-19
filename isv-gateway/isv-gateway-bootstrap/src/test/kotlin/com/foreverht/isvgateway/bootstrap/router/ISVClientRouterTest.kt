@@ -2,24 +2,81 @@ package com.foreverht.isvgateway.bootstrap.router
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
+import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import com.foreverht.isvgateway.bootstrap.AbstractRouteTest
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
 class ISVClientRouterTest : AbstractRouteTest(){
 
     private val logger by lazy { LoggerFactory.getLogger(ISVClientRouterTest::class.java) }
+
+    private val isvClientApplication: ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
+
+    companion object {
+
+        const val api = "http://test248.workplus.io/api4/v1"
+
+        const val domainId = "workplus"
+
+        const val clientId = "02018e570da2f42bf598d2f5628183d158e22a72"
+
+        const val clientSecret = "63d3237269214272be13fbab7da791f3"
+
+        const val ownerId = "2975ff5f83a34f458280fd25fbd3a356"
+
+        const val orgId = "aHexITjYkEurKyyxpKMgFh"
+    }
+
+    @Test
+    fun testApiTokenRoute(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+
+                val created = isvClientApplication.createISVClient(realISVClient()).await()
+
+                testContext.verify { Assertions.assertNotNull(created) }
+
+
+                val requestJson = json {
+                    obj(
+                        "clientId" to created.clientId,
+                        "clientSecret" to created.clientSecret,
+                        "domainId" to domainId,
+                        "orgCode" to ownerId
+                    )
+                }
+
+                val response = webClient.post(port,host,"/v1/api/token")
+                    .sendJsonObject(requestJson)
+                    .await()
+
+                testContext.verify {
+                    val body = response.bodyAsJsonObject()
+                    Assertions.assertEquals(200,response.statusCode())
+                    Assertions.assertNotNull(body.getString("accessToken"))
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
 
     @Test
     fun testJsonToObject(vertx: Vertx,testContext: VertxTestContext){
@@ -287,5 +344,18 @@ class ISVClientRouterTest : AbstractRouteTest(){
             .put("clientName", UUID.randomUUID().toString())
             .put("callback", UUID.randomUUID().toString())
             .put("extra", extraForWorkPlusJson)
+    }
+
+
+    private fun realISVClient() : ISVClientDTO {
+        val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
+            clientId = clientId,
+            clientSecret = clientSecret,
+            domainId = domainId,
+            api = api,
+            ownerId = ownerId
+        )
+
+        return ISVClientDTO(clientName = "WorkPlus Test App",extra = isvClientExtraDTO,callback = api)
     }
 }

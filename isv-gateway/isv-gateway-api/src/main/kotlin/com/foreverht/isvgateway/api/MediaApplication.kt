@@ -5,7 +5,7 @@ import io.vertx.core.Future
 
 interface MediaApplication {
 
-    suspend fun uploadFile(clientId:String,path:String):Future<String>
+    suspend fun uploadFile(isvAccessToken:String, path:String):Future<String>
 
-    suspend fun downloadFile(clientId:String,mediaId:String):Future<MediaDTO>
+    suspend fun downloadFile(isvAccessToken:String, mediaId:String):Future<MediaDTO>
 }

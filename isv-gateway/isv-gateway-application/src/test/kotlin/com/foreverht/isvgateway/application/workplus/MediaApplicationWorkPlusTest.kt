@@ -11,6 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.apache.commons.codec.digest.DigestUtils
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import java.io.File
@@ -18,9 +19,10 @@ import java.util.*
 
 class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
 
+    private val mediaApplication:MediaApplication by lazy { InstanceFactory.getInstance(MediaApplication::class.java,"WorkPlusApp") }
+
     companion object {
         private val logger = LoggerFactory.getLogger(MediaApplicationWorkPlusTest::class.java)
-        private val mediaApplication:MediaApplication by lazy { InstanceFactory.getInstance(MediaApplication::class.java,"WorkPlusApp") }
         private const val mediaId = "ad6a568cfbb540f0ad75d10e77d233de"
     }
 
@@ -28,20 +30,20 @@ class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testDownloadFile(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val mediaDTO = mediaApplication.downloadFile(clientId = isvClientId, mediaId = mediaId).await()
+                val mediaDTO = mediaApplication.downloadFile(isvAccessToken = isvAccessToken, mediaId = mediaId).await()
                 testContext.verify {
                     Assertions.assertNotNull(mediaDTO)
                     Assertions.assertEquals(648421,mediaDTO.size)
                 }
 
                 try {
-                    mediaApplication.downloadFile(clientId = isvClientId, mediaId = UUID.randomUUID().toString()).await()
+                    mediaApplication.downloadFile(isvAccessToken = isvAccessToken, mediaId = UUID.randomUUID().toString()).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
 
                 try {
-                     mediaApplication.downloadFile(clientId = UUID.randomUUID().toString(), mediaId = mediaId).await()
+                     mediaApplication.downloadFile(isvAccessToken = UUID.randomUUID().toString(), mediaId = mediaId).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -58,7 +60,7 @@ class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
             try {
                 val path = "META-INF/my_avatar.png"
                 var absolutePath = MediaApplicationWorkPlusTest::class.java.classLoader.getResource(path)!!.path
-                val mediaId = mediaApplication.uploadFile(clientId = isvClientId,path = absolutePath).await()
+                val mediaId = mediaApplication.uploadFile(isvAccessToken = isvAccessToken,path = absolutePath).await()
                 logger.debug("mediaId:$mediaId")
                 testContext.verify {
                     Assertions.assertNotNull(mediaId)

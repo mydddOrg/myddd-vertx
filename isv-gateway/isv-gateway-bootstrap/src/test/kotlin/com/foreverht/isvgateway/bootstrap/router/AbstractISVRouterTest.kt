@@ -11,6 +11,8 @@ import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -53,15 +55,30 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
                 val isvClientDTO = realISVClient()
                 val created = isvClientApplication.createISVClient(isvClientDTO).await()
 
-                var userDTO = databaseOAuth2Application.requestClientToken(created.clientId!!,created.clientSecret!!).await()
+                val userDTO = databaseOAuth2Application.requestClientToken(created.clientId!!,created.clientSecret!!).await()
                 testContext.verify {
                     Assertions.assertNotNull(userDTO)
                     Assertions.assertFalse(userDTO!!.expired())
                 }
 
-                val clientId = databaseOAuth2Application.queryValidClientIdByAccessToken(userDTO!!.tokenDTO!!.accessToken).await()
-                accessToken = userDTO!!.tokenDTO!!.accessToken
-                testContext.verify { Assertions.assertNotNull(clientId) }
+                val requestJson = json {
+                    obj(
+                        "clientId" to created.clientId,
+                        "clientSecret" to created.clientSecret,
+                        "domainId" to ISVClientRouterTest.domainId,
+                        "orgCode" to ISVClientRouterTest.ownerId
+                    )
+                }
+
+                val response = webClient.post(port,host,"/v1/api/token")
+                    .sendJsonObject(requestJson)
+                    .await()
+                val body = response.bodyAsJsonObject()
+                testContext.verify {
+                    Assertions.assertEquals(200,response.statusCode())
+                    Assertions.assertNotNull(body.getString("accessToken"))
+                }
+                accessToken = body.getString("accessToken")
 
                 Future.succeededFuture(Unit)
             }catch (t:Throwable){

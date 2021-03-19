@@ -11,12 +11,13 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.web.router.AbstractRouter
 import java.util.*
-import javax.print.attribute.standard.Media
 
 abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(vertx = vertx,router = router) {
 
     companion object {
         const val WorkPlusApp = "WorkPlusApp"
+
+        private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java,WorkPlusApp) }
 
         private val organizationApplicationMap:Map<String,OrganizationApplication> = mapOf(
             WorkPlusApp to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkPlusApp)
@@ -47,31 +48,30 @@ abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(v
 
 
     suspend fun getMessageApplication(accessToken: String):Future<MessageApplication>{
-        return getApplicationByClientType(applicationMap = messageApplicationMap,accessToken = accessToken)
+        return getApplicationByClientType(applicationMap = messageApplicationMap,isvAccessToken = accessToken)
     }
 
     suspend fun getOrganizationApplication(accessToken:String):Future<OrganizationApplication>{
-        return getApplicationByClientType(applicationMap = organizationApplicationMap,accessToken = accessToken)
+        return getApplicationByClientType(applicationMap = organizationApplicationMap,isvAccessToken = accessToken)
     }
 
     suspend fun getEmployeeApplication(accessToken: String):Future<EmployeeApplication>{
-        return getApplicationByClientType(applicationMap = employeeApplicationMap,accessToken = accessToken)
+        return getApplicationByClientType(applicationMap = employeeApplicationMap,isvAccessToken = accessToken)
     }
 
     suspend fun getMediaApplication(accessToken: String):Future<MediaApplication>{
-        return getApplicationByClientType(applicationMap = mediaApplicationMap,accessToken = accessToken)
+        return getApplicationByClientType(applicationMap = mediaApplicationMap,isvAccessToken = accessToken)
     }
 
     suspend fun getAppApplication(accessToken: String):Future<AppApplication>{
-        return getApplicationByClientType(applicationMap = appApplicationMap,accessToken = accessToken)
+        return getApplicationByClientType(applicationMap = appApplicationMap,isvAccessToken = accessToken)
     }
 
-    private suspend fun <T>  getApplicationByClientType(applicationMap:Map<String,T>,accessToken: String):Future<T>{
+    private suspend fun <T>  getApplicationByClientType(applicationMap:Map<String,T>, isvAccessToken: String):Future<T>{
         return try {
-            val clientId = oauth2Application.queryValidClientIdByAccessToken(accessToken).await()
-            val isvClient = isvClientApplication.queryClientByClientId(clientId).await()
+            val isvClient = accessTokenApplication.queryClientByAccessToken(isvAccessToken).await()
             if(Objects.nonNull(isvClient)){
-                Future.succeededFuture(applicationMap[isvClient!!.extra.clientType])
+                Future.succeededFuture(applicationMap[isvClient.extra.clientType])
             }else{
                 throw BusinessLogicException(ISVErrorCode.CLIENT_ID_NOT_FOUND)
             }

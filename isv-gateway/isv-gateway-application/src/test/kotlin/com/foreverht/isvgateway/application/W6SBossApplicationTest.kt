@@ -12,37 +12,40 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.*
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class W6SBossApplicationTest : AbstractW6SBossTest() {
 
     private val w6SBossApplication by lazy { InstanceFactory.getInstance(W6SBossApplication::class.java) }
 
     companion object {
-        private const val ORG_ID = "2975ff5f83a34f458280fd25fbd3a356"
+        private const val ORG_CODE = "2975ff5f83a34f458280fd25fbd3a356"
+        private const val DOMAIN_ID = "workplus"
     }
 
+
     @Test
-    @Order(6)
+    @Order(5)
     fun testRequestApiAccessToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 try {
-                    w6SBossApplication.requestApiAccessToken(clientId = isvClientId,orgId = ORG_ID).await()
+                    w6SBossApplication.requestApiAccessToken(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = ORG_CODE).await()
                 }catch (t:Throwable){
                     Assertions.assertNotNull(t)
                 }
 
-                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,orgId = ORG_ID).await()
+                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = ORG_CODE).await()
                 testContext.verify {
                     Assertions.assertNotNull(permanent)
                     Assertions.assertNotNull(permanent.permanentAuthCode)
                 }
 
 
-                val isvAuthCode = w6SBossApplication.requestApiAccessToken(clientId = isvClientId,orgId = ORG_ID).await()
+                val isvClientToken = w6SBossApplication.requestApiAccessToken(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = ORG_CODE).await()
                 testContext.verify {
-                    Assertions.assertNotNull(isvAuthCode)
-                    Assertions.assertNotNull(isvAuthCode.apiExtra)
+                    Assertions.assertNotNull(isvClientToken)
+                    Assertions.assertNotNull(isvClientToken.extra)
                 }
             }catch (t:Throwable){
                 testContext.failNow(t)
@@ -52,17 +55,17 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
     }
 
     @Test
-    @Order(5)
+    @Order(4)
     fun testActiveSuite(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,orgId = ORG_ID).await()
+                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = ORG_CODE).await()
                 testContext.verify {
                     Assertions.assertNotNull(permanent)
                     Assertions.assertNotNull(permanent.permanentAuthCode)
                 }
 
-                val success = w6SBossApplication.activeSuite(clientId = isvClientId,orgId = ORG_ID).await()
+                val success = w6SBossApplication.activeSuite(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = ORG_CODE).await()
                 testContext.verify { Assertions.assertTrue(success) }
             }catch (t:Throwable){
                 logger.error(t.message)
@@ -73,12 +76,12 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     fun testRequestPermanentCode(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
 
-                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,orgId = ORG_ID).await()
+                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = ORG_CODE).await()
                 testContext.verify {
                     Assertions.assertNotNull(permanent)
                     Assertions.assertNotNull(permanent.permanentAuthCode)
@@ -87,13 +90,13 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
 
 
                 try {
-                    w6SBossApplication.requestPermanentCode(clientId = UUID.randomUUID().toString(),orgId = ORG_ID).await()
+                    w6SBossApplication.requestPermanentCode(clientId = UUID.randomUUID().toString(),domainId = DOMAIN_ID,orgCode = ORG_CODE).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
 
                 try {
-                    w6SBossApplication.requestPermanentCode(clientId = isvClientId,orgId = UUID.randomUUID().toString()).await()
+                    w6SBossApplication.requestPermanentCode(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = UUID.randomUUID().toString()).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -105,54 +108,8 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
         }
     }
 
-    @Test
-    @Order(3)
-    fun testGenerateToken(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val w6SBossApplicationImpl = w6SBossApplication as W6SBossApplicationImpl
-                val isvClientToken = w6SBossApplicationImpl.generateToken(clientId = isvClientId).await()
-                testContext.verify {
-                    Assertions.assertNotNull(isvClientToken)
-                }
-
-                try {
-                    w6SBossApplicationImpl.generateToken(clientId = randomString()).await()
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
-            }
-            testContext.completeNow()
-        }
-    }
     @Test
     @Order(2)
-    fun testRequestSuiteToken(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val w6SBossApplicationImpl = w6SBossApplication as W6SBossApplicationImpl
-                val isvClient = ISVClient.queryClient(clientId = isvClientId).await()
-
-                testContext.verify { Assertions.assertNotNull(isvClient) }
-                val (suiteToken,expired) = w6SBossApplicationImpl.requestSuiteToken(isvClient!!).await()
-
-                testContext.verify {
-                    Assertions.assertNotNull(suiteToken)
-                    Assertions.assertTrue(expired > 0)
-                }
-
-            }catch (t:Throwable){
-                t.printStackTrace()
-                testContext.failNow(t)
-            }
-            testContext.completeNow()
-        }
-    }
-
-    @Test
-    @Order(1)
     fun testRequestISVToken(vertx: Vertx, testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -178,5 +135,32 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
             testContext.completeNow()
         }
     }
+
+    @Test
+    @Order(1)
+    fun testRequestSuiteToken(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val w6SBossApplicationImpl = w6SBossApplication as W6SBossApplicationImpl
+                val isvClient = ISVClient.queryClient(clientId = isvClientId).await()
+
+                testContext.verify { Assertions.assertNotNull(isvClient) }
+                val (suiteToken,expired) = w6SBossApplicationImpl.requestSuiteToken(isvClient!!).await()
+
+                testContext.verify {
+                    Assertions.assertNotNull(suiteToken)
+                    Assertions.assertTrue(expired > 0)
+                }
+
+            }catch (t:Throwable){
+                t.printStackTrace()
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+
+
 
 }

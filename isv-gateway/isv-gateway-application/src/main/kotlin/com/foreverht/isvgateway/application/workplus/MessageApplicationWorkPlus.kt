@@ -17,9 +17,9 @@ class MessageApplicationWorkPlus :AbstractApplicationWorkPlus(),MessageApplicati
         private const val SEND_MESSAGE = "%s/apps/mbox?access_token=%s&source_type=NATIVE&for_all=%s"
     }
 
-    override suspend fun sendMessage(clientId: String, message: MessageDTO): Future<Boolean> {
+    override suspend fun sendMessage(isvAccessToken: String, message: MessageDTO): Future<Boolean> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(clientId)
+            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
             val requestUrl = String.format(SEND_MESSAGE,extra.api,accessToken,message.forAll)
 
             val requestBody = json {

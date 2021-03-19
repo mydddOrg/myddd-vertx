@@ -43,7 +43,7 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
                 val mapper = ObjectMapper().registerModule(KotlinModule())
                 val messageD = mapper.readValue(msgJsonObject.toString(), MessageDTO::class.java)
 
-                val success = messageApplication.sendMessage(clientId = isvClientId,messageD).await()
+                val success = messageApplication.sendMessage(isvAccessToken = isvAccessToken,messageD).await()
                 testContext.verify { Assertions.assertTrue(success) }
 
             }catch (t:Throwable){
@@ -71,7 +71,7 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
                 val mapper = ObjectMapper().registerModule(KotlinModule())
                 val messageD = mapper.readValue(msgJsonObject.toString(), MessageDTO::class.java)
 
-                val success = messageApplication.sendMessage(clientId = isvClientId,messageD).await()
+                val success = messageApplication.sendMessage(isvAccessToken = isvAccessToken,messageD).await()
                 testContext.verify { Assertions.assertTrue(success) }
 
             }catch (t:Throwable){
@@ -98,7 +98,7 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
                 val mapper = ObjectMapper().registerModule(KotlinModule())
                 val messageD = mapper.readValue(msgJsonObject.toString(), MessageDTO::class.java)
 
-                val success = messageApplication.sendMessage(clientId = isvClientId,messageD).await()
+                val success = messageApplication.sendMessage(isvAccessToken = isvAccessToken,messageD).await()
                 testContext.verify { Assertions.assertTrue(success) }
 
             }catch (t:Throwable){
@@ -129,7 +129,7 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
                 val mapper = ObjectMapper().registerModule(KotlinModule())
                 val messageDTO = mapper.readValue(imageMsgBodyJson.toString(), MessageDTO::class.java)
 
-                val success = messageApplication.sendMessage(clientId = isvClientId,messageDTO).await()
+                val success = messageApplication.sendMessage(isvAccessToken = isvAccessToken,messageDTO).await()
                 testContext.verify { Assertions.assertTrue(success) }
             }catch (t:Throwable){
                 testContext.failNow(t)

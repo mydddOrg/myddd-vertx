@@ -6,8 +6,8 @@ import io.vertx.core.Future
 
 interface AppApplication {
 
-    suspend fun getAdminList(clientId:String):Future<List<EmployeeDTO>>
+    suspend fun getAdminList(isvAccessToken:String):Future<List<EmployeeDTO>>
 
-    suspend fun getAppDetail(clientId:String):Future<AppDTO>
+    suspend fun getAppDetail(isvAccessToken:String):Future<AppDTO>
 
 }

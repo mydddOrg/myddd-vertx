@@ -4,12 +4,8 @@ import com.foreverht.isvgateway.api.MediaApplication
 import com.foreverht.isvgateway.api.dto.MediaDTO
 import io.vertx.core.Future
 import io.vertx.core.Vertx
-import io.vertx.core.buffer.Buffer
 import io.vertx.core.file.AsyncFile
 import io.vertx.core.file.OpenOptions
-import io.vertx.core.impl.logging.Logger
-import io.vertx.core.impl.logging.LoggerFactory
-import io.vertx.core.streams.WriteStream
 import io.vertx.ext.web.client.WebClient
 import io.vertx.ext.web.codec.BodyCodec
 import io.vertx.ext.web.multipart.MultipartForm
@@ -23,7 +19,7 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
 
     private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
-    override suspend fun uploadFile(clientId:String,path: String): Future<String> {
+    override suspend fun uploadFile(isvAccessToken:String, path: String): Future<String> {
         return try {
             val fs = vertx.fileSystem()
             val name = path.substring(path.lastIndexOf(File.separator) + 1)
@@ -34,7 +30,7 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
                 it.complete(md5)
             }.await()
 
-            val mediaId = queryMediaIdByMd5(clientId = clientId,md5 =  md5).await()
+            val mediaId = queryMediaIdByMd5(isvAccessToken = isvAccessToken,md5 =  md5).await()
             if(Objects.nonNull(mediaId)){
                 logger.debug("命中MediaId缓存,${mediaId}")
                 Future.succeededFuture(mediaId)
@@ -47,7 +43,7 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
                     .binaryFileUpload("file",name,path, "application/octet-stream ")
 
 
-                val (extra, accessToken) = getRemoteAccessToken(clientId)
+                val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
                 val requestUrl = "${extra.api}/medias?access_token=$accessToken&file_digest=$md5&file_size=${fileSystemProps.size()}"
                 logger.debug("【Request URL】:$requestUrl" )
 
@@ -73,13 +69,13 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
         }
     }
 
-    override suspend fun downloadFile(clientId:String,mediaId: String): Future<MediaDTO> {
+    override suspend fun downloadFile(isvAccessToken:String, mediaId: String): Future<MediaDTO> {
 
         var detFile:AsyncFile? = null
         return try {
             val destFilePath = System.getProperty("java.io.tmpdir") + mediaId
             detFile = vertx.fileSystem().open(destFilePath, OpenOptions()).await()
-            val (extra, accessToken) = getRemoteAccessToken(clientId)
+            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
             val requestUrl = "${extra.api}/medias/$mediaId?access_token=$accessToken&type=id"
             val response = webClient.getAbs(requestUrl)
                 .`as`(BodyCodec.pipe(detFile))
@@ -104,9 +100,9 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
         }
     }
 
-    private suspend fun queryMediaIdByMd5(clientId: String,md5: String):Future<String?>{
+    private suspend fun queryMediaIdByMd5(isvAccessToken: String,md5: String):Future<String?>{
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(clientId)
+            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
             val requestUrl = "${extra.api}/medias/$md5/info/?access_token=$accessToken&type=DIGEST"
 
             val response = webClient.getAbs(requestUrl)

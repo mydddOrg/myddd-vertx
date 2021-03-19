@@ -28,7 +28,7 @@ class ISVAuthCodeAssemblerTest : AbstractTest(){
         isvAuthCode.clientType = ISVClientType.WorkPlusISV
         isvAuthCode.authStatus = ISVAuthStatus.Temporary
         isvAuthCode.domainId = randomString()
-        isvAuthCode.orgId = randomString()
+        isvAuthCode.orgCode = randomString()
         isvAuthCode.temporaryAuthCode = randomString()
         return isvAuthCode
     }
@@ -39,7 +39,7 @@ class ISVAuthCodeAssemblerTest : AbstractTest(){
             clientType = ISVClientType.WorkPlusISV.toString(),
             authStatus = ISVAuthStatus.Temporary.toString(),
             domainId = randomIDString.randomString(),
-            orgId = randomIDString.randomString(),
+            orgCode = randomIDString.randomString(),
             temporaryAuthCode = randomIDString.randomString(),
             permanentAuthCode = randomIDString.randomString()
         )

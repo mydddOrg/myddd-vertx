@@ -9,8 +9,8 @@ interface ISVAuthCodeApplication {
 
     suspend fun toPermanent(authCode:ISVAuthCodeDTO):Future<ISVAuthCodeDTO?>
 
-    suspend fun queryTemporaryAuthCode(suiteId:String,orgId:String,clientType:String):Future<ISVAuthCodeDTO?>
+    suspend fun queryTemporaryAuthCode(suiteId:String,domainId:String, orgCode:String, clientType:String):Future<ISVAuthCodeDTO?>
 
-    suspend fun queryPermanentAuthCode(suiteId: String,orgId:String,clientType: String):Future<ISVAuthCodeDTO?>
+    suspend fun queryPermanentAuthCode(suiteId: String,domainId: String, orgCode:String, clientType: String):Future<ISVAuthCodeDTO?>
 
 }

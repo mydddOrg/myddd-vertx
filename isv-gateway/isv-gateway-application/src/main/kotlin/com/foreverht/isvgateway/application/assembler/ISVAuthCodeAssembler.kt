@@ -11,7 +11,7 @@ fun toISVAuthCode(isvAuthCodeDTO: ISVAuthCodeDTO):ISVAuthCode{
     isvAuthCode.clientType = ISVClientType.valueOf(isvAuthCodeDTO.clientType)
     isvAuthCode.authStatus = ISVAuthStatus.valueOf(isvAuthCodeDTO.authStatus)
     isvAuthCode.domainId = isvAuthCodeDTO.domainId
-    isvAuthCode.orgId = isvAuthCodeDTO.orgId
+    isvAuthCode.orgCode = isvAuthCodeDTO.orgCode
     isvAuthCode.temporaryAuthCode = isvAuthCodeDTO.temporaryAuthCode
     isvAuthCode.permanentAuthCode = isvAuthCodeDTO.permanentAuthCode
     return isvAuthCode
@@ -23,7 +23,7 @@ fun toISVAuthDTO(isvAuthCode: ISVAuthCode):ISVAuthCodeDTO{
         clientType = isvAuthCode.clientType.toString(),
         authStatus = isvAuthCode.authStatus.toString(),
         domainId = isvAuthCode.domainId,
-        orgId = isvAuthCode.orgId,
+        orgCode = isvAuthCode.orgCode,
         temporaryAuthCode = isvAuthCode.temporaryAuthCode,
         permanentAuthCode = isvAuthCode.permanentAuthCode
     )

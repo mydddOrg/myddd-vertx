@@ -28,10 +28,10 @@ class ISVClientRepositoryTest : AbstractTest() {
                 val permanent = created.toPermanent().await()
                 testContext.verify { Assertions.assertNotNull(permanent) }
 
-                val query = clientRepository.queryPermanentAuthCode(suiteId = created.suiteId,clientType = ISVClientType.WorkPlusISV,orgId = created.orgId).await()
+                val query = clientRepository.queryPermanentAuthCode(suiteId = created.suiteId,clientType = ISVClientType.WorkPlusISV,domainId = created.domainId,orgCode = created.orgCode).await()
                 testContext.verify { Assertions.assertNotNull(query) }
 
-                val noExists = clientRepository.queryPermanentAuthCode(suiteId = randomString(),clientType = ISVClientType.WorkPlusISV,orgId = created.orgId).await()
+                val noExists = clientRepository.queryPermanentAuthCode(suiteId = randomString(),clientType = ISVClientType.WorkPlusISV,domainId = created.domainId,orgCode = created.orgCode).await()
                 testContext.verify { Assertions.assertNull(noExists) }
 
             }catch (t:Throwable){
@@ -48,10 +48,10 @@ class ISVClientRepositoryTest : AbstractTest() {
                 val created = randomISVAuthCode().createTemporaryAuth().await()
                 testContext.verify { Assertions.assertNotNull(created) }
 
-                val query = clientRepository.queryTemporaryAuthCode(suiteId = created.suiteId,clientType = ISVClientType.WorkPlusISV,orgId = created.orgId).await()
+                val query = clientRepository.queryTemporaryAuthCode(suiteId = created.suiteId,clientType = ISVClientType.WorkPlusISV,domainId = created.domainId,orgCode = created.orgCode).await()
                 testContext.verify { Assertions.assertNotNull(query) }
 
-                val noExists = clientRepository.queryTemporaryAuthCode(suiteId = randomString(),clientType = ISVClientType.WorkPlusISV,orgId = created.orgId).await()
+                val noExists = clientRepository.queryTemporaryAuthCode(suiteId = randomString(),clientType = ISVClientType.WorkPlusISV,domainId = created.domainId,orgCode = created.orgCode).await()
                 testContext.verify { Assertions.assertNull(noExists) }
 
             }catch (t:Throwable){
@@ -68,7 +68,7 @@ class ISVClientRepositoryTest : AbstractTest() {
                 val created = randomISVAuthCode().createTemporaryAuth().await()
                 testContext.verify { Assertions.assertNotNull(created) }
 
-                val query = clientRepository.queryAuthCode(suiteId = created.suiteId,clientType = ISVClientType.WorkPlusISV,orgId = created.orgId).await()
+                val query = clientRepository.queryAuthCode(suiteId = created.suiteId,clientType = ISVClientType.WorkPlusISV,domainId = created.domainId,orgCode = created.orgCode).await()
 
                 testContext.verify { Assertions.assertNotNull(query) }
             }catch (t:Throwable){
@@ -114,7 +114,7 @@ class ISVClientRepositoryTest : AbstractTest() {
         isvAuthCode.clientType = ISVClientType.WorkPlusISV
         isvAuthCode.authStatus = ISVAuthStatus.Temporary
         isvAuthCode.domainId = randomString()
-        isvAuthCode.orgId = randomString()
+        isvAuthCode.orgCode = randomString()
         isvAuthCode.temporaryAuthCode = randomString()
         return isvAuthCode
     }

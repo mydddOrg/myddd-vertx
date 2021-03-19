@@ -2,6 +2,8 @@ package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.AbstractWorkPlusTest
 import com.foreverht.isvgateway.api.AccessTokenApplication
+import com.foreverht.isvgateway.api.RequestTokenDTO
+import com.foreverht.isvgateway.domain.ISVClientToken
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.junit5.VertxTestContext
@@ -46,20 +48,57 @@ class AccessTokenApplicationWorkPlusTest : AbstractWorkPlusTest() {
     }
 
     @Test
-    fun testRequestAccessTokenByClientId(vertx: Vertx,testContext: VertxTestContext){
+    fun testQueryISVAccessToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
+                val requestTokenDTO = RequestTokenDTO(clientId = isvClientId, clientSecret = clientSecret,
+                    domainId = domainId,orgCode = ownerId)
+
+                val tokenDTO = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
+                testContext.verify { Assertions.assertNotNull(tokenDTO) }
+
+                val isvClientDTO = accessTokenApplication.queryClientByAccessToken(isvAccessToken = tokenDTO.accessToken)
+                testContext.verify {
+                    Assertions.assertNotNull(isvClientDTO)
+                }
+
                 try {
-                    accessTokenApplication.requestRequestAccessToken(randomIDString.randomString()).await()
+                    accessTokenApplication.queryClientByAccessToken(isvAccessToken = randomString()).await()
+                    testContext.failNow("不可能到这")
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
 
-                val accessToken = accessTokenApplication.requestRequestAccessToken(isvClientId).await()
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testRequestAccessTokenByClientId(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                try {
+                    val requestTokenDTO = RequestTokenDTO(clientId = randomString(), clientSecret = clientSecret,
+                        domainId = domainId,orgCode = ownerId)
+                    accessTokenApplication.requestAccessToken(requestTokenDTO).await()
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
+                val requestTokenDTO = RequestTokenDTO(clientId = isvClientId, clientSecret = clientSecret,
+                    domainId = domainId,orgCode = ownerId)
+
+                val accessToken = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
                 testContext.verify { Assertions.assertNotNull(accessToken) }
 
-                val queryAccessTokenAgain = accessTokenApplication.requestRequestAccessToken(isvClientId).await()
-                testContext.verify { Assertions.assertNotNull(queryAccessTokenAgain) }
+                val isvClientToken = ISVClientToken.queryByToken(accessToken.accessToken).await()
+                testContext.verify {
+                    Assertions.assertNotNull(isvClientToken)
+                }
 
             }catch (t:Throwable){
                 testContext.failNow(t)

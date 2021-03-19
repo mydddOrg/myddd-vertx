@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.domain
 
+import com.foreverht.isvgateway.domain.converter.ISVClientAuthExtraConverter
 import com.foreverht.isvgateway.domain.converter.ISVClientExtraConverter
 import io.vertx.core.Future
 import io.vertx.kotlin.coroutines.await
@@ -45,7 +46,9 @@ class ISVClient : BaseEntity() {
     @Column(name = "description")
     var description:String? = null
 
-
+    @Column(name = "api_extra",length = 500)
+    @Convert(converter = ISVClientAuthExtraConverter::class)
+    var clientAuthExtra:ISVClientAuthExtra? = null
 
     companion object {
 
@@ -119,4 +122,16 @@ class ISVClient : BaseEntity() {
             Future.failedFuture(t)
         }
     }
+
+
+    suspend fun saveClientAuthExtra(extra: ISVClientAuthExtra):Future<ISVClient>{
+        return try {
+            this.clientAuthExtra = extra
+            val updated = repository.save(this).await()
+            Future.succeededFuture(updated)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
 }

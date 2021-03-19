@@ -4,8 +4,8 @@ data class ISVAuthCodeDTO(
     val suiteId:String,
     val clientType:String,
     val authStatus:String,
-    val domainId:String? = null,
-    var orgId:String,
+    val domainId:String,
+    var orgCode:String,
     var temporaryAuthCode:String,
     var permanentAuthCode:String? = null
 )

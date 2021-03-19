@@ -1,11 +1,14 @@
 package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.AbstractTest
+import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForISV
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -20,6 +23,27 @@ class ISVClientTest : AbstractTest() {
 
     companion object {
         private val randomIdString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
+    }
+
+    @Test
+    fun testSaveClientAuthExtra(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val created = ISVClient.createClient(clientName = UUID.randomUUID().toString(),extra = createExtra(),callback = "http://callback.workplus.io")
+                testContext.verify {
+                    Assertions.assertNotNull(created)
+                }
+
+                val extra = ISVClientAuthExtraForISV.createInstance(accessToken = randomString(),expireTime = System.currentTimeMillis())
+                val updated = created.saveClientAuthExtra(extra).await()
+                testContext.verify {
+                    Assertions.assertNotNull(updated)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
     }
 
     @Test

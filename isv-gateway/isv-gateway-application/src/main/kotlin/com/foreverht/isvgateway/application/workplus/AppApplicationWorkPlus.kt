@@ -4,7 +4,6 @@ import com.foreverht.isvgateway.api.AppApplication
 import com.foreverht.isvgateway.api.dto.AppDTO
 import com.foreverht.isvgateway.api.dto.EmployeeDTO
 import io.vertx.core.Future
-import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.coroutines.await
@@ -15,9 +14,10 @@ class AppApplicationWorkPlus :AbstractApplicationWorkPlus(),AppApplication {
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
 
-    override suspend fun getAdminList(clientId:String): Future<List<EmployeeDTO>> {
+    override suspend fun getAdminList(isvAccessToken:String): Future<List<EmployeeDTO>> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(clientId)
+            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
+
             val requestUrl = "${extra.api}/apps/${extra.clientId}/admins?source_type=native&access_token=$accessToken"
             val response = webClient.getAbs(requestUrl).send().await()
             if(response.resultSuccess()){
@@ -38,9 +38,9 @@ class AppApplicationWorkPlus :AbstractApplicationWorkPlus(),AppApplication {
         }
     }
 
-    override suspend fun getAppDetail(clientId: String): Future<AppDTO> {
+    override suspend fun getAppDetail(isvAccessToken: String): Future<AppDTO> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(clientId)
+            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
             val requestUrl = "${extra.api}/apps/${extra.clientId}?access_token=$accessToken"
             val response = webClient.getAbs(requestUrl).send().await()
             if(response.resultSuccess()){

@@ -2,15 +2,20 @@ package com.foreverht.isvgateway.domain.extra
 
 import com.foreverht.isvgateway.domain.ISVClientTokenExtra
 import com.foreverht.isvgateway.domain.ISVClientType
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 
 class ISVClientTokenExtraForWorkPlusApp : ISVClientTokenExtra() {
 
     init {
         this.clientType = ISVClientType.WorkPlusApp
+
     }
 
     companion object {
+        val logger by lazy { LoggerFactory.getLogger(ISVClientTokenExtraForWorkPlusApp::class.java) }
+
+
         fun createInstanceFormJsonObject(result:JsonObject):ISVClientTokenExtraForWorkPlusApp{
             val extra = ISVClientTokenExtraForWorkPlusApp()
             extra.clientId = result.getString("client_id")
@@ -33,6 +38,9 @@ class ISVClientTokenExtraForWorkPlusApp : ISVClientTokenExtra() {
     var issuedTime:Long = 0
 
     override fun accessTokenValid(): Boolean {
+        if(System.currentTimeMillis() < expireTime){
+            logger.info("【INVALID】：$expireTime - ${System.currentTimeMillis()}")
+        }
         return expireTime > System.currentTimeMillis()
     }
 

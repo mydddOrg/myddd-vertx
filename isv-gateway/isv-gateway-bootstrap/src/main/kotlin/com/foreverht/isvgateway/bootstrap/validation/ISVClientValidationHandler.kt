@@ -75,6 +75,14 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
             .requiredProperty("clientSecret",Schemas.stringSchema())
     }
 
+    internal val requestApiTokenSchema by lazy {
+        Schemas.objectSchema()
+            .requiredProperty("clientId",Schemas.stringSchema())
+            .requiredProperty("clientSecret",Schemas.stringSchema())
+            .requiredProperty("domainId",Schemas.stringSchema())
+            .requiredProperty("orgCode",Schemas.stringSchema())
+    }
+
     fun createISVClientValidation(): ValidationHandler {
         return ValidationHandler
             .builder(schemaParser)
@@ -109,5 +117,13 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
             .body(Bodies.json(resetClientSecretSchema))
             .build()
     }
+
+    fun requestApiTokenValidation(): ValidationHandler {
+        return ValidationHandler
+            .builder(schemaParser)
+            .body(Bodies.json(requestApiTokenSchema))
+            .build()
+    }
+
 
 }

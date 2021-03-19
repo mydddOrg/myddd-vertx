@@ -1,12 +1,17 @@
 package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.api.AccessTokenApplication
+import com.foreverht.isvgateway.api.RequestTokenDTO
+import com.foreverht.isvgateway.api.TokenDTO
+import com.foreverht.isvgateway.api.dto.ISVClientDTO
+import com.foreverht.isvgateway.application.assembler.toISVClientDTO
 import com.foreverht.isvgateway.domain.ISVClient
 import com.foreverht.isvgateway.domain.ISVClientToken
 import com.foreverht.isvgateway.domain.ISVErrorCode
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
 import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusApp
 import io.vertx.core.Future
+import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.client.WebClient
@@ -18,71 +23,88 @@ import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
 
-class AccessTokenApplicationWorkPlus : AccessTokenApplication{
+class AccessTokenApplicationWorkPlus : AbstractApplicationWorkPlus(),AccessTokenApplication{
+
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
-    private val logger: Logger by lazy { LoggerFactory.getLogger(AccessTokenApplicationWorkPlus::class.java) }
 
-    override suspend fun requestRequestAccessToken(clientId: String): Future<String?> {
+    override suspend fun requestAccessToken(requestTokenDTO: RequestTokenDTO): Future<TokenDTO> {
         return try {
-            val existsClientToken : ISVClientToken? = ISVClientToken.queryByClientId(clientId).await()
-            if(Objects.nonNull(existsClientToken)){
-                logger.info("命中缓存:${existsClientToken?.token}")
-                Future.succeededFuture(existsClientToken!!.token)
+            val isvClientToken = ISVClientToken.queryClientToken(clientId = requestTokenDTO.clientId,domainId = requestTokenDTO.domainId,orgCode = requestTokenDTO.orgCode).await()
+            if(Objects.nonNull(isvClientToken)){
+                val extra = isvClientToken!!.extra as ISVClientTokenExtraForWorkPlusApp
+                Future.succeededFuture(TokenDTO(accessToken = isvClientToken!!.token,refreshToken = extra.refreshToken,accessExpiredIn = extra.expireTime))
             }else{
-                val isvClient = ISVClient.queryClient(clientId).await()
-                if(Objects.isNull(isvClient)){
-                    throw BusinessLogicException(ISVErrorCode.CLIENT_ID_NOT_FOUND)
-                }
-                val tokenExtra = requestAccessTokenForISVClient(isvClient!!).await()
-
-                saveISVClientToken(tokenExtra,clientId)
-                Future.succeededFuture(tokenExtra.accessToken)
+                requestFromRemote(requestTokenDTO)
             }
+
         }catch (t:Throwable){
+            logger.error("请求远程TOKEN出错",t)
             Future.failedFuture(t)
         }
     }
 
-    private suspend fun saveISVClientToken(tokenExtra: ISVClientTokenExtraForWorkPlusApp,clientId: String) {
-        try {
-            ISVClientToken.saveByExtraToken(tokenExtra,clientId).await()
-        } catch (t: Throwable) {
-            logger.warn("保存TOKEN失败", t)
+    override suspend fun queryClientByAccessToken(isvAccessToken: String): Future<ISVClientDTO> {
+        return try {
+            val isvClientToken = ISVClientToken.queryByToken(token = isvAccessToken).await()
+            if(Objects.nonNull(isvClientToken)){
+                Future.succeededFuture(toISVClientDTO(isvClientToken!!.client))
+            }else{
+                throw BusinessLogicException(ISVErrorCode.ACCESS_TOKEN_INVALID)
+            }
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
+
     }
 
-    private suspend fun requestAccessTokenForISVClient(isvClient: ISVClient):Future<ISVClientTokenExtraForWorkPlusApp> {
-         return try {
-             val extra = isvClient.extra as ISVClientExtraForWorkPlusApp
+    private suspend fun requestFromRemote(requestTokenDTO: RequestTokenDTO): Future<TokenDTO> {
+        return try {
+            val isvClient = ISVClient.queryClient(clientId = requestTokenDTO.clientId).await()
+            val extra = isvClient!!.extra as ISVClientExtraForWorkPlusApp
 
-             val requestJSON = json {
-                 obj(
-                     "grant_type" to "client_credentials",
-                     "scope" to "app",
-                     "domain_id" to extra.domainId,
-                     "org_id" to extra.ownerId,
-                     "client_id" to extra.clientId,
-                     "client_secret" to extra.clientSecret
-                 )
-             }
+            val requestJSON = json {
+                obj(
+                    "grant_type" to "client_credentials",
+                    "scope" to "app",
+                    "domain_id" to extra.domainId,
+                    "org_id" to extra.ownerId,
+                    "client_id" to extra.clientId,
+                    "client_secret" to extra.clientSecret
+                )
+            }
 
-             val tokenResponse = webClient.postAbs("${extra.api}/token")
-                 .sendJsonObject(requestJSON)
-                 .await()
+            val tokenResponse = webClient.postAbs("${extra.api}/token")
+                .sendJsonObject(requestJSON)
+                .await()
 
-             val bodyJson = tokenResponse.bodyAsJsonObject()
-             if(tokenResponse.resultSuccess()){
-                 val result = bodyJson.getJsonObject("result")
-                 logger.info("请求TOKEN的result:$result")
-                 val tokenExtra = ISVClientTokenExtraForWorkPlusApp.createInstanceFormJsonObject(result)
-                 Future.succeededFuture(tokenExtra)
-             }else{
-                 Future.failedFuture(bodyJson.toString())
-             }
-         }catch (t:Throwable){
-             logger.error("请求远程TOKEN出错",t)
-             Future.failedFuture(t)
-         }
+            val bodyJson = tokenResponse.bodyAsJsonObject()
+            return if (tokenResponse.resultSuccess()) {
+                val result = bodyJson.getJsonObject("result")
+                logger.info("请求TOKEN的result:$result")
+                val tokenExtra = ISVClientTokenExtraForWorkPlusApp.createInstanceFormJsonObject(result)
+                val isvClientToken = ISVClientToken.createInstanceByExtra(
+                    client = isvClient,
+                    extra = tokenExtra,
+                    domainId = requestTokenDTO.domainId,
+                    orgCode = requestTokenDTO.orgCode
+                )
+                val created = isvClientToken.createClientToken().await()
+
+
+                Future.succeededFuture(
+                    TokenDTO(
+                        accessToken = created.token,
+                        refreshToken = tokenExtra.refreshToken,
+                        accessExpiredIn = tokenExtra.expireTime
+                    )
+                )
+            } else {
+                Future.failedFuture(bodyJson.toString())
+            }
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+
     }
 }
 

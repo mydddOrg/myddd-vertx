@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.domain.extra
 
 import com.foreverht.isvgateway.domain.ISVClientTokenExtra
 import com.foreverht.isvgateway.domain.ISVClientType
+import io.vertx.core.json.JsonObject
 
 class ISVClientTokenExtraForWorkPlusISV : ISVClientTokenExtra() {
 
@@ -10,24 +11,30 @@ class ISVClientTokenExtraForWorkPlusISV : ISVClientTokenExtra() {
     }
 
     companion object {
-
-        fun createInstance(accessToken:String,expireTime:Long):ISVClientTokenExtraForWorkPlusISV {
-            val isvClientTokenExtra = ISVClientTokenExtraForWorkPlusISV()
-            isvClientTokenExtra.accessToken = accessToken
-            isvClientTokenExtra.expireTime = expireTime
-            return isvClientTokenExtra
+        fun createInstanceFromJson(jsonObject: JsonObject):ISVClientTokenExtra{
+            val extra = ISVClientTokenExtraForWorkPlusISV()
+            extra.apiAccessToken = jsonObject.getString("api_access_token")
+            extra.websiteEndpoint = jsonObject.getString("website_endpoint")
+            extra.accessEndpoint = jsonObject.getString("access_endpoint")
+            extra.expireTime = jsonObject.getLong("expire_time")
+            return extra
         }
     }
 
-    lateinit var accessToken:String
+    lateinit var apiAccessToken:String
+
+    lateinit var accessEndpoint:String
+
+    lateinit var websiteEndpoint:String
 
     var expireTime:Long = 0
 
     override fun accessTokenValid(): Boolean {
-        return expireTime > System.currentTimeMillis()
+        return System.currentTimeMillis() < expireTime
     }
 
     override fun accessToken(): String {
-        return accessToken
+        return apiAccessToken
     }
+
 }

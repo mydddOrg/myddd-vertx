@@ -3,8 +3,6 @@ package com.foreverht.isvgateway.application.workplus
 import com.foreverht.isvgateway.api.EmployeeApplication
 import com.foreverht.isvgateway.api.dto.EmployeeDTO
 import io.vertx.core.Future
-import io.vertx.core.impl.logging.Logger
-import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.coroutines.await
@@ -19,20 +17,20 @@ class EmployeeApplicationWorkPlus :AbstractApplicationWorkPlus(),EmployeeApplica
         private const val API_QUERY_EMPLOYEE = "%s/admin/organizations/%s/employees?access_token=%s&type=username&query=%s"
     }
 
-    override suspend fun queryEmployeeById(clientId: String, orgCode:String,userId: String): Future<EmployeeDTO> {
+    override suspend fun queryEmployeeById(isvAccessToken: String, orgCode:String, userId: String): Future<EmployeeDTO> {
         return try {
-            val employeeDTOList = batchQueryEmployeeByIds(clientId = clientId,orgCode = orgCode, arrayListOf(userId)).await()
+            val employeeDTOList = batchQueryEmployeeByIds(isvAccessToken = isvAccessToken,orgCode = orgCode, arrayListOf(userId)).await()
             Future.succeededFuture(employeeDTOList[0])
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
     }
 
-    override suspend fun batchQueryEmployeeByIds(clientId: String, orgCode: String, userIdList: List<String>): Future<List<EmployeeDTO>> {
+    override suspend fun batchQueryEmployeeByIds(isvAccessToken: String, orgCode: String, userIdList: List<String>): Future<List<EmployeeDTO>> {
         return try {
             require(userIdList.isNotEmpty())
 
-            val (extra, accessToken) = getRemoteAccessToken(clientId)
+            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
             val url = String.format(API_BATCH_QUERY_EMPLOYEE,extra.api,orgCode,accessToken,userIdList.joinToString(","))
             logger.debug("【Request URL】:$url")
             queryEmployees(url)
@@ -41,12 +39,12 @@ class EmployeeApplicationWorkPlus :AbstractApplicationWorkPlus(),EmployeeApplica
         }
     }
 
-    override suspend fun searchEmployees(clientId: String, orgCode: String, query: String): Future<List<EmployeeDTO>> {
+    override suspend fun searchEmployees(isvAccessToken: String, orgCode: String, query: String): Future<List<EmployeeDTO>> {
         return try {
 
             check(query.isNotBlank())
 
-            val (extra, accessToken) = getRemoteAccessToken(clientId)
+            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
             val url = String.format(API_QUERY_EMPLOYEE,extra.api,orgCode,accessToken,query)
             logger.debug("【Request URL】:$url")
             queryEmployees(url)

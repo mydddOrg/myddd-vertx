@@ -2,8 +2,11 @@ package com.foreverht.isvgateway.bootstrap.route
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
+import com.foreverht.isvgateway.api.RequestTokenDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
+import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import com.foreverht.isvgateway.bootstrap.ISVClientErrorCode
 import com.foreverht.isvgateway.bootstrap.validation.ISVClientValidationHandler
 import io.vertx.core.Vertx
@@ -28,6 +31,8 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
 
     private val isvClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
 
+    private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java,"WorkPlusApp") }
+
     companion object {
         private val logger by lazy { LoggerFactory.getLogger(ISVClientRouter::class.java) }
     }
@@ -40,6 +45,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
         refreshClientTokenToken()
         revokeClientTokenRoute()
         resetClientSecretRoute()
+        requestApiTokenRoute()
     }
 
     private fun createISVClientRoute(){
@@ -104,6 +110,28 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                     }catch (t:Throwable){
                         logger.error(t)
                         it.fail(HTTP_400_RESPONSE,t)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun requestApiTokenRoute(){
+        createPostRoute(path = "/$version/api/token") { route ->
+            route.handler(ISVClientValidationHandler().requestApiTokenValidation())
+
+            route.handler {
+                GlobalScope.launch(vertx.dispatcher()) {
+                    try {
+                        val bodyString = it.bodyAsString
+                        val mapper = ObjectMapper().registerModule(KotlinModule())
+                        val requestTokenDTO = mapper.readValue(bodyString,RequestTokenDTO::class.java)
+
+                        val tokenDTO = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
+                        it.end(JsonObject.mapFrom(tokenDTO).toBuffer())
+                    }catch (t:Throwable){
+                        t.printStackTrace()
+                        it.fail(t)
                     }
                 }
             }
@@ -192,6 +220,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
             }
         }
     }
+
 
 
 

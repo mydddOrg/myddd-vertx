@@ -4,6 +4,7 @@ package com.foreverht.isvgateway.bootstrap.route
 import com.foreverht.isvgateway.api.OrganizationApplication
 import com.foreverht.isvgateway.api.dto.OrgPageQueryDTO
 import com.foreverht.isvgateway.api.dto.OrganizationDTO
+import com.foreverht.isvgateway.bootstrap.handler.ISVAccessTokenAuthorizationHandler
 import com.foreverht.isvgateway.bootstrap.validation.OrganizationValidationHandler
 import io.vertx.core.Future
 import io.vertx.core.Vertx
@@ -16,7 +17,6 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.web.router.ext.singleQueryParam
-import org.myddd.vertx.web.router.handler.AccessTokenAuthorizationHandler
 
 class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = vertx,router = router) {
 
@@ -32,7 +32,7 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
             route.handler(OrganizationValidationHandler().queryOrganizationValidation())
 
-            route.handler(AccessTokenAuthorizationHandler(vertx))
+            route.handler(ISVAccessTokenAuthorizationHandler(vertx))
 
             route.handler {
 
@@ -56,7 +56,7 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
             route.handler(OrganizationValidationHandler().queryOrganizationChildrenOrEmployeeValidation())
 
-            route.handler(AccessTokenAuthorizationHandler(vertx))
+            route.handler(ISVAccessTokenAuthorizationHandler(vertx))
 
             route.handler {
                 GlobalScope.launch(vertx.dispatcher()) {
@@ -78,7 +78,7 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
             route.handler(OrganizationValidationHandler().queryOrganizationValidation())
 
-            route.handler(AccessTokenAuthorizationHandler(vertx))
+            route.handler(ISVAccessTokenAuthorizationHandler(vertx))
 
             route.handler {
                 GlobalScope.launch(vertx.dispatcher()) {
@@ -87,12 +87,11 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
                         val orgId = if(orgList.isNotEmpty()) orgList[0] else null
 
                         val orgCode = it.pathParam("orgCode")
-                        val clientId = it.get<String>("clientId")
                         val accessToken = it.get<String>("accessToken")
 
                         val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
 
-                        val organizationDTO = organizationApplication.queryOrganizationById(clientId = clientId,orgCode = orgCode,orgId = orgId).await()
+                        val organizationDTO = organizationApplication.queryOrganizationById(isvAccessToken = accessToken,orgCode = orgCode,orgId = orgId).await()
                         it.end(JsonObject.mapFrom(organizationDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
@@ -105,7 +104,6 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
     private suspend fun parsePageQueryParam(it:RoutingContext): Future<Pair<OrgPageQueryDTO,OrganizationApplication>> {
         return try {
-            val clientId = it.get<String>("clientId")
             val accessToken = it.get<String>("accessToken")
             val orgCode = it.pathParam("orgCode")
 
@@ -115,7 +113,7 @@ class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = 
 
             val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
 
-            Future.succeededFuture(Pair(OrgPageQueryDTO(clientId = clientId,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip),organizationApplication))
+            Future.succeededFuture(Pair(OrgPageQueryDTO(accessToken = accessToken,orgCode = orgCode,orgId = orgId,limit = limit,skip = skip),organizationApplication))
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

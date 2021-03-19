@@ -1,6 +1,5 @@
 package com.foreverht.isvgateway
 
-import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.ISVAuthCodeApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
@@ -22,6 +21,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
@@ -65,66 +65,12 @@ abstract class AbstractW6SBossTest : AbstractTest() {
                         Assertions.assertEquals(ISVClientType.WorkPlusISV.toString(),w6sISVClient.extra.clientType)
                     }
                     isvClientId = w6sISVClient.clientId!!
-
-                    saveTmpAuthCodeToLocal(webClient).await()
-                    saveSuiteTicketToLocal(webClient).await()
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }
                 testContext.completeNow()
             }
         }
-
-        private suspend fun saveTmpAuthCodeToLocal(webClient: WebClient):Future<Unit>{
-            return try {
-                val response = webClient.getAbs("http://isvgateway.workplus.io:8080/v1/w6s/authCode/temporary/njVwg-pgkeI5nK11iAdduH/2975ff5f83a34f458280fd25fbd3a356")
-                    .send().await()
-                if(response.statusCode() == 200){
-                    val body = response.bodyAsJsonObject()
-                    val isvAuthCode = ISVAuthCodeDTO(
-                        suiteId = body.getString("suiteId"),
-                        clientType = body.getString("clientType"),
-                        authStatus = body.getString("authStatus"),
-                        orgId = body.getString("orgId"),
-                        domainId = body.getString("domainId"),
-                        temporaryAuthCode = body.getString("temporaryAuthCode")
-                    )
-
-                    logger.info("temporaryAuthCode:${isvAuthCode.temporaryAuthCode}")
-                    isvAuthCodeApplication.createTemporaryAuthCode(authCode = isvAuthCode).await()
-                    Future.succeededFuture()
-                }else{
-                    Future.failedFuture(response.bodyAsString())
-                }
-            }catch (t:Throwable){
-                Future.failedFuture(t)
-            }
-        }
-
-        private suspend fun saveSuiteTicketToLocal(webClient: WebClient):Future<Unit>{
-            return try {
-                val response = webClient.getAbs("http://isvgateway.workplus.io:8080/v1/w6s/tickets/njVwg-pgkeI5nK11iAdduH")
-                    .send().await()
-                if(response.statusCode() == 200){
-                    val body = response.bodyAsJsonObject()
-                    val isvSuiteTicket = isvSuiteTicketApplication.saveSuiteTicket(ISVSuiteTicketDTO(
-                        suiteId = body.getString("suiteId"),
-                        suiteTicket = body.getString("suiteTicket"),
-                        clientType = ISVClientType.WorkPlusISV.toString()
-                    )).await()
-                    if(Objects.isNull(isvSuiteTicket)){
-                        Future.failedFuture("SUITE NOT FOUND")
-                    }else{
-                        Future.succeededFuture()
-                    }
-                }else{
-                    Future.failedFuture(response.bodyAsString())
-                }
-            }catch (t:Throwable){
-                Future.failedFuture(t)
-            }
-        }
-
 
         private suspend fun querySuiteTicket(webClient: WebClient):Future<String>{
             return try {
@@ -157,5 +103,70 @@ abstract class AbstractW6SBossTest : AbstractTest() {
         }
 
     }
+
+    @BeforeEach
+    fun beforeEach(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch {
+            try {
+                val webClient = WebClient.create(vertx)
+                saveSuiteTicketToLocal(webClient = webClient).await()
+                saveTmpAuthCodeToLocal(webClient = webClient).await()
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    private suspend fun saveTmpAuthCodeToLocal(webClient: WebClient):Future<Unit>{
+        return try {
+            val response = webClient.getAbs("http://isvgateway.workplus.io:8080/v1/w6s/authCode/temporary/njVwg-pgkeI5nK11iAdduH/2975ff5f83a34f458280fd25fbd3a356")
+                .send().await()
+            if(response.statusCode() == 200){
+                val body = response.bodyAsJsonObject()
+                val isvAuthCode = ISVAuthCodeDTO(
+                    suiteId = body.getString("suiteId"),
+                    clientType = body.getString("clientType"),
+                    authStatus = body.getString("authStatus"),
+                    orgCode = body.getString("orgId"),
+                    domainId = body.getString("domainId"),
+                    temporaryAuthCode = body.getString("temporaryAuthCode")
+                )
+
+                logger.info("temporaryAuthCode:${isvAuthCode.temporaryAuthCode}")
+                isvAuthCodeApplication.createTemporaryAuthCode(authCode = isvAuthCode).await()
+                Future.succeededFuture()
+            }else{
+                Future.failedFuture(response.bodyAsString())
+            }
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
+    private suspend fun saveSuiteTicketToLocal(webClient: WebClient):Future<Unit>{
+        return try {
+            val response = webClient.getAbs("http://isvgateway.workplus.io:8080/v1/w6s/tickets/njVwg-pgkeI5nK11iAdduH")
+                .send().await()
+            if(response.statusCode() == 200){
+                val body = response.bodyAsJsonObject()
+                val isvSuiteTicket = isvSuiteTicketApplication.saveSuiteTicket(ISVSuiteTicketDTO(
+                    suiteId = body.getString("suiteId"),
+                    suiteTicket = body.getString("suiteTicket"),
+                    clientType = ISVClientType.WorkPlusISV.toString()
+                )).await()
+                if(Objects.isNull(isvSuiteTicket)){
+                    Future.failedFuture("SUITE NOT FOUND")
+                }else{
+                    Future.succeededFuture()
+                }
+            }else{
+                Future.failedFuture(response.bodyAsString())
+            }
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
 
 }

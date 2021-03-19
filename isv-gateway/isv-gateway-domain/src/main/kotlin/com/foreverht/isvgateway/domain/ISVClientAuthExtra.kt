@@ -1,7 +1,8 @@
 package com.foreverht.isvgateway.domain
 
-abstract class ISVAuthExtra {
+abstract class ISVClientAuthExtra {
 
     lateinit var clientType:ISVClientType
 
+    abstract fun clientTokenValid():Boolean
 }

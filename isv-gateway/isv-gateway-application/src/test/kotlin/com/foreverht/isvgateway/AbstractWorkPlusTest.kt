@@ -2,9 +2,11 @@ package com.foreverht.isvgateway
 
 import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
+import com.foreverht.isvgateway.api.RequestTokenDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import com.foreverht.isvgateway.application.workplus.AccessTokenApplicationWorkPlusTest
+import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
@@ -42,6 +44,8 @@ abstract class AbstractWorkPlusTest : AbstractTest() {
 
         val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
+        lateinit var isvAccessToken:String
+
         private fun realISVClient() : ISVClientDTO {
             val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
                 clientId = clientId,
@@ -69,10 +73,25 @@ abstract class AbstractWorkPlusTest : AbstractTest() {
 
                     created.clientId?.also { isvClientId = it }
 
+                    isvAccessToken = requestAccessToken().await()
+
                     testContext.completeNow()
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }
+            }
+        }
+
+        private suspend fun requestAccessToken(): Future<String> {
+            return try {
+                val requestTokenDTO = RequestTokenDTO(clientId = isvClientId, clientSecret = clientSecret,
+                    domainId = domainId,orgCode = ownerId)
+
+                val accessToken = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
+
+                return Future.succeededFuture(accessToken.accessToken)
+            }catch (t:Throwable){
+                Future.failedFuture(t)
             }
         }
 

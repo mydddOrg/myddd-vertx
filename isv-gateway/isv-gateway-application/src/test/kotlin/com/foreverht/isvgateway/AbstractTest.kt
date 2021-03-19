@@ -35,17 +35,16 @@ import javax.persistence.Persistence
 @ExtendWith(VertxExtension::class)
 abstract class AbstractTest {
 
+
     companion object {
 
         val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
 
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
+        init {
             InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
                 override fun configure() {
-                    bind(Vertx::class.java).toInstance(vertx)
-                    bind(WebClient::class.java).toInstance(WebClient.create(vertx))
+                    bind(Vertx::class.java).toInstance(Vertx.vertx())
+                    bind(WebClient::class.java).toInstance(WebClient.create(Vertx.vertx()))
                     bind(Mutiny.SessionFactory::class.java).toInstance(
                         Persistence.createEntityManagerFactory("default")
                             .unwrap(Mutiny.SessionFactory::class.java))
@@ -73,8 +72,6 @@ abstract class AbstractTest {
 
                 }
             })))
-
-            testContext.completeNow()
         }
 
 

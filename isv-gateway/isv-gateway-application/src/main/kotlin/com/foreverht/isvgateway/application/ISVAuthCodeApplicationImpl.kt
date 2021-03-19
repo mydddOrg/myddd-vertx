@@ -32,9 +32,9 @@ class ISVAuthCodeApplicationImpl:ISVAuthCodeApplication {
         }
     }
 
-    override suspend fun queryTemporaryAuthCode(suiteId: String, orgId:String,clientType: String): Future<ISVAuthCodeDTO?> {
+    override suspend fun queryTemporaryAuthCode(suiteId: String,domainId:String,orgCode:String, clientType: String): Future<ISVAuthCodeDTO?> {
         return try {
-            val authCode = ISVAuthCode.queryTemporaryAuthCode(suiteId = suiteId,orgId = orgId,clientType = ISVClientType.valueOf(clientType)).await()
+            val authCode = ISVAuthCode.queryTemporaryAuthCode(suiteId = suiteId,domainId = domainId,orgCode = orgCode,clientType = ISVClientType.valueOf(clientType)).await()
             if(Objects.nonNull(authCode)){
                 Future.succeededFuture(toISVAuthDTO(authCode!!))
             }else{
@@ -45,9 +45,9 @@ class ISVAuthCodeApplicationImpl:ISVAuthCodeApplication {
         }
     }
 
-    override suspend fun queryPermanentAuthCode(suiteId: String, orgId:String,clientType: String): Future<ISVAuthCodeDTO?> {
+    override suspend fun queryPermanentAuthCode(suiteId: String,domainId:String,orgCode:String, clientType: String): Future<ISVAuthCodeDTO?> {
         return try {
-            val authCode = ISVAuthCode.queryPermanentAuthCode(suiteId = suiteId,orgId = orgId,clientType = ISVClientType.valueOf(clientType)).await()
+            val authCode = ISVAuthCode.queryPermanentAuthCode(suiteId = suiteId,domainId = domainId, orgCode = orgCode,clientType = ISVClientType.valueOf(clientType)).await()
             if(Objects.nonNull(authCode)){
                 Future.succeededFuture(toISVAuthDTO(authCode!!))
             }else{

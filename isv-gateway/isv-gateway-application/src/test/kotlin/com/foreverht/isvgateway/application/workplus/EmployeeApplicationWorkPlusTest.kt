@@ -14,11 +14,11 @@ import org.myddd.vertx.ioc.InstanceFactory
 
 class EmployeeApplicationWorkPlusTest : AbstractWorkPlusTest() {
 
+    private val employeeApplication:EmployeeApplication by lazy { InstanceFactory.getInstance(EmployeeApplication::class.java,"WorkPlusApp") }
 
     companion object {
         private const val userId = "ce48a6e05f8e4cb8a8a796684d5c991a"
         private const val query = "136318341"
-        private val employeeApplication:EmployeeApplication by lazy { InstanceFactory.getInstance(EmployeeApplication::class.java,"WorkPlusApp") }
     }
 
 
@@ -26,14 +26,14 @@ class EmployeeApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testQueryEmployeeById(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val employee = employeeApplication.queryEmployeeById(clientId = isvClientId, orgCode = ownerId , userId = userId).await()
+                val employee = employeeApplication.queryEmployeeById(isvAccessToken = isvAccessToken, orgCode = ownerId , userId = userId).await()
                 testContext.verify {
                     Assertions.assertNotNull(employee)
                     Assertions.assertEquals(userId,employee.userId)
                 }
 
                 try {
-                    employeeApplication.queryEmployeeById(clientId = randomIDString.randomString(), orgCode = ownerId , userId = userId)
+                    employeeApplication.queryEmployeeById(isvAccessToken = randomIDString.randomString(), orgCode = ownerId , userId = userId)
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -49,7 +49,7 @@ class EmployeeApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testBatchQueryEmployees(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val employeeList = employeeApplication.batchQueryEmployeeByIds(clientId = isvClientId,orgCode = ownerId,
+                val employeeList = employeeApplication.batchQueryEmployeeByIds(isvAccessToken = isvAccessToken,orgCode = ownerId,
                     listOf(userId)).await()
                 testContext.verify {
                     Assertions.assertNotNull(employeeList)
@@ -57,14 +57,14 @@ class EmployeeApplicationWorkPlusTest : AbstractWorkPlusTest() {
                 }
 
                 try {
-                    employeeApplication.batchQueryEmployeeByIds(clientId = isvClientId,orgCode = ownerId,
+                    employeeApplication.batchQueryEmployeeByIds(isvAccessToken = isvAccessToken,orgCode = ownerId,
                         listOf()).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
 
                 try {
-                    employeeApplication.batchQueryEmployeeByIds(clientId = isvClientId,orgCode = ownerId,
+                    employeeApplication.batchQueryEmployeeByIds(isvAccessToken = isvAccessToken,orgCode = ownerId,
                         listOf(randomIDString.randomString())).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
@@ -83,26 +83,26 @@ class EmployeeApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testSearchEmployee(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val searchResult = employeeApplication.searchEmployees(clientId = isvClientId,orgCode = ownerId, query = query).await()
+                val searchResult = employeeApplication.searchEmployees(isvAccessToken = isvAccessToken,orgCode = ownerId, query = query).await()
                 testContext.verify {
                     Assertions.assertNotNull(searchResult)
                     Assertions.assertTrue(searchResult.isNotEmpty())
                 }
 
                 try {
-                    employeeApplication.searchEmployees(clientId = isvClientId,orgCode = ownerId, query = "").await()
+                    employeeApplication.searchEmployees(isvAccessToken = isvAccessToken,orgCode = ownerId, query = "").await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
 
                 try {
-                    employeeApplication.searchEmployees(clientId = randomIDString.randomString(),orgCode = ownerId, query = "").await()
+                    employeeApplication.searchEmployees(isvAccessToken = randomIDString.randomString(),orgCode = ownerId, query = "").await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
 
                 try {
-                    employeeApplication.searchEmployees(clientId = isvClientId,orgCode = randomIDString.randomString(), query = "").await()
+                    employeeApplication.searchEmployees(isvAccessToken = isvAccessToken,orgCode = randomIDString.randomString(), query = "").await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }

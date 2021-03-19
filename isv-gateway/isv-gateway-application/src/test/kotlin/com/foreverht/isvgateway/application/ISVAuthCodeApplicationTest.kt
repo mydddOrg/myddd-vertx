@@ -31,7 +31,7 @@ class ISVAuthCodeApplicationTest: AbstractTest() {
                 }
 
 
-                var noExistPermanent = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = created!!.suiteId,orgId = created.orgId,clientType = ISVClientType.WorkPlusISV.toString()).await()
+                var noExistPermanent = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = created!!.suiteId,domainId = created.domainId,orgCode = created.orgCode,clientType = ISVClientType.WorkPlusISV.toString()).await()
                 testContext.verify { Assertions.assertNull(noExistPermanent) }
 
                 created.permanentAuthCode = randomString()
@@ -39,10 +39,10 @@ class ISVAuthCodeApplicationTest: AbstractTest() {
                 val permanent = isvAuthCodeApplication.toPermanent(created).await()
                 testContext.verify { Assertions.assertNotNull(permanent) }
 
-                val queryPermanent = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = permanent!!.suiteId,orgId = permanent.orgId,clientType = ISVClientType.WorkPlusISV.toString()).await()
+                val queryPermanent = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = permanent!!.suiteId,domainId = created.domainId,orgCode = permanent.orgCode,clientType = ISVClientType.WorkPlusISV.toString()).await()
                 testContext.verify { Assertions.assertNotNull(queryPermanent) }
 
-                noExistPermanent = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = UUID.randomUUID().toString(),orgId = created.orgId,clientType = ISVClientType.WorkPlusISV.toString()).await()
+                noExistPermanent = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = UUID.randomUUID().toString(),domainId = created.domainId,orgCode = created.orgCode,clientType = ISVClientType.WorkPlusISV.toString()).await()
                 testContext.verify { Assertions.assertNull(noExistPermanent) }
             }catch (t:Throwable){
                 testContext.failNow(t)
@@ -61,10 +61,10 @@ class ISVAuthCodeApplicationTest: AbstractTest() {
                     Assertions.assertEquals(ISVAuthStatus.Temporary.toString(),created!!.authStatus)
                 }
 
-                val queryTemporary = isvAuthCodeApplication.queryTemporaryAuthCode(suiteId = created!!.suiteId,orgId = created.orgId,clientType = ISVClientType.WorkPlusISV.toString()).await()
+                val queryTemporary = isvAuthCodeApplication.queryTemporaryAuthCode(suiteId = created!!.suiteId,domainId = created.domainId,orgCode = created.orgCode,clientType = ISVClientType.WorkPlusISV.toString()).await()
                 testContext.verify { Assertions.assertNotNull(queryTemporary) }
 
-                var noExistsAuthCode = isvAuthCodeApplication.queryTemporaryAuthCode(suiteId = UUID.randomUUID().toString(),orgId = created.orgId,clientType = ISVClientType.WorkPlusISV.toString()).await()
+                var noExistsAuthCode = isvAuthCodeApplication.queryTemporaryAuthCode(suiteId = UUID.randomUUID().toString(),domainId = created.domainId,orgCode = created.orgCode,clientType = ISVClientType.WorkPlusISV.toString()).await()
 
                 testContext.verify { Assertions.assertNull(noExistsAuthCode) }
 
@@ -121,7 +121,7 @@ class ISVAuthCodeApplicationTest: AbstractTest() {
                         clientType = ISVClientType.WorkPlusISV.toString(),
                         authStatus = ISVAuthStatus.Temporary.toString(),
                         domainId = randomIDString.randomString(),
-                        orgId = randomIDString.randomString(),
+                        orgCode = randomIDString.randomString(),
                         temporaryAuthCode = randomIDString.randomString(),
                         permanentAuthCode = randomIDString.randomString()
                     )
@@ -143,7 +143,7 @@ class ISVAuthCodeApplicationTest: AbstractTest() {
             clientType = ISVClientType.WorkPlusISV.toString(),
             authStatus = ISVAuthStatus.Temporary.toString(),
             domainId = randomIDString.randomString(),
-            orgId = randomIDString.randomString(),
+            orgCode = randomIDString.randomString(),
             temporaryAuthCode = randomIDString.randomString(),
             permanentAuthCode = randomIDString.randomString()
         )

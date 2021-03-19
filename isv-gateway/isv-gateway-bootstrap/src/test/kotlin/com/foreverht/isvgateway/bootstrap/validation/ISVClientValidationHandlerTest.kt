@@ -14,6 +14,7 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -339,6 +340,46 @@ class ISVClientValidationHandlerTest {
             }
             testContext.completeNow()
         }
+    }
+
+    @Test
+    fun testRequestApiTokenValidation(vertx: Vertx,testContext: VertxTestContext){
+
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val requestApiTokenValidation = ISVClientValidationHandler().requestApiTokenSchema.build(ISVClientValidationHandler().schemaParser)
+
+                val json = json {
+                    obj(
+                        "clientId" to UUID.randomUUID().toString(),
+                        "clientSecret" to UUID.randomUUID().toString(),
+                        "domainId" to UUID.randomUUID().toString(),
+                        "orgCode" to UUID.randomUUID().toString()
+                    )
+                }
+
+                requestApiTokenValidation.validateAsync(json).await()
+
+                try {
+                    val errorJson = json {
+                        obj(
+                            "clientId" to UUID.randomUUID().toString(),
+                            "clientSecret" to UUID.randomUUID().toString(),
+                            "domainId" to UUID.randomUUID().toString()
+                        )
+                    }
+
+                    requestApiTokenValidation.validateAsync(errorJson).await()
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+
     }
 
 }
