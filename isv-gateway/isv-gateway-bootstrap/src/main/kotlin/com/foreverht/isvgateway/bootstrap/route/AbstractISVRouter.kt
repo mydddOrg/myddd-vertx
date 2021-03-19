@@ -17,7 +17,7 @@ abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(v
     companion object {
         const val WorkPlusApp = "WorkPlusApp"
 
-        private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java,WorkPlusApp) }
+        private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
 
         private val organizationApplicationMap:Map<String,OrganizationApplication> = mapOf(
             WorkPlusApp to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkPlusApp)

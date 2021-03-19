@@ -31,7 +31,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
 
     private val isvClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
 
-    private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java,"WorkPlusApp") }
+    private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
 
     companion object {
         private val logger by lazy { LoggerFactory.getLogger(ISVClientRouter::class.java) }

@@ -5,7 +5,6 @@ import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.RequestTokenDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
-import com.foreverht.isvgateway.application.workplus.AccessTokenApplicationWorkPlusTest
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.Logger
@@ -24,7 +23,7 @@ abstract class AbstractWorkPlusTest : AbstractTest() {
 
     companion object {
 
-        val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java,"WorkPlusApp") }
+        val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
 
         val logger: Logger = LoggerFactory.getLogger(AbstractWorkPlusTest::class.java)
 

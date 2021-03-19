@@ -1,10 +1,7 @@
 package com.foreverht.isvgateway
 
 import com.foreverht.isvgateway.api.*
-import com.foreverht.isvgateway.application.ISVAuthCodeApplicationImpl
-import com.foreverht.isvgateway.application.ISVClientApplicationImpl
-import com.foreverht.isvgateway.application.ISVSuiteTicketApplicationImpl
-import com.foreverht.isvgateway.application.W6SBossApplication
+import com.foreverht.isvgateway.application.*
 import com.foreverht.isvgateway.application.isv.W6SBossApplicationImpl
 import com.foreverht.isvgateway.application.workplus.*
 import com.foreverht.isvgateway.domain.ISVClientRepository
@@ -15,9 +12,7 @@ import com.google.inject.name.Names
 import io.vertx.core.Vertx
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
-import io.vertx.junit5.VertxTestContext
 import org.hibernate.reactive.mutiny.Mutiny
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
@@ -63,7 +58,8 @@ abstract class AbstractTest {
                     bind(ISVAuthCodeApplication::class.java).to(ISVAuthCodeApplicationImpl::class.java)
                     bind(W6SBossApplication::class.java).to(W6SBossApplicationImpl::class.java)
 
-                    bind(AccessTokenApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(AccessTokenApplicationWorkPlus::class.java)
+                    bind(AccessTokenApplication::class.java).to(AccessTokenApplicationImpl::class.java)
+
                     bind(OrganizationApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to((OrganizationApplicationWorkPlus::class.java))
                     bind(EmployeeApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(EmployeeApplicationWorkPlus::class.java)
                     bind(MediaApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(MediaApplicationWorkPlus::class.java)

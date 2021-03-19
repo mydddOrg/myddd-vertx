@@ -22,9 +22,9 @@ abstract class AbstractRouteTest {
 
         lateinit var deployId:String
 
-        val port:Int = 8080
+        const val port:Int = 8080
 
-        val host = "127.0.0.1"
+        const val host = "127.0.0.1"
 
         lateinit var webClient: WebClient
 

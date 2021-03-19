@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 
-class AccessTokenApplicationWorkPlusTest : AbstractWorkPlusTest() {
+class AccessTokenApplicationImplTest : AbstractWorkPlusTest() {
 
     @Test
     fun testInstance(vertx: Vertx,testContext: VertxTestContext){
         testContext.verify {
-            Assertions.assertNotNull(InstanceFactory.getInstance(AccessTokenApplication::class.java,"WorkPlusApp"))
+            Assertions.assertNotNull(InstanceFactory.getInstance(AccessTokenApplication::class.java))
         }
         testContext.completeNow()
     }

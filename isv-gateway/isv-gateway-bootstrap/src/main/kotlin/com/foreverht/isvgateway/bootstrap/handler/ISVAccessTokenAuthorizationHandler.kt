@@ -15,7 +15,7 @@ import java.util.*
 
 class ISVAccessTokenAuthorizationHandler(private val vertx: Vertx) : Handler<RoutingContext> {
 
-    private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java,"WorkPlusApp") }
+    private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
 
     override fun handle(rc: RoutingContext?) {
         GlobalScope.launch(vertx.dispatcher()) {
