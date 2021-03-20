@@ -58,7 +58,9 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                     try {
                         val bodyString = it.bodyAsString
                         val mapper = ObjectMapper().registerModule(KotlinModule())
-                        val isvClientDTO = mapper.readValue(bodyString,ISVClientDTO::class.java)
+                        val isvClientDTO = vertx.executeBlocking<ISVClientDTO> {
+                            it.complete(mapper.readValue(bodyString,ISVClientDTO::class.java))
+                        }.await()
 
                         val created = isvClientApplication.createISVClient(isvClientDTO).await()
                         it.end(JsonObject.mapFrom(created).toBuffer())
@@ -103,7 +105,10 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                     try {
                         val bodyString = it.bodyAsString
                         val mapper = ObjectMapper().registerModule(KotlinModule())
-                        val isvClientDTO = mapper.readValue(bodyString,ISVClientDTO::class.java)
+
+                        val isvClientDTO = vertx.executeBlocking<ISVClientDTO> {
+                            it.complete(mapper.readValue(bodyString,ISVClientDTO::class.java))
+                        }.await()
 
                         val created = isvClientApplication.updateISVClient(isvClientDTO).await()
                         it.end(JsonObject.mapFrom(created).toBuffer())
@@ -125,7 +130,9 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                     try {
                         val bodyString = it.bodyAsString
                         val mapper = ObjectMapper().registerModule(KotlinModule())
-                        val requestTokenDTO = mapper.readValue(bodyString,RequestTokenDTO::class.java)
+                        val requestTokenDTO = vertx.executeBlocking<RequestTokenDTO> {
+                            it.complete(mapper.readValue(bodyString,RequestTokenDTO::class.java))
+                        }.await()
 
                         val tokenDTO = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
                         it.end(JsonObject.mapFrom(tokenDTO).toBuffer())

@@ -30,7 +30,10 @@ class MessageRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = vert
                         val accessToken = it.get<String>("accessToken")
 
                         val mapper = ObjectMapper().registerModule(KotlinModule())
-                        val messageDTO = mapper.readValue(it.bodyAsString, MessageDTO::class.java)
+                        val bodyString = it.bodyAsString
+                        val messageDTO = vertx.executeBlocking<MessageDTO> {
+                            it.complete(mapper.readValue(bodyString, MessageDTO::class.java))
+                        }.await()
 
                         val messageApplication = getMessageApplication(accessToken = accessToken).await()
 
