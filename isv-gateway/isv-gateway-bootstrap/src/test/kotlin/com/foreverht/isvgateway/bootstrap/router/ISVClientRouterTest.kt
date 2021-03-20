@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
+import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
 import com.foreverht.isvgateway.bootstrap.AbstractRouteTest
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
@@ -48,7 +49,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
 
-                val created = isvClientApplication.createISVClient(realISVClient()).await()
+                val created = isvClientApplication.createISVClient(realWorkPlusAppClientDTO()).await()
 
                 testContext.verify { Assertions.assertNotNull(created) }
 
@@ -83,7 +84,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val mapper = ObjectMapper().registerModule(KotlinModule())
-                val dto = mapper.readValue(randomISVClientDTO().toString(),ISVClientDTO::class.java)
+                val dto = mapper.readValue(randomAppClient().toString(),ISVClientDTO::class.java)
                 logger.info(dto)
             }catch (t:Throwable){
                 logger.error(t)
@@ -98,11 +99,18 @@ class ISVClientRouterTest : AbstractRouteTest(){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val response = webClient.post(port, host,"/v1/clients")
-                    .sendJsonObject(randomISVClientDTO()).await()
+                    .sendJsonObject(randomAppClient()).await()
 
                 testContext.verify {
                     logger.debug(response.bodyAsString())
                     Assertions.assertEquals(200,response.statusCode())
+                }
+
+                val isvCreateResponse = webClient.post(port,host,"/v1/clients")
+                    .sendJsonObject(randomAppClient())
+                    .await()
+                testContext.verify {
+                    Assertions.assertEquals(200,isvCreateResponse.statusCode())
                 }
 
             }catch (t:Throwable){
@@ -117,7 +125,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val response = webClient.post(port, host,"/v1/clients")
-                    .sendJsonObject(randomISVClientDTO()).await()
+                    .sendJsonObject(randomAppClient()).await()
 
                 testContext.verify {
                     logger.debug(response.bodyAsString())
@@ -152,7 +160,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val response = webClient.post(port, host,"/v1/clients")
-                    .sendJsonObject(randomISVClientDTO()).await()
+                    .sendJsonObject(randomAppClient()).await()
 
                 testContext.verify {
                     logger.debug(response.bodyAsString())
@@ -194,7 +202,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
 
 
                 var response = webClient.post(port, host,"/v1/clients")
-                    .sendJsonObject(randomISVClientDTO()).await()
+                    .sendJsonObject(randomAppClient()).await()
 
                 testContext.verify {
                     logger.debug(response.bodyAsString())
@@ -320,7 +328,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
 
     private suspend fun createISVClient(webClient: WebClient, testContext: VertxTestContext): ISVClientDTO {
         var response = webClient.post(port, host, "/v1/clients")
-            .sendJsonObject(randomISVClientDTO()).await()
+            .sendJsonObject(randomAppClient()).await()
 
         testContext.verify {
             logger.debug(response.bodyAsString())
@@ -331,7 +339,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
         return mapper.readValue(response.bodyAsString(), ISVClientDTO::class.java)
     }
 
-    private fun randomISVClientDTO(): JsonObject {
+    private fun randomAppClient(): JsonObject {
         val extraForWorkPlusJson = JsonObject()
             .put("clientId", UUID.randomUUID().toString())
             .put("clientSecret", UUID.randomUUID().toString())
@@ -347,7 +355,23 @@ class ISVClientRouterTest : AbstractRouteTest(){
     }
 
 
-    private fun realISVClient() : ISVClientDTO {
+    private fun realW6SISVClient() : ISVClientDTO {
+        val isvClientExtraDTO = ISVClientExtraForWorkPlusISVDTO(
+            suiteKey = "njVwg-pgkeI5nK11iAdduH",
+            suiteSecret = "o0jF8HfNXNYE53o3kV22Vcag2oejnM1n",
+            vendorKey = "k2n23vwy0gEKxpS_Bb237h",
+            token = "KSbiWeOKpLQeyyVuJUT2X6JOM2iqlWAgosk0d0xXIEL",
+            encryptSecret = "CoOREEhw6KPCAyfIRLqVFyysEim0dUkWpC5rmDKaLYR",
+            isvApi = "http://test248.workplus.io/v1/isv",
+            appId = "Pu-xt6AREHB67AznU9ReDd"
+        )
+
+        return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())
+    }
+
+
+
+    private fun realWorkPlusAppClientDTO() : ISVClientDTO {
         val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
             clientId = clientId,
             clientSecret = clientSecret,

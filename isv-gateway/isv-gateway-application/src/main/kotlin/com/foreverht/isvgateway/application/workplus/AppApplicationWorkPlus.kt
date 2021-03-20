@@ -23,6 +23,7 @@ class AppApplicationWorkPlus :AbstractApplicationWorkPlus(),AppApplication {
             val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
 
             val requestUrl = "${isvClientToken.api()}/apps/${isvClientToken.appId()}/admins?source_type=${isvClientToken.appType()}&access_token=${isvClientToken.accessToken()}"
+            logger.debug("Request Url: $requestUrl")
             val response = webClient.getAbs(requestUrl).send().await()
             if(response.resultSuccess()){
                 val bodyJson = response.bodyAsJsonObject()
@@ -46,6 +47,7 @@ class AppApplicationWorkPlus :AbstractApplicationWorkPlus(),AppApplication {
         return try {
             val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
             val requestUrl = "${isvClientToken.api()}/apps/${isvClientToken.appId()}?access_token=${isvClientToken.accessToken()}&source_type=${isvClientToken.appType()}&"
+            logger.debug("Request Url: $requestUrl")
             val response = webClient.getAbs(requestUrl).send().await()
             if(response.resultSuccess()){
                 val bodyJson = response.bodyAsJsonObject()
