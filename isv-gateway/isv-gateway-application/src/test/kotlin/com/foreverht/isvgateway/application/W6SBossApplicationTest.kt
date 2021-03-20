@@ -4,6 +4,7 @@ import com.foreverht.isvgateway.AbstractW6SBossTest
 import com.foreverht.isvgateway.application.isv.W6SBossApplicationImpl
 import com.foreverht.isvgateway.domain.ISVClient
 import io.vertx.core.Vertx
+import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
@@ -21,6 +22,20 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
     companion object {
         private const val ORG_CODE = "2975ff5f83a34f458280fd25fbd3a356"
         private const val DOMAIN_ID = "workplus"
+    }
+
+    @BeforeEach
+    fun beforeEach(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val webClient = WebClient.create(vertx)
+                saveSuiteTicketToLocal(webClient = webClient).await()
+                saveTmpAuthCodeToLocal(webClient = webClient).await()
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
     }
 
 

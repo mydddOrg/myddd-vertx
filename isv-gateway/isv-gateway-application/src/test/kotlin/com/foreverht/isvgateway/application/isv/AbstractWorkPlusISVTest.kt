@@ -1,5 +1,6 @@
-package com.foreverht.isvgateway
+package com.foreverht.isvgateway.application.isv
 
+import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.api.*
 import com.foreverht.isvgateway.api.dto.ISVAuthCodeDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
@@ -25,7 +26,7 @@ import java.util.*
 
 @ExtendWith(VertxExtension::class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-abstract class AbstractW6SBossTest : AbstractTest() {
+abstract class AbstractWorkPlusISVTest : AbstractTest() {
 
     companion object {
 
@@ -35,7 +36,7 @@ abstract class AbstractW6SBossTest : AbstractTest() {
 
         lateinit var isvClientSecret:String
 
-        val logger: Logger by lazy { LoggerFactory.getLogger(AbstractW6SBossTest::class.java) }
+        val logger: Logger by lazy { LoggerFactory.getLogger(AbstractWorkPlusISVTest::class.java) }
 
         private val isvClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
 
@@ -43,6 +44,11 @@ abstract class AbstractW6SBossTest : AbstractTest() {
 
         private val isvAuthCodeApplication by lazy { InstanceFactory.getInstance(ISVAuthCodeApplication::class.java) }
 
+        val w6SBossApplication by lazy { InstanceFactory.getInstance(W6SBossApplication::class.java) }
+        val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
+
+        const val ORG_CODE = "2975ff5f83a34f458280fd25fbd3a356"
+        const val DOMAIN_ID = "workplus"
         lateinit var isvAccessToken:String
 
         @BeforeAll
@@ -70,12 +76,47 @@ abstract class AbstractW6SBossTest : AbstractTest() {
                     isvClientId = w6sISVClient.clientId!!
                     isvClientSecret = w6sISVClient.clientSecret!!
 
+                    requestAccessToken(testContext).await()
+
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }
                 testContext.completeNow()
             }
         }
+
+        suspend fun requestAccessToken(testContext: VertxTestContext):Future<Unit>{
+           return try {
+                try {
+                    with(w6SBossApplication) { requestApiAccessToken(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = ORG_CODE).await() }
+                }catch (t:Throwable){
+                    Assertions.assertNotNull(t)
+                }
+
+                val permanent = w6SBossApplication.requestPermanentCode(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = ORG_CODE).await()
+                testContext.verify {
+                    Assertions.assertNotNull(permanent)
+                    Assertions.assertNotNull(permanent.permanentAuthCode)
+                }
+
+                val requestTokenDTO = RequestTokenDTO(clientId = isvClientId, clientSecret = isvClientSecret,
+                    domainId = DOMAIN_ID,orgCode = ORG_CODE
+                )
+
+                val tokenDTO = accessTokenApplication.requestAccessToken(requestTokenDTO = requestTokenDTO).await()
+                testContext.verify { Assertions.assertNotNull(tokenDTO) }
+
+                val query = accessTokenApplication.queryClientByAccessToken(isvAccessToken = tokenDTO.accessToken).await()
+                testContext.verify { Assertions.assertNotNull(query) }
+
+                isvAccessToken = tokenDTO.accessToken
+               Future.succeededFuture()
+           }catch (t:Throwable){
+                Future.failedFuture(t)
+            }
+        }
+
+
 
         private suspend fun querySuiteTicket(webClient: WebClient):Future<String>{
             return try {

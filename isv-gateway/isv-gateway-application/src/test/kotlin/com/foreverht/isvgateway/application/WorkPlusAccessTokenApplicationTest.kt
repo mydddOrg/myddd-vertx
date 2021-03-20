@@ -1,6 +1,6 @@
-package com.foreverht.isvgateway.application.workplus
+package com.foreverht.isvgateway.application
 
-import com.foreverht.isvgateway.AbstractWorkPlusTest
+import com.foreverht.isvgateway.application.workplus.AbstractWorkPlusTest
 import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.RequestTokenDTO
 import com.foreverht.isvgateway.domain.ISVClientToken
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 
-class AccessTokenApplicationImplTest : AbstractWorkPlusTest() {
+class WorkPlusAccessTokenApplicationTest : AbstractWorkPlusTest() {
 
     @Test
     fun testInstance(vertx: Vertx,testContext: VertxTestContext){

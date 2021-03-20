@@ -1,5 +1,6 @@
-package com.foreverht.isvgateway
+package com.foreverht.isvgateway.application.workplus
 
+import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.RequestTokenDTO
@@ -84,7 +85,8 @@ abstract class AbstractWorkPlusTest : AbstractTest() {
         private suspend fun requestAccessToken(): Future<String> {
             return try {
                 val requestTokenDTO = RequestTokenDTO(clientId = isvClientId, clientSecret = clientSecret,
-                    domainId = domainId,orgCode = ownerId)
+                    domainId = domainId,orgCode = ownerId
+                )
 
                 val accessToken = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
 

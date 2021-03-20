@@ -3,6 +3,9 @@ package com.foreverht.isvgateway.application.workplus
 import com.foreverht.isvgateway.api.AppApplication
 import com.foreverht.isvgateway.api.dto.AppDTO
 import com.foreverht.isvgateway.api.dto.EmployeeDTO
+import com.foreverht.isvgateway.application.extention.accessToken
+import com.foreverht.isvgateway.application.extention.api
+import com.foreverht.isvgateway.application.extention.appId
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
@@ -16,9 +19,9 @@ class AppApplicationWorkPlus :AbstractApplicationWorkPlus(),AppApplication {
 
     override suspend fun getAdminList(isvAccessToken:String): Future<List<EmployeeDTO>> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
+            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
 
-            val requestUrl = "${extra.api}/apps/${extra.clientId}/admins?source_type=native&access_token=$accessToken"
+            val requestUrl = "${isvClientToken.api()}/apps/${isvClientToken.appId()}/admins?source_type=native&access_token=${isvClientToken.accessToken()}"
             val response = webClient.getAbs(requestUrl).send().await()
             if(response.resultSuccess()){
                 val bodyJson = response.bodyAsJsonObject()
@@ -40,8 +43,8 @@ class AppApplicationWorkPlus :AbstractApplicationWorkPlus(),AppApplication {
 
     override suspend fun getAppDetail(isvAccessToken: String): Future<AppDTO> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
-            val requestUrl = "${extra.api}/apps/${extra.clientId}?access_token=$accessToken"
+            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
+            val requestUrl = "${isvClientToken.api()}/apps/${isvClientToken.appId()}?access_token=${isvClientToken.accessToken()}"
             val response = webClient.getAbs(requestUrl).send().await()
             if(response.resultSuccess()){
                 val bodyJson = response.bodyAsJsonObject()

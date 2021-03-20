@@ -2,6 +2,8 @@ package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.api.MessageApplication
 import com.foreverht.isvgateway.api.dto.message.MessageDTO
+import com.foreverht.isvgateway.application.extention.accessToken
+import com.foreverht.isvgateway.application.extention.api
 import io.vertx.core.Future
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.core.json.json
@@ -19,8 +21,8 @@ class MessageApplicationWorkPlus :AbstractApplicationWorkPlus(),MessageApplicati
 
     override suspend fun sendMessage(isvAccessToken: String, message: MessageDTO): Future<Boolean> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
-            val requestUrl = String.format(SEND_MESSAGE,extra.api,accessToken,message.forAll)
+            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
+            val requestUrl = String.format(SEND_MESSAGE,isvClientToken.api(),isvClientToken.accessToken(),message.forAll)
 
             val requestBody = json {
                 obj(

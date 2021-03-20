@@ -1,5 +1,6 @@
-package com.foreverht.isvgateway.application.workplus
+package com.foreverht.isvgateway.application.isv
 
+import com.foreverht.isvgateway.AbstractW6SBossTest
 import com.foreverht.isvgateway.api.MediaApplication
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
@@ -15,12 +16,12 @@ import org.myddd.vertx.ioc.InstanceFactory
 import java.io.File
 import java.util.*
 
-class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
+class MediaApplicationISVTest : AbstractWorkPlusISVTest() {
 
     private val mediaApplication:MediaApplication by lazy { InstanceFactory.getInstance(MediaApplication::class.java,"WorkPlusApp") }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(MediaApplicationWorkPlusTest::class.java)
+        private val logger = LoggerFactory.getLogger(MediaApplicationISVTest::class.java)
         private const val mediaId = "ad6a568cfbb540f0ad75d10e77d233de"
     }
 
@@ -41,7 +42,7 @@ class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
                 }
 
                 try {
-                     mediaApplication.downloadFile(isvAccessToken = UUID.randomUUID().toString(), mediaId = mediaId).await()
+                    mediaApplication.downloadFile(isvAccessToken = UUID.randomUUID().toString(), mediaId = mediaId).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -57,7 +58,7 @@ class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val path = "META-INF/my_avatar.png"
-                var absolutePath = MediaApplicationWorkPlusTest::class.java.classLoader.getResource(path)!!.path
+                var absolutePath = MediaApplicationISVTest::class.java.classLoader.getResource(path)!!.path
                 val mediaId = mediaApplication.uploadFile(isvAccessToken = isvAccessToken,path = absolutePath).await()
                 logger.debug("mediaId:$mediaId")
                 testContext.verify {
@@ -81,8 +82,8 @@ class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
                 testContext.verify { Assertions.assertNotNull(fileSystemProps) }
 
                 val md5 = vertx.executeBlocking<String> {
-                    logger.debug(MediaApplicationWorkPlusTest::class.java.classLoader.getResource(path)!!.path)
-                    val md5 = DigestUtils.md5Hex(MediaApplicationWorkPlusTest::class.java.classLoader.getResourceAsStream(path))
+                    logger.debug(MediaApplicationISVTest::class.java.classLoader.getResource(path)!!.path)
+                    val md5 = DigestUtils.md5Hex(MediaApplicationISVTest::class.java.classLoader.getResourceAsStream(path))
                     it.complete(md5)
                 }.await()
 
@@ -96,3 +97,4 @@ class MediaApplicationWorkPlusTest : AbstractWorkPlusTest() {
     }
 
 }
+

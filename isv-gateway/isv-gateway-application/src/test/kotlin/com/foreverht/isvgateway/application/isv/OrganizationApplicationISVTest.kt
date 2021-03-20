@@ -1,5 +1,6 @@
-package com.foreverht.isvgateway.application.workplus
+package com.foreverht.isvgateway.application.isv
 
+import com.foreverht.isvgateway.AbstractW6SBossTest
 import com.foreverht.isvgateway.api.OrganizationApplication
 import com.foreverht.isvgateway.api.dto.OrgPageQueryDTO
 import io.vertx.core.Vertx
@@ -12,12 +13,12 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 
-class OrganizationApplicationWorkPlusTest : AbstractWorkPlusTest() {
+class OrganizationApplicationISVTest : AbstractWorkPlusISVTest() {
 
-    private val organizationApplication:OrganizationApplication by lazy { InstanceFactory.getInstance(OrganizationApplication::class.java,"WorkPlusApp") }
+    private val organizationApplication: OrganizationApplication by lazy { InstanceFactory.getInstance(OrganizationApplication::class.java,"WorkPlusApp") }
 
     @Test
-    fun testInstance(vertx: Vertx,testContext: VertxTestContext){
+    fun testInstance(vertx: Vertx, testContext: VertxTestContext){
         testContext.verify { Assertions.assertNotNull(organizationApplication) }
         testContext.completeNow()
     }
@@ -26,10 +27,10 @@ class OrganizationApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testQueryOrganizationById(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val organizationDTO = organizationApplication.queryOrganizationById(orgCode = ownerId,isvAccessToken = isvAccessToken).await()
+                val organizationDTO = organizationApplication.queryOrganizationById(orgCode = ORG_CODE,isvAccessToken = isvAccessToken).await()
                 testContext.verify { Assertions.assertNotNull(organizationDTO) }
 
-                val subOrganizationDTO = organizationApplication.queryOrganizationById(isvAccessToken = isvAccessToken,orgCode = ownerId,orgId = "aHexITjYkEurKyyxpKMgFh").await()
+                val subOrganizationDTO = organizationApplication.queryOrganizationById(isvAccessToken = isvAccessToken,orgCode = ORG_CODE,orgId = "aHexITjYkEurKyyxpKMgFh").await()
                 testContext.verify { Assertions.assertNotNull(subOrganizationDTO) }
 
                 try {
@@ -39,7 +40,7 @@ class OrganizationApplicationWorkPlusTest : AbstractWorkPlusTest() {
                 }
 
                 try {
-                    organizationApplication.queryOrganizationById(orgCode = ownerId,isvAccessToken = isvAccessToken, orgId = randomIDString.randomString()).await()
+                    organizationApplication.queryOrganizationById(orgCode = ORG_CODE,isvAccessToken = isvAccessToken, orgId = randomIDString.randomString()).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -54,12 +55,12 @@ class OrganizationApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testQueryChildrenOrganizations(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                var subOrganizationList = organizationApplication.queryChildrenOrganizations(OrgPageQueryDTO(accessToken = isvAccessToken,orgCode = ownerId)).await()
+                var subOrganizationList = organizationApplication.queryChildrenOrganizations(OrgPageQueryDTO(accessToken = isvAccessToken,orgCode = ORG_CODE)).await()
                 testContext.verify {
                     Assertions.assertNotNull(subOrganizationList)
                 }
 
-                subOrganizationList = organizationApplication.queryChildrenOrganizations(OrgPageQueryDTO(accessToken = isvAccessToken,orgCode = ownerId,orgId = "aHexITjYkEurKyyxpKMgFh")).await()
+                subOrganizationList = organizationApplication.queryChildrenOrganizations(OrgPageQueryDTO(accessToken = isvAccessToken,orgCode = ORG_CODE,orgId = "aHexITjYkEurKyyxpKMgFh")).await()
                 testContext.verify {
                     Assertions.assertNotNull(subOrganizationList)
                 }
@@ -81,12 +82,12 @@ class OrganizationApplicationWorkPlusTest : AbstractWorkPlusTest() {
     fun testQueryOrganizationEmployees(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                var employees = organizationApplication.queryOrganizationEmployees(OrgPageQueryDTO(accessToken = isvAccessToken,orgCode = ownerId)).await()
+                var employees = organizationApplication.queryOrganizationEmployees(OrgPageQueryDTO(accessToken = isvAccessToken,orgCode = ORG_CODE)).await()
                 testContext.verify {
                     Assertions.assertNotNull(employees)
                 }
 
-                employees = organizationApplication.queryOrganizationEmployees(OrgPageQueryDTO(accessToken = isvAccessToken,orgCode = ownerId,orgId = "aHexITjYkEurKyyxpKMgFh")).await()
+                employees = organizationApplication.queryOrganizationEmployees(OrgPageQueryDTO(accessToken = isvAccessToken,orgCode = ORG_CODE,orgId = "aHexITjYkEurKyyxpKMgFh")).await()
                 testContext.verify {
                     logger.debug("COUNT:${employees.count()}")
                     Assertions.assertNotNull(employees)
@@ -107,5 +108,3 @@ class OrganizationApplicationWorkPlusTest : AbstractWorkPlusTest() {
     }
 
 }
-
-

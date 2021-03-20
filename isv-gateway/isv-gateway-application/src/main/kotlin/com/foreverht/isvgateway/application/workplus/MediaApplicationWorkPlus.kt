@@ -2,6 +2,8 @@ package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.api.MediaApplication
 import com.foreverht.isvgateway.api.dto.MediaDTO
+import com.foreverht.isvgateway.application.extention.accessToken
+import com.foreverht.isvgateway.application.extention.api
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.file.AsyncFile
@@ -42,9 +44,8 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
                     .attribute("filename",name)
                     .binaryFileUpload("file",name,path, "application/octet-stream ")
 
-
-                val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
-                val requestUrl = "${extra.api}/medias?access_token=$accessToken&file_digest=$md5&file_size=${fileSystemProps.size()}"
+                val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
+                val requestUrl = "${isvClientToken.api()}/medias?access_token=${isvClientToken.accessToken()}&file_digest=$md5&file_size=${fileSystemProps.size()}"
                 logger.debug("【Request URL】:$requestUrl" )
 
                 val response = webClient.postAbs(requestUrl)
@@ -75,8 +76,10 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
         return try {
             val destFilePath = System.getProperty("java.io.tmpdir") + mediaId
             detFile = vertx.fileSystem().open(destFilePath, OpenOptions()).await()
-            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
-            val requestUrl = "${extra.api}/medias/$mediaId?access_token=$accessToken&type=id"
+
+
+            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
+            val requestUrl = "${isvClientToken.api()}/medias/$mediaId?access_token=${isvClientToken.accessToken()}&type=id"
             val response = webClient.getAbs(requestUrl)
                 .`as`(BodyCodec.pipe(detFile))
                 .send()
@@ -102,8 +105,8 @@ class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
 
     private suspend fun queryMediaIdByMd5(isvAccessToken: String,md5: String):Future<String?>{
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
-            val requestUrl = "${extra.api}/medias/$md5/info/?access_token=$accessToken&type=DIGEST"
+            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
+            val requestUrl = "${isvClientToken.api()}/medias/$md5/info/?access_token=${isvClientToken.accessToken()}&type=DIGEST"
 
             val response = webClient.getAbs(requestUrl)
                 .send()

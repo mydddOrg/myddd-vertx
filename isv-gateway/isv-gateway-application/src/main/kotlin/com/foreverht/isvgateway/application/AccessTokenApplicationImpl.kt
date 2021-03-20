@@ -11,8 +11,7 @@ import com.foreverht.isvgateway.domain.ISVClient
 import com.foreverht.isvgateway.domain.ISVClientToken
 import com.foreverht.isvgateway.domain.ISVClientType
 import com.foreverht.isvgateway.domain.ISVErrorCode
-import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
-import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusApp
+import com.foreverht.isvgateway.domain.extra.*
 import io.vertx.core.Future
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.core.json.json
@@ -27,17 +26,30 @@ class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenAppl
 
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
+    private val bossApplication:W6SBossApplication by lazy { InstanceFactory.getInstance(W6SBossApplication::class.java) }
+
     override suspend fun requestAccessToken(requestTokenDTO: RequestTokenDTO): Future<TokenDTO> {
         return try {
             val isvClientToken = ISVClientToken.queryClientToken(clientId = requestTokenDTO.clientId,domainId = requestTokenDTO.domainId,orgCode = requestTokenDTO.orgCode).await()
             if(Objects.nonNull(isvClientToken)){
-                val extra = isvClientToken!!.extra as ISVClientTokenExtraForWorkPlusApp
-                Future.succeededFuture(TokenDTO(accessToken = isvClientToken.token,refreshToken = extra.refreshToken,accessExpiredIn = extra.expireTime))
+                return when(isvClientToken!!.client.clientType){
+                    ISVClientType.WorkPlusApp -> {
+                        val extra = isvClientToken.extra as ISVClientTokenExtraForWorkPlusApp
+                        Future.succeededFuture(TokenDTO(accessToken = isvClientToken.token,refreshToken = extra.refreshToken,accessExpiredIn = extra.expireTime))
+                    }
+                    ISVClientType.WorkPlusISV -> {
+                        val extra = isvClientToken.client.clientAuthExtra as ISVClientAuthExtraForISV
+                        Future.succeededFuture(TokenDTO(accessToken = isvClientToken.token,accessExpiredIn = extra.expireTime))
+                    }
+                    else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
+                }
+
             }else{
                 val isvClient = ISVClient.queryClient(clientId = requestTokenDTO.clientId).await()
                 requireNotNull(isvClient)
                 return when(isvClient.clientType){
                     ISVClientType.WorkPlusApp -> requestFromRemoteForWorkPlusApp(requestTokenDTO)
+                    ISVClientType.WorkPlusISV -> requestFromRemoteWorkPlusISV(requestTokenDTO)
                     else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
                 }
             }
@@ -59,6 +71,19 @@ class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenAppl
             Future.failedFuture(t)
         }
 
+    }
+
+    private suspend fun requestFromRemoteWorkPlusISV(requestTokenDTO: RequestTokenDTO):Future<TokenDTO> {
+        return try {
+            val isvClientToken = bossApplication.requestApiAccessToken(clientId = requestTokenDTO.clientId,domainId = requestTokenDTO.domainId,orgCode = requestTokenDTO.orgCode).await()
+            val extra = isvClientToken.extra as ISVClientTokenExtraForWorkPlusISV
+            Future.succeededFuture(TokenDTO(
+                accessToken = isvClientToken.token,
+                accessExpiredIn = extra.expireTime
+            ))
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
     private suspend fun requestFromRemoteForWorkPlusApp(requestTokenDTO: RequestTokenDTO): Future<TokenDTO> {

@@ -1,4 +1,4 @@
-package com.foreverht.isvgateway.application.workplus
+package com.foreverht.isvgateway.application.isv
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -14,11 +14,13 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
-class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
+@Disabled("ISV消息逻辑还不清楚")
+class MessageApplicationISVTest : AbstractWorkPlusISVTest() {
 
     private val messageApplication by lazy { InstanceFactory.getInstance(MessageApplication::class.java,"WorkPlusApp") }
 
@@ -136,7 +138,5 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
             testContext.completeNow()
         }
     }
-
-
 
 }

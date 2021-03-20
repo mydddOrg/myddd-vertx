@@ -2,6 +2,8 @@ package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.api.EmployeeApplication
 import com.foreverht.isvgateway.api.dto.EmployeeDTO
+import com.foreverht.isvgateway.application.extention.accessToken
+import com.foreverht.isvgateway.application.extention.api
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
@@ -30,8 +32,8 @@ class EmployeeApplicationWorkPlus :AbstractApplicationWorkPlus(),EmployeeApplica
         return try {
             require(userIdList.isNotEmpty())
 
-            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
-            val url = String.format(API_BATCH_QUERY_EMPLOYEE,extra.api,orgCode,accessToken,userIdList.joinToString(","))
+            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
+            val url = String.format(API_BATCH_QUERY_EMPLOYEE,isvClientToken.api(),orgCode,isvClientToken.accessToken(),userIdList.joinToString(","))
             logger.debug("【Request URL】:$url")
             queryEmployees(url)
         }catch (t:Throwable){
@@ -44,8 +46,8 @@ class EmployeeApplicationWorkPlus :AbstractApplicationWorkPlus(),EmployeeApplica
 
             check(query.isNotBlank())
 
-            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
-            val url = String.format(API_QUERY_EMPLOYEE,extra.api,orgCode,accessToken,query)
+            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
+            val url = String.format(API_QUERY_EMPLOYEE,isvClientToken.api(),orgCode,isvClientToken.accessToken(),query)
             logger.debug("【Request URL】:$url")
             queryEmployees(url)
         }catch (t:Throwable){

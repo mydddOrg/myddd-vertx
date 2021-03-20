@@ -4,6 +4,8 @@ import com.foreverht.isvgateway.api.OrganizationApplication
 import com.foreverht.isvgateway.api.dto.EmployeeDTO
 import com.foreverht.isvgateway.api.dto.OrgPageQueryDTO
 import com.foreverht.isvgateway.api.dto.OrganizationDTO
+import com.foreverht.isvgateway.application.extention.accessToken
+import com.foreverht.isvgateway.application.extention.api
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
@@ -20,8 +22,8 @@ class OrganizationApplicationWorkPlus :AbstractApplicationWorkPlus(),Organizatio
         orgId: String?
     ): Future<OrganizationDTO> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(isvAccessToken).await()
-            val requestUrl = "${extra.api}/admin/organizations/$orgCode/view?employee_limit=0&org_limit=0&org_id=$orgId&access_token=$accessToken"
+            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
+            val requestUrl = "${isvClientToken.api()}/admin/organizations/$orgCode/view?employee_limit=0&org_limit=0&org_id=$orgId&access_token=${isvClientToken.accessToken()}"
             logger.debug("【Request URL】:$requestUrl" )
             val response = webClient.getAbs(requestUrl).send().await()
 
@@ -47,9 +49,9 @@ class OrganizationApplicationWorkPlus :AbstractApplicationWorkPlus(),Organizatio
 
     override suspend fun queryChildrenOrganizations(orgPageQueryDTO: OrgPageQueryDTO): Future<List<OrganizationDTO>> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(orgPageQueryDTO.accessToken).await()
+            val isvClientToken = getRemoteAccessToken(orgPageQueryDTO.accessToken).await()
 
-            val requestUrl = "${extra.api}/admin/organizations/${orgPageQueryDTO.orgCode}/view?employee_limit=0&org_limit=${orgPageQueryDTO.limit}&org_skip=${orgPageQueryDTO.skip}&org_id=${orgPageQueryDTO.orgId}&access_token=$accessToken"
+            val requestUrl = "${isvClientToken.api()}/admin/organizations/${orgPageQueryDTO.orgCode}/view?employee_limit=0&org_limit=${orgPageQueryDTO.limit}&org_skip=${orgPageQueryDTO.skip}&org_id=${orgPageQueryDTO.orgId}&access_token=${isvClientToken.accessToken()}"
             logger.debug("【Request URL】:$requestUrl")
 
             val response = webClient.getAbs(requestUrl).send().await()
@@ -82,9 +84,9 @@ class OrganizationApplicationWorkPlus :AbstractApplicationWorkPlus(),Organizatio
 
     override suspend fun queryOrganizationEmployees(orgPageQueryDTO: OrgPageQueryDTO): Future<List<EmployeeDTO>> {
         return try {
-            val (extra, accessToken) = getRemoteAccessToken(orgPageQueryDTO.accessToken).await()
+            val isvClientToken = getRemoteAccessToken(orgPageQueryDTO.accessToken).await()
 
-            val requestUrl = "${extra.api}/admin/organizations/${orgPageQueryDTO.orgCode}/view?employee_limit=${orgPageQueryDTO.limit}&employee_skip=${orgPageQueryDTO.skip}&org_limit=0&org_skip=0&org_id=${orgPageQueryDTO.orgId}&access_token=$accessToken"
+            val requestUrl = "${isvClientToken.api()}/admin/organizations/${orgPageQueryDTO.orgCode}/view?employee_limit=${orgPageQueryDTO.limit}&employee_skip=${orgPageQueryDTO.skip}&org_limit=0&org_skip=0&org_id=${orgPageQueryDTO.orgId}&access_token=${isvClientToken.accessToken()}"
             logger.debug("【Request URL】:$requestUrl" )
 
             val response = webClient.getAbs(requestUrl).send().await()
