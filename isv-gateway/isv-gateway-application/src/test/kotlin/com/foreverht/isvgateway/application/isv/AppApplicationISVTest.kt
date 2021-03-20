@@ -8,11 +8,9 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 
-@Disabled("ISV应用逻辑还不清楚")
 class AppApplicationISVTest : AbstractWorkPlusISVTest() {
 
     private val appApplication by lazy { InstanceFactory.getInstance(AppApplication::class.java,"WorkPlusApp") }
@@ -23,7 +21,7 @@ class AppApplicationISVTest : AbstractWorkPlusISVTest() {
             try {
                 val admins = appApplication.getAdminList(isvAccessToken = isvAccessToken).await()
                 testContext.verify {
-                    Assertions.assertTrue(admins.isNotEmpty())
+                    Assertions.assertNotNull(admins)
                 }
             }catch (t:Throwable){
                 testContext.failNow(t)

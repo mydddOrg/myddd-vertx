@@ -6,6 +6,7 @@ import com.foreverht.isvgateway.api.dto.EmployeeDTO
 import com.foreverht.isvgateway.application.extention.accessToken
 import com.foreverht.isvgateway.application.extention.api
 import com.foreverht.isvgateway.application.extention.appId
+import com.foreverht.isvgateway.application.extention.appType
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
@@ -21,14 +22,14 @@ class AppApplicationWorkPlus :AbstractApplicationWorkPlus(),AppApplication {
         return try {
             val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
 
-            val requestUrl = "${isvClientToken.api()}/apps/${isvClientToken.appId()}/admins?source_type=native&access_token=${isvClientToken.accessToken()}"
+            val requestUrl = "${isvClientToken.api()}/apps/${isvClientToken.appId()}/admins?source_type=${isvClientToken.appType()}&access_token=${isvClientToken.accessToken()}"
             val response = webClient.getAbs(requestUrl).send().await()
             if(response.resultSuccess()){
                 val bodyJson = response.bodyAsJsonObject()
                 val result = bodyJson.getJsonObject("result")
                 val childrenList = result.getJsonArray("records")
-                val children = mutableListOf<EmployeeDTO>()
 
+                val children = mutableListOf<EmployeeDTO>()
                 childrenList.forEach{
                     children.add(EmployeeDTO.createInstanceFromJsomObject(it as JsonObject))
                 }
@@ -44,7 +45,7 @@ class AppApplicationWorkPlus :AbstractApplicationWorkPlus(),AppApplication {
     override suspend fun getAppDetail(isvAccessToken: String): Future<AppDTO> {
         return try {
             val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
-            val requestUrl = "${isvClientToken.api()}/apps/${isvClientToken.appId()}?access_token=${isvClientToken.accessToken()}"
+            val requestUrl = "${isvClientToken.api()}/apps/${isvClientToken.appId()}?access_token=${isvClientToken.accessToken()}&source_type=${isvClientToken.appType()}&"
             val response = webClient.getAbs(requestUrl).send().await()
             if(response.resultSuccess()){
                 val bodyJson = response.bodyAsJsonObject()
