@@ -68,7 +68,7 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
                     )
                 }
 
-                val messageD = JsonMapper.mapFrom(vertx,msgJsonObject.toString(), MessageDTO::class.java)
+                val messageD = JsonMapper.mapFrom(vertx,msgJsonObject.toString(), MessageDTO::class.java).await()
 
                 val success = messageApplication.sendMessage(isvAccessToken = isvAccessToken,messageD).await()
                 testContext.verify { Assertions.assertTrue(success) }
