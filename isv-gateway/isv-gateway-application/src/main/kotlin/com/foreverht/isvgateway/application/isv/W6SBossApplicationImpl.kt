@@ -19,6 +19,7 @@ class W6SBossApplicationImpl:W6SBossApplication {
 
     private val webClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
+
     companion object {
         private const val PERMANENT_URL = "%s/permanent-code?access_token=%s"
         private const val ACTIVATE_SUITE_URL = "%s/suite-activation?access_token=%s"

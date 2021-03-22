@@ -29,6 +29,7 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
         processCallbackRoute()
         querySuiteTicketRoute()
         queryTemporaryAuthCodeRoute()
+        queryPermanentAuthCodeRoute()
     }
 
     companion object {
@@ -40,10 +41,9 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
     }
 
     private fun processCallbackRoute(){
-        createPostRoute(path = "/$version/w6s/isv"){ route ->
+        createPostRoute(path = "/$version/callback/isv/:clientId"){ route ->
             route.handler {
                 GlobalScope.launch(vertx.dispatcher()) {
-
                     val bodyJson = it.bodyAsJson
                     logger.info("request body:")
                     logger.info(it.bodyAsString)
@@ -53,7 +53,6 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
                         else -> it.response().setStatusCode(404).end()
                     }
                 }
-
             }
         }.consumes(CONTENT_TYPE_JSON)
     }
@@ -100,6 +99,27 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
         }
     }
 
+    private fun queryPermanentAuthCodeRoute(){
+        createGetRoute(path = "/$version/w6s/authCode/pernament/:suiteId/:orgId"){ route ->
+
+            route.handler {
+                GlobalScope.launch(vertx.dispatcher()) {
+
+                    try {
+                        val suiteId = it.pathParam("suiteId")
+                        val orgId = it.pathParam("orgId")
+                        val authCodeDTO = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = suiteId,domainId = "workplus",orgCode = orgId,clientType = CLIENT_TYPE_WORKPLUS_ISV).await()
+                        it.end(JsonObject.mapFrom(authCodeDTO).toBuffer())
+                    }catch (t:Throwable){
+                        it.fail(t)
+                    }
+
+                }
+            }
+
+        }
+    }
+
     private suspend fun processSuiteTicketEvent(it:RoutingContext){
         try {
             val bodyJson = it.bodyAsJson
@@ -116,6 +136,13 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
         try {
             val bodyJson = it.bodyAsJson
             val param = bodyJson.getJsonObject("param")
+
+
+
+            val clientId = it.pathParam("clientId")
+            var domainId = param.getString("domain_id")
+            var orgCode = param.getString("org_code")
+
             val isvAuthCodeDTO = ISVAuthCodeDTO(
                 suiteId = bodyJson.getString("suite_key"),
                 domainId = param.getString("domain_id"),
@@ -125,6 +152,7 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
                 authStatus = "Temporary"
             )
             isvAuthCodeApplication.createTemporaryAuthCode(isvAuthCodeDTO).await()
+            isvSuiteTicketApplication.activeSuite(clientId = clientId,domainId = domainId,orgCode = orgCode).await()
             it.end(JsonObject().put("status",0).toBuffer())
         }catch (t:Throwable){
             it.fail(t)

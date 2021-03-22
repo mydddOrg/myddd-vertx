@@ -1,6 +1,7 @@
 package com.foreverht.isvgateway.application
 
 import com.foreverht.isvgateway.AbstractW6SBossTest
+import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
 import com.foreverht.isvgateway.application.isv.W6SBossApplicationImpl
 import com.foreverht.isvgateway.domain.ISVClient
 import io.vertx.core.Vertx
@@ -19,6 +20,8 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
 
     private val w6SBossApplication by lazy { InstanceFactory.getInstance(W6SBossApplication::class.java) }
 
+    private val isvSuiteTicketApplication by lazy { InstanceFactory.getInstance(ISVSuiteTicketApplication::class.java) }
+
     companion object {
         private const val ORG_CODE = "2975ff5f83a34f458280fd25fbd3a356"
         private const val DOMAIN_ID = "workplus"
@@ -31,6 +34,19 @@ class W6SBossApplicationTest : AbstractW6SBossTest() {
                 val webClient = WebClient.create(vertx)
                 saveSuiteTicketToLocal(webClient = webClient).await()
                 saveTmpAuthCodeToLocal(webClient = webClient).await()
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    @Order(6)
+    fun testActiveSuiteForSuiteApplication(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                isvSuiteTicketApplication.activeSuite(clientId = isvClientId,domainId = DOMAIN_ID,orgCode = ORG_CODE).await()
             }catch (t:Throwable){
                 testContext.failNow(t)
             }

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 
 class RandomIDStringTest {
 
-    val randomIDString = RandomIDStringProvider()
+    private val randomIDString = RandomIDStringProvider()
 
     @Test
     fun testRandomId(){

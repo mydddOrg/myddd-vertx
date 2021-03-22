@@ -41,7 +41,8 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
             .requiredProperty("callback",Schemas.stringSchema())
             .optionalProperty("description",Schemas.stringSchema())
             .requiredProperty("extra",Schemas.oneOf(
-                extraForWorkPlus
+                extraForWorkPlus,
+                extraForWorkPlusISV
             ))
     }
 
