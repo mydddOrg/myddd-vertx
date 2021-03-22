@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
-@Disabled
+//@Disabled
 class MessageApplicationISVTest : AbstractWorkPlusISVTest() {
 
     private val messageApplication by lazy { InstanceFactory.getInstance(MessageApplication::class.java,"WorkPlusApp") }

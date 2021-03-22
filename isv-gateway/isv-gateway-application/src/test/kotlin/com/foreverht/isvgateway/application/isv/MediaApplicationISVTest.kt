@@ -1,6 +1,5 @@
 package com.foreverht.isvgateway.application.isv
 
-import com.foreverht.isvgateway.AbstractW6SBossTest
 import com.foreverht.isvgateway.api.MediaApplication
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory

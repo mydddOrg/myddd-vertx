@@ -4,6 +4,7 @@ import com.foreverht.isvgateway.api.MessageApplication
 import com.foreverht.isvgateway.api.dto.message.MessageDTO
 import com.foreverht.isvgateway.application.extention.accessToken
 import com.foreverht.isvgateway.application.extention.api
+import com.foreverht.isvgateway.application.extention.appId
 import com.foreverht.isvgateway.application.extention.appType
 import io.vertx.core.Future
 import io.vertx.ext.web.client.WebClient
@@ -17,13 +18,13 @@ class MessageApplicationWorkPlus :AbstractApplicationWorkPlus(),MessageApplicati
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
     companion object {
-        private const val SEND_MESSAGE = "%s/apps/mbox?access_token=%s&source_type=%s&for_all=%s"
+        private const val SEND_MESSAGE = "%s/apps/mbox?access_token=%s&source_type=%s&for_all=%s&app_id=%s"
     }
 
     override suspend fun sendMessage(isvAccessToken: String, message: MessageDTO): Future<Boolean> {
         return try {
             val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
-            val requestUrl = String.format(SEND_MESSAGE,isvClientToken.api(),isvClientToken.accessToken(),isvClientToken.appType(),message.forAll)
+            val requestUrl = String.format(SEND_MESSAGE,isvClientToken.api(),isvClientToken.accessToken(),isvClientToken.appType(),message.forAll,isvClientToken.appId())
 
             val requestBody = json {
                 obj(

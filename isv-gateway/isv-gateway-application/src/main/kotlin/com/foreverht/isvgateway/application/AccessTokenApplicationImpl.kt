@@ -35,7 +35,7 @@ class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenAppl
                 return when(isvClientToken!!.client.clientType){
                     ISVClientType.WorkPlusApp -> {
                         val extra = isvClientToken.extra as ISVClientTokenExtraForWorkPlusApp
-                        Future.succeededFuture(TokenDTO(accessToken = isvClientToken.token,refreshToken = extra.refreshToken,accessExpiredIn = extra.expireTime))
+                        Future.succeededFuture(TokenDTO(accessToken = isvClientToken.token,accessExpiredIn = extra.expireTime))
                     }
                     ISVClientType.WorkPlusISV -> {
                         val extra = isvClientToken.client.clientAuthExtra as ISVClientAuthExtraForISV
@@ -123,7 +123,6 @@ class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenAppl
                 Future.succeededFuture(
                     TokenDTO(
                         accessToken = created.token,
-                        refreshToken = tokenExtra.refreshToken,
                         accessExpiredIn = tokenExtra.expireTime
                     )
                 )
