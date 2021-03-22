@@ -63,6 +63,11 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${rootProject.extra["jackson_version"]}")
 
+    //weixin api dependencry
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation("commons-codec:commons-codec:1.15")
+    implementation("org.json:json:20210307")
+
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
 

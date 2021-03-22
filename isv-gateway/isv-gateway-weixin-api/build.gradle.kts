@@ -1,10 +1,9 @@
 plugins {
     java
-    kotlin("jvm")
 }
 
 group = "org.myddd.vertx"
-version = rootProject.extra["version"]!!
+version = "1.0.0-SNAPSHOT"
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
@@ -17,10 +16,7 @@ tasks.jacocoTestReport {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-
+    implementation("commons-codec:commons-codec:1.15")
+    implementation("org.json:json:20210307")
     testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
-    api("com.google.inject:guice:5.0.1")
-
-    implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
 }

@@ -29,7 +29,7 @@ dependencies {
     implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-api"))
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
     testImplementation("org.mockito:mockito-core:3.7.7")
     implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
 

@@ -35,5 +35,4 @@ include("isv-gateway:isv-gateway-api")
 include("isv-gateway:isv-gateway-application")
 include("isv-gateway:isv-gateway-infra")
 include("isv-gateway:isv-gateway-bootstrap")
-
-
+//include("isv-gateway:isv-gateway-weixin-api")

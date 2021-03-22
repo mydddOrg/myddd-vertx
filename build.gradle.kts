@@ -20,6 +20,7 @@ extra["javax_persistence_version"] = "2.2.1"
 extra["mockito_version"] = "3.7.7"
 extra["hibernate_core_version"] = "5.4.28.Final"
 extra["commons_lang3_version"] = "3.12.0"
+extra["junit5_version"] = "5.7.1"
 
 extra["isv_gateway_version"] = "1.0.0-SNAPSHOT"
 
