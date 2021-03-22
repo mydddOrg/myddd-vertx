@@ -43,6 +43,44 @@ class ISVClientValidationHandlerTest {
     }
 
     @Test
+    fun testExtraForWorkWeiXinValidation(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val extraForWorkWeiXinValidation = isvClientValidationHandler.extraForWorkWeiXin.build(isvClientValidationHandler.schemaParser)
+                val extraForWeiXinJson = json {
+                    obj(
+                        "corpId" to UUID.randomUUID().toString(),
+                        "providerSecret" to UUID.randomUUID().toString(),
+                        "suiteId" to UUID.randomUUID().toString(),
+                        "suiteSecret" to UUID.randomUUID().toString(),
+                        "clientType" to "WorkWeiXin"
+                    )
+                }
+
+                extraForWorkWeiXinValidation.validateAsync(extraForWeiXinJson).await()
+
+                try {
+                    val errorJson = json {
+                        obj(
+                            "corpId" to UUID.randomUUID().toString(),
+                            "suiteId" to UUID.randomUUID().toString(),
+                            "suiteSecret" to UUID.randomUUID().toString(),
+                            "clientType" to "WorkWeiXin"
+                        )
+                    }
+                    extraForWorkWeiXinValidation.validateAsync(errorJson).await()
+                    testContext.failNow("JSON数据有误，无法到这一步")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testExtraForWorkPlusISVValidation(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {

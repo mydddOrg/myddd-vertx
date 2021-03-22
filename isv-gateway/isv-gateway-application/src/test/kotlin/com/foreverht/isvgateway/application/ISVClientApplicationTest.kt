@@ -5,6 +5,7 @@ import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
+import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkWeiXinDTO
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -31,7 +32,6 @@ class ISVClientApplicationTest : AbstractTest() {
     }
 
     @Test
-
     fun testCreateISVClient(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -43,11 +43,18 @@ class ISVClientApplicationTest : AbstractTest() {
                     Assertions.assertNotNull(created.clientSecret)
                 }
 
-                val w6sISVCreated = isvClientApplication.createISVClient(randomISVClient()).await()
+                val w6sISVCreated = isvClientApplication.createISVClient(randomW6SISVClient()).await()
                 testContext.verify {
                     Assertions.assertNotNull(w6sISVCreated)
                     Assertions.assertNotNull(w6sISVCreated.clientId)
                     Assertions.assertNotNull(w6sISVCreated.clientSecret)
+                }
+
+                val workWeiXin = isvClientApplication.createISVClient(randomWorkWeiXinClient()).await()
+                testContext.verify {
+                    Assertions.assertNotNull(workWeiXin)
+                    Assertions.assertNotNull(workWeiXin.clientId)
+                    Assertions.assertNotNull(workWeiXin.clientSecret)
                 }
                 testContext.completeNow()
             }catch (t:Throwable){
@@ -137,6 +144,16 @@ class ISVClientApplicationTest : AbstractTest() {
             appId = randomString()
         )
 
+        return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())
+    }
+
+    private fun randomWorkWeiXinClient():ISVClientDTO {
+        val isvClientExtraDTO = ISVClientExtraForWorkWeiXinDTO(
+            corpId = randomString(),
+            providerSecret = randomString(),
+            suiteId = randomString(),
+            suiteSecret = randomString()
+        )
         return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())
     }
 }

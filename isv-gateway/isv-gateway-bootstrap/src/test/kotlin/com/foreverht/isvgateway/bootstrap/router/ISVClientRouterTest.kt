@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.json.JsonMapper
 import java.util.*
 
 class ISVClientRouterTest : AbstractRouteTest(){
@@ -83,8 +84,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
     fun testJsonToObject(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val mapper = ObjectMapper().registerModule(KotlinModule())
-                val dto = mapper.readValue(randomAppClient().toString(),ISVClientDTO::class.java)
+                val dto = JsonMapper.mapFrom(vertx,randomAppClient().toString(),ISVClientDTO::class.java).await()
                 logger.info(dto)
             }catch (t:Throwable){
                 logger.error(t)
@@ -98,19 +98,15 @@ class ISVClientRouterTest : AbstractRouteTest(){
     fun testCreateISVClientRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val response = webClient.post(port, host,"/v1/clients")
-                    .sendJsonObject(randomAppClient()).await()
+                val clients = arrayOf(randomAppClient(),randomISVClient(),randomWorkWeiXinClient())
+                clients.forEach {
+                    val response = webClient.post(port, host,"/v1/clients")
+                        .sendJsonObject(it).await()
 
-                testContext.verify {
-                    logger.debug(response.bodyAsString())
-                    Assertions.assertEquals(200,response.statusCode())
-                }
-
-                val isvCreateResponse = webClient.post(port,host,"/v1/clients")
-                    .sendJsonObject(randomAppClient())
-                    .await()
-                testContext.verify {
-                    Assertions.assertEquals(200,isvCreateResponse.statusCode())
+                    testContext.verify {
+                        logger.debug(response.bodyAsString())
+                        Assertions.assertEquals(200,response.statusCode())
+                    }
                 }
 
             }catch (t:Throwable){
@@ -261,7 +257,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
 
                 val created = createISVClient(webClient, testContext)
 
-                var requestResponse = webClient.post(port,host,"/v1/clients/token")
+                val requestResponse = webClient.post(port,host,"/v1/clients/token")
                     .sendJson(JsonObject("{\"clientId\":\"${created.clientId}\",\"clientSecret\":\"${created.clientSecret}\",\"grantType\":\"client_credentials\"}"))
                     .await()
 
@@ -340,37 +336,56 @@ class ISVClientRouterTest : AbstractRouteTest(){
     }
 
     private fun randomAppClient(): JsonObject {
-        val extraForWorkPlusJson = JsonObject()
-            .put("appKey", UUID.randomUUID().toString())
-            .put("appSecret", UUID.randomUUID().toString())
-            .put("api", UUID.randomUUID().toString())
-            .put("domainId", UUID.randomUUID().toString())
-            .put("ownerId",UUID.randomUUID().toString())
-            .put("clientType","WorkPlusApp")
-
-        return JsonObject()
-            .put("clientName", UUID.randomUUID().toString())
-            .put("callback", UUID.randomUUID().toString())
-            .put("extra", extraForWorkPlusJson)
+        return json {
+            obj(
+                "clientName" to UUID.randomUUID().toString(),
+                "callback" to UUID.randomUUID().toString(),
+                "extra" to obj(
+                    "appKey" to UUID.randomUUID().toString(),
+                    "appSecret" to UUID.randomUUID().toString(),
+                    "api" to UUID.randomUUID().toString(),
+                    "domainId" to UUID.randomUUID().toString(),
+                    "ownerId" to UUID.randomUUID().toString(),
+                    "clientType" to "WorkPlusApp"
+                    )
+            )
+        }
     }
 
-
-    private fun realW6SISVClient() : ISVClientDTO {
-        val isvClientExtraDTO = ISVClientExtraForWorkPlusISVDTO(
-            suiteKey = "njVwg-pgkeI5nK11iAdduH",
-            suiteSecret = "o0jF8HfNXNYE53o3kV22Vcag2oejnM1n",
-            vendorKey = "k2n23vwy0gEKxpS_Bb237h",
-            token = "KSbiWeOKpLQeyyVuJUT2X6JOM2iqlWAgosk0d0xXIEL",
-            encryptSecret = "CoOREEhw6KPCAyfIRLqVFyysEim0dUkWpC5rmDKaLYR",
-            isvApi = "http://test248.workplus.io/v1/isv",
-            appId = "Pu-xt6AREHB67AznU9ReDd"
-        )
-
-        return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())
+    private fun randomISVClient():JsonObject {
+        return json {
+            obj(
+                "clientName" to UUID.randomUUID().toString(),
+                "callback" to UUID.randomUUID().toString(),
+                "extra" to obj(
+                    "suiteKey" to UUID.randomUUID().toString(),
+                    "suiteSecret" to UUID.randomUUID().toString(),
+                    "vendorKey" to UUID.randomUUID().toString(),
+                    "token" to UUID.randomUUID().toString(),
+                    "encryptSecret" to UUID.randomUUID().toString(),
+                    "isvApi" to UUID.randomUUID().toString(),
+                    "appId" to UUID.randomUUID().toString(),
+                    "clientType" to "WorkPlusISV"
+                )
+            )
+        }
     }
 
-
-
+    private fun randomWorkWeiXinClient():JsonObject {
+        return json {
+            obj(
+                "clientName" to UUID.randomUUID().toString(),
+                "callback" to UUID.randomUUID().toString(),
+                "extra" to obj(
+                    "corpId" to UUID.randomUUID().toString(),
+                    "providerSecret" to UUID.randomUUID().toString(),
+                    "suiteId" to UUID.randomUUID().toString(),
+                    "suiteSecret" to UUID.randomUUID().toString(),
+                    "clientType" to "WorkWeiXin"
+                )
+            )
+        }
+    }
     private fun realWorkPlusAppClientDTO() : ISVClientDTO {
         val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
             appKey = clientId,

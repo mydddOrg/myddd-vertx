@@ -4,10 +4,12 @@ import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.ISVClientExtraDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
+import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkWeiXinDTO
 import com.foreverht.isvgateway.domain.ISVClient
 import com.foreverht.isvgateway.domain.ISVClientExtra
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
+import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkWeiXin
 
 
 fun toISVClientDTO(isvClient:ISVClient) : ISVClientDTO {
@@ -49,6 +51,14 @@ fun toISVClientExtra(isvExtraDTO: ISVClientExtraDTO):ISVClientExtra? {
             isvClientExtra.appId = isvExtraDTO.appId
             isvClientExtra
         }
+        is ISVClientExtraForWorkWeiXinDTO -> {
+            val isvClientExtra = ISVClientExtraForWorkWeiXin()
+            isvClientExtra.corpId = isvExtraDTO.corpId
+            isvClientExtra.providerSecret = isvExtraDTO.providerSecret
+            isvClientExtra.suiteId = isvExtraDTO.suiteId
+            isvClientExtra.suiteSecret = isvExtraDTO.suiteSecret
+            isvClientExtra
+        }
         else -> null
     }
 }
@@ -73,6 +83,14 @@ fun toISVClientExtraDTO(isvClientExtra: ISVClientExtra) : ISVClientExtraDTO? {
                 encryptSecret = isvClientExtra.encryptSecret,
                 isvApi = isvClientExtra.isvApi,
                 appId = isvClientExtra.appId
+            )
+        }
+        is ISVClientExtraForWorkWeiXin -> {
+            ISVClientExtraForWorkWeiXinDTO(
+                corpId = isvClientExtra.corpId,
+                providerSecret = isvClientExtra.providerSecret,
+                suiteId = isvClientExtra.suiteId,
+                suiteSecret =  isvClientExtra.suiteSecret
             )
         }
         else -> null

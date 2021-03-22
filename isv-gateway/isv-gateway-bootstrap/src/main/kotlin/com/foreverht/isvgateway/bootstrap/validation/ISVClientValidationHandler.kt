@@ -32,6 +32,16 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
 
     }
 
+    internal val extraForWorkWeiXin:ObjectSchemaBuilder by lazy {
+        Schemas.objectSchema()
+            .requiredProperty("corpId",Schemas.stringSchema())
+            .requiredProperty("providerSecret",Schemas.stringSchema())
+            .requiredProperty("suiteId",Schemas.stringSchema())
+            .requiredProperty("suiteSecret",Schemas.stringSchema())
+            .requiredProperty("clientType",Schemas.enumSchema("WorkWeiXin"))
+
+    }
+
     internal val createISVClientSchema: ObjectSchemaBuilder? by lazy {
         requireNotNull(extraForWorkPlus)
 
@@ -42,7 +52,8 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
             .optionalProperty("description",Schemas.stringSchema())
             .requiredProperty("extra",Schemas.oneOf(
                 extraForWorkPlus,
-                extraForWorkPlusISV
+                extraForWorkPlusISV,
+                extraForWorkWeiXin
             ))
     }
 

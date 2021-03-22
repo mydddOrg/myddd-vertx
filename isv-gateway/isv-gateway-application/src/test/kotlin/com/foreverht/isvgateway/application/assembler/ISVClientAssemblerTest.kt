@@ -5,17 +5,44 @@ import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.ISVClientExtraDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
+import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkWeiXinDTO
 import com.foreverht.isvgateway.domain.ISVClient
 import com.foreverht.isvgateway.domain.ISVClientExtra
 import com.foreverht.isvgateway.domain.ISVClientType
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
+import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkWeiXin
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.oauth2.domain.OAuth2Client
 import java.util.*
 
 class ISVClientAssemblerTest : AbstractTest() {
+
+
+    @Test
+    fun testToISVClientExtraForWorkWeiXin(){
+        val dto = ISVClientExtraForWorkWeiXinDTO(
+            corpId = randomString(),
+            providerSecret = randomString(),
+            suiteId = randomString(),
+            suiteSecret = randomString()
+        )
+        val extra = toISVClientExtra(dto)
+        Assertions.assertNotNull(extra)
+    }
+
+    @Test
+    fun tesToISVClientWorkWeiXinExtraDTO(){
+        val isvClientExtraForWorkWeiXin = ISVClientExtraForWorkWeiXin()
+        isvClientExtraForWorkWeiXin.corpId = randomString()
+        isvClientExtraForWorkWeiXin.providerSecret = randomString()
+        isvClientExtraForWorkWeiXin.suiteId = randomString()
+        isvClientExtraForWorkWeiXin.suiteSecret = randomString()
+
+        val dto = toISVClientExtraDTO(isvClientExtraForWorkWeiXin)
+        Assertions.assertNotNull(dto)
+    }
 
     @Test
     fun testToISVClientDTO(){
@@ -141,4 +168,6 @@ class ISVClientAssemblerTest : AbstractTest() {
         val isvClientExtraISV = toISVClientExtra(isvClientExtraDTO)
         Assertions.assertNotNull(isvClientExtraISV)
     }
+
+
 }
