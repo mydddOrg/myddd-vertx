@@ -327,7 +327,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
     }
 
     private suspend fun createISVClient(webClient: WebClient, testContext: VertxTestContext): ISVClientDTO {
-        var response = webClient.post(port, host, "/v1/clients")
+        val response = webClient.post(port, host, "/v1/clients")
             .sendJsonObject(randomAppClient()).await()
 
         testContext.verify {

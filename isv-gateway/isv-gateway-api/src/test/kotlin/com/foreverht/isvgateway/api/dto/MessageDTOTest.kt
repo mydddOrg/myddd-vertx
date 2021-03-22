@@ -30,6 +30,7 @@ class MessageDTOTest {
 
         val mapper = ObjectMapper().registerModule(KotlinModule())
         val messageDTO = mapper.readValue(msgJsonObject.toString(), MessageDTO::class.java)
+
         Assertions.assertNotNull(messageDTO)
         Assertions.assertEquals(AbstractMessageBody.FILE_MSG_TYPE,messageDTO.body.msgType)
     }

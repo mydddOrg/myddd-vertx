@@ -11,6 +11,7 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.myddd.vertx.json.JsonMapper
 
 class MessageRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = vertx,router = router) {
 
@@ -29,12 +30,8 @@ class MessageRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = vert
                     try {
                         val accessToken = it.get<String>("accessToken")
 
-                        val mapper = ObjectMapper().registerModule(KotlinModule())
                         val bodyString = it.bodyAsString
-                        val messageDTO = vertx.executeBlocking<MessageDTO> {
-                            it.complete(mapper.readValue(bodyString, MessageDTO::class.java))
-                        }.await()
-
+                        val messageDTO = JsonMapper.mapFrom(vertx,bodyString,MessageDTO::class.java).await()
                         val messageApplication = getMessageApplication(accessToken = accessToken).await()
 
                         messageApplication.sendMessage(isvAccessToken = accessToken,message = messageDTO).await()

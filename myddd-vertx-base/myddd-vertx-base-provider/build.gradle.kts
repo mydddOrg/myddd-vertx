@@ -19,6 +19,11 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    api("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
+    api("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
+
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${rootProject.extra["jackson_version"]}")
+
 
     api(project(":myddd-vertx-base:myddd-vertx-base-api"))
 

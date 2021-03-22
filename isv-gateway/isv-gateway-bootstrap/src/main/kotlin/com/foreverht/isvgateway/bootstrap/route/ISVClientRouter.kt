@@ -19,6 +19,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.json.JsonMapper
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
 import org.myddd.vertx.web.router.AbstractRouter
@@ -57,11 +58,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
                         val bodyString = it.bodyAsString
-                        val mapper = ObjectMapper().registerModule(KotlinModule())
-                        val isvClientDTO = vertx.executeBlocking<ISVClientDTO> {
-                            it.complete(mapper.readValue(bodyString,ISVClientDTO::class.java))
-                        }.await()
-
+                        val isvClientDTO = JsonMapper.mapFrom(vertx,bodyString,ISVClientDTO::class.java).await()
                         val created = isvClientApplication.createISVClient(isvClientDTO).await()
                         it.end(JsonObject.mapFrom(created).toBuffer())
                     }catch (t:Throwable){
@@ -104,12 +101,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
                         val bodyString = it.bodyAsString
-                        val mapper = ObjectMapper().registerModule(KotlinModule())
-
-                        val isvClientDTO = vertx.executeBlocking<ISVClientDTO> {
-                            it.complete(mapper.readValue(bodyString,ISVClientDTO::class.java))
-                        }.await()
-
+                        val isvClientDTO = JsonMapper.mapFrom(vertx,bodyString,ISVClientDTO::class.java).await()
                         val created = isvClientApplication.updateISVClient(isvClientDTO).await()
                         it.end(JsonObject.mapFrom(created).toBuffer())
                     }catch (t:Throwable){
@@ -129,11 +121,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
                         val bodyString = it.bodyAsString
-                        val mapper = ObjectMapper().registerModule(KotlinModule())
-                        val requestTokenDTO = vertx.executeBlocking<RequestTokenDTO> {
-                            it.complete(mapper.readValue(bodyString,RequestTokenDTO::class.java))
-                        }.await()
-
+                        val requestTokenDTO = JsonMapper.mapFrom(vertx,bodyString,RequestTokenDTO::class.java).await()
                         val tokenDTO = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
                         it.end(JsonObject.mapFrom(tokenDTO).toBuffer())
                     }catch (t:Throwable){
@@ -227,8 +215,4 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
             }
         }
     }
-
-
-
-
 }
