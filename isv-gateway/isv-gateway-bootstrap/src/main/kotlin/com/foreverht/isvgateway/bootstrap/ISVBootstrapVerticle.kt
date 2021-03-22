@@ -23,6 +23,7 @@ class ISVBootstrapVerticle (port:Int = 8080) : BootstrapVerticle(port = port){
             StaticResourceRouter(vertx,router)
 
             ISVW6SSuiteRoute(vertx,router)
+            WorkWeiXinRoute(vertx,router)
         }
     }
 

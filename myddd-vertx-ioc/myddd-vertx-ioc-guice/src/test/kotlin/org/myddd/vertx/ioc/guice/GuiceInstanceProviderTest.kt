@@ -5,26 +5,32 @@ import com.google.inject.Guice
 import com.google.inject.Injector
 import com.google.inject.name.Names
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 
-class TestGuiceInstanceProvider {
+class GuiceInstanceProviderTest {
 
-  private var injector:Injector? = null
+  companion object {
+    private var injector:Injector? = null
 
-  @BeforeEach
-  fun beforeEach(){
+    @BeforeAll
+    @JvmStatic
+    fun beforeAll(){
 
-    injector = Guice.createInjector(object : AbstractModule(){
-      override fun configure() {
-        bind(InterfaceA::class.java).to(ObjectA::class.java)
-        bind(InterfaceB::class.java).to(ObjectB::class.java)
-        bind(InterfaceA::class.java).annotatedWith(Names.named("AnotherA")).to(ObjectA::class.java)
-      }
-    })
-    InstanceFactory.setInstanceProvider(GuiceInstanceProvider(injector))
+      injector = Guice.createInjector(object : AbstractModule(){
+        override fun configure() {
+          bind(InterfaceA::class.java).to(ObjectA::class.java)
+          bind(InterfaceB::class.java).to(ObjectB::class.java)
+          bind(InterfaceA::class.java).annotatedWith(Names.named("AnotherA")).to(ObjectA::class.java)
+        }
+      })
+      InstanceFactory.setInstanceProvider(GuiceInstanceProvider(injector))
+    }
+
   }
+
 
   @Test
   fun testGetInstance(){
