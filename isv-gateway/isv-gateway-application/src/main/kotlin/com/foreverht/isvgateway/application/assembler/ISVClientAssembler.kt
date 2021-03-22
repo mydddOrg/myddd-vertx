@@ -57,6 +57,8 @@ fun toISVClientExtra(isvExtraDTO: ISVClientExtraDTO):ISVClientExtra? {
             isvClientExtra.providerSecret = isvExtraDTO.providerSecret
             isvClientExtra.suiteId = isvExtraDTO.suiteId
             isvClientExtra.suiteSecret = isvExtraDTO.suiteSecret
+            isvClientExtra.token = isvExtraDTO.token
+            isvClientExtra.encodingAESKey = isvExtraDTO.encodingAESKey
             isvClientExtra
         }
         else -> null
@@ -90,7 +92,9 @@ fun toISVClientExtraDTO(isvClientExtra: ISVClientExtra) : ISVClientExtraDTO? {
                 corpId = isvClientExtra.corpId,
                 providerSecret = isvClientExtra.providerSecret,
                 suiteId = isvClientExtra.suiteId,
-                suiteSecret =  isvClientExtra.suiteSecret
+                suiteSecret =  isvClientExtra.suiteSecret,
+                token = isvClientExtra.token,
+                encodingAESKey = isvClientExtra.encodingAESKey
             )
         }
         else -> null

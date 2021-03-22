@@ -241,6 +241,8 @@ class ISVClientTest : AbstractTest() {
         extra.suiteSecret = randomString()
         extra.corpId = randomString()
         extra.providerSecret = randomString()
+        extra.token = randomString()
+        extra.encodingAESKey = randomString()
         return extra
     }
 }

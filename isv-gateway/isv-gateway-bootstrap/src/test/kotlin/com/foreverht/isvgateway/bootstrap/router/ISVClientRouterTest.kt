@@ -381,6 +381,8 @@ class ISVClientRouterTest : AbstractRouteTest(){
                     "providerSecret" to UUID.randomUUID().toString(),
                     "suiteId" to UUID.randomUUID().toString(),
                     "suiteSecret" to UUID.randomUUID().toString(),
+                    "token" to UUID.randomUUID().toString(),
+                    "encodingAESKey" to UUID.randomUUID().toString(),
                     "clientType" to "WorkWeiXin"
                 )
             )

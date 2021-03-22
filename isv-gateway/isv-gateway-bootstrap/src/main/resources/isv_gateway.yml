@@ -774,16 +774,28 @@ components:
         corpid:
           type: string
           description: 企业微信中的corpid
+        providerSecret:
+          type: string
+          description: 第三方应用的ProviderSecret
         suiteId:
           type: string
           description: 第三方应用ID
         suiteSecret:
           type: string
           description: 第三方应用密钥
+        token:
+          type: string
+          description: 回调配置中的token
+        encodingAESKey:
+          type: string
+          description: 回调配置中的encodingAESKey
       required:
         - corpid
+        - providerSecret
         - suiteId
         - suiteSecret
+        - token
+        - encodingAESKey
     # 创建ISV附加属性 （ISV）
     extraForWorkPlusISV:
       type: object

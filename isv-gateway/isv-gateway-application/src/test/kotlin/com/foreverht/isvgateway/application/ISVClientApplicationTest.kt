@@ -152,7 +152,9 @@ class ISVClientApplicationTest : AbstractTest() {
             corpId = randomString(),
             providerSecret = randomString(),
             suiteId = randomString(),
-            suiteSecret = randomString()
+            suiteSecret = randomString(),
+            token = randomString(),
+            encodingAESKey = randomString()
         )
         return ISVClientDTO(clientName = UUID.randomUUID().toString(),extra = isvClientExtraDTO,callback = UUID.randomUUID().toString())
     }

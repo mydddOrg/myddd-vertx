@@ -17,6 +17,10 @@ class ISVClientExtraForWorkWeiXin : ISVClientExtra() {
 
     lateinit var suiteSecret:String
 
+    lateinit var token:String
+
+    lateinit var encodingAESKey:String
+
     override fun primaryId(): String {
         return suiteId
     }

@@ -38,6 +38,8 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
             .requiredProperty("providerSecret",Schemas.stringSchema())
             .requiredProperty("suiteId",Schemas.stringSchema())
             .requiredProperty("suiteSecret",Schemas.stringSchema())
+            .requiredProperty("token",Schemas.stringSchema())
+            .requiredProperty("encodingAESKey",Schemas.stringSchema())
             .requiredProperty("clientType",Schemas.enumSchema("WorkWeiXin"))
 
     }

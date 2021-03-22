@@ -6,5 +6,7 @@ data class ISVClientExtraForWorkWeiXinDTO(
     val corpId:String,
     val providerSecret:String,
     val suiteId:String,
-    val suiteSecret:String
+    val suiteSecret:String,
+    val token:String,
+    val encodingAESKey:String
 ): ISVClientExtraDTO(clientType = "WorkWeiXin")

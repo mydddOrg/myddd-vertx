@@ -26,7 +26,9 @@ class ISVClientAssemblerTest : AbstractTest() {
             corpId = randomString(),
             providerSecret = randomString(),
             suiteId = randomString(),
-            suiteSecret = randomString()
+            suiteSecret = randomString(),
+            token = randomString(),
+            encodingAESKey = randomString()
         )
         val extra = toISVClientExtra(dto)
         Assertions.assertNotNull(extra)
@@ -39,7 +41,8 @@ class ISVClientAssemblerTest : AbstractTest() {
         isvClientExtraForWorkWeiXin.providerSecret = randomString()
         isvClientExtraForWorkWeiXin.suiteId = randomString()
         isvClientExtraForWorkWeiXin.suiteSecret = randomString()
-
+        isvClientExtraForWorkWeiXin.token = randomString()
+        isvClientExtraForWorkWeiXin.encodingAESKey = randomString()
         val dto = toISVClientExtraDTO(isvClientExtraForWorkWeiXin)
         Assertions.assertNotNull(dto)
     }
