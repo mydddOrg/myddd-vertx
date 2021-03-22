@@ -9,9 +9,9 @@ class ISVClientExtraForWorkPlusApp : ISVClientExtra() {
         this.clientType = ISVClientType.WorkPlusApp
     }
 
-    lateinit var clientId:String
+    lateinit var appKey:String
 
-    lateinit var clientSecret:String
+    lateinit var appSecret:String
 
     lateinit var domainId:String
 
@@ -20,7 +20,7 @@ class ISVClientExtraForWorkPlusApp : ISVClientExtra() {
     lateinit var ownerId:String
 
     override fun primaryId(): String {
-        return clientId
+        return appKey
     }
 
 }

@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.*
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
-import java.util.*
 
 open class AbstractISVRouterTest : AbstractRouteTest() {
 
@@ -55,12 +54,6 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
                 val isvClientDTO = realISVClient()
                 val created = isvClientApplication.createISVClient(isvClientDTO).await()
 
-                val userDTO = databaseOAuth2Application.requestClientToken(created.clientId!!,created.clientSecret!!).await()
-                testContext.verify {
-                    Assertions.assertNotNull(userDTO)
-                    Assertions.assertFalse(userDTO!!.expired())
-                }
-
                 val requestJson = json {
                     obj(
                         "clientId" to created.clientId,
@@ -90,9 +83,9 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
 
         const val domainId = "workplus"
 
-        const val clientId = "02018e570da2f42bf598d2f5628183d158e22a72"
+        const val appKey = "02018e570da2f42bf598d2f5628183d158e22a72"
 
-        const val clientSecret = "63d3237269214272be13fbab7da791f3"
+        const val appSecret = "63d3237269214272be13fbab7da791f3"
 
         const val ownerId = "2975ff5f83a34f458280fd25fbd3a356"
 
@@ -100,8 +93,8 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
 
         private fun realISVClient() : ISVClientDTO {
             val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
-                clientId = clientId,
-                clientSecret = clientSecret,
+                appKey = appKey,
+                appSecret = appSecret,
                 domainId = domainId,
                 api = api,
                 ownerId = ownerId

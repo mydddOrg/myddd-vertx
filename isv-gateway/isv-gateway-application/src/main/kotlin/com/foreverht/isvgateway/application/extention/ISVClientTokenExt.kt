@@ -35,7 +35,7 @@ fun ISVClientToken.appId():String {
     return when(this.client.clientType){
         ISVClientType.WorkPlusApp -> {
             val extra = this.client.extra as ISVClientExtraForWorkPlusApp
-            extra.clientId
+            extra.appKey
         }
         ISVClientType.WorkPlusISV -> {
             val extra = this.client.extra as ISVClientExtraForWorkPlusISV

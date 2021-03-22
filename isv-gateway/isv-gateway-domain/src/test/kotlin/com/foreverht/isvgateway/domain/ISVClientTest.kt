@@ -7,8 +7,6 @@ import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
-import io.vertx.kotlin.core.json.json
-import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
@@ -197,8 +195,8 @@ class ISVClientTest : AbstractTest() {
 
     private fun createExtra():ISVClientExtra {
         val extra = ISVClientExtraForWorkPlusApp()
-        extra.clientId = randomIdString.randomString()
-        extra.clientSecret = randomIdString.randomString()
+        extra.appKey = randomIdString.randomString()
+        extra.appSecret = randomIdString.randomString()
         extra.api = "http://api.workplus.io"
         extra.domainId = "atwork"
         extra.ownerId = randomIdString.randomString()

@@ -31,8 +31,8 @@ fun toISVClientExtra(isvExtraDTO: ISVClientExtraDTO):ISVClientExtra? {
     return when (isvExtraDTO){
         is ISVClientExtraForWorkPlusDTO -> {
             val isvClientExtra = ISVClientExtraForWorkPlusApp()
-            isvClientExtra.clientId = isvExtraDTO.clientId
-            isvClientExtra.clientSecret = isvExtraDTO.clientSecret
+            isvClientExtra.appKey = isvExtraDTO.appKey
+            isvClientExtra.appSecret = isvExtraDTO.appSecret
             isvClientExtra.domainId = isvExtraDTO.domainId
             isvClientExtra.api = isvExtraDTO.api
             isvClientExtra.ownerId = isvExtraDTO.ownerId
@@ -57,8 +57,8 @@ fun toISVClientExtraDTO(isvClientExtra: ISVClientExtra) : ISVClientExtraDTO? {
     return when(isvClientExtra){
         is ISVClientExtraForWorkPlusApp -> {
             ISVClientExtraForWorkPlusDTO(
-                clientId = isvClientExtra.clientId,
-                clientSecret = isvClientExtra.clientSecret,
+                appKey = isvClientExtra.appKey,
+                appSecret = isvClientExtra.appSecret,
                 api = isvClientExtra.api,
                 domainId = isvClientExtra.domainId,
                 ownerId = isvClientExtra.ownerId

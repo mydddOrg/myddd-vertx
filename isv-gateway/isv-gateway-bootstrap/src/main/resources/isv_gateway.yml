@@ -8,7 +8,7 @@ servers:
 paths:
   # ==== clients ======
   # 申请token
-  /clients/token:
+  /api/token:
     post:
       tags:
         - "clients"
@@ -28,6 +28,12 @@ paths:
                 clientSecret:
                   type: string
                   description: 需要申请token的clientSecret
+                domainId:
+                  type: string
+                  description: 域ID
+                orgCode:
+                  type: string
+                  description: 组织CODE
                 grantType:
                   type: string
                   default: "client_credentials"
@@ -140,61 +146,61 @@ paths:
               example:
                 clientId: 1Vdq19UzefUhjbSMnNx7mBoMVZJDsaZm
                 clientSecret: 9DSN4N14vEAuFjHNeDHWh4V8gtPzaOQO
-  # 刷新token
-  /clients/refreshToken:
-    post:
-      tags:
-        - "clients"
-      summary: 刷新accessToken
-      description: 刷新accessToken，在accssToken过期前需要主动刷新accessToken
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                clientId:
-                  type: string
-                  description: 需刷新token的clientId
-                refreshToken:
-                  type: string
-                  description: 刷新token
-
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/tokenResponse"
-        "400":
-          $ref: "#/components/responses/errorResponse"
+#  # 刷新token
+#  /clients/refreshToken:
+#    post:
+#      tags:
+#        - "clients"
+#      summary: 刷新accessToken
+#      description: 刷新accessToken，在accssToken过期前需要主动刷新accessToken
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              properties:
+#                clientId:
+#                  type: string
+#                  description: 需刷新token的clientId
+#                refreshToken:
+#                  type: string
+#                  description: 刷新token
+#
+#      responses:
+#        "200":
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/tokenResponse"
+#        "400":
+#          $ref: "#/components/responses/errorResponse"
   # 注销token
-  /clients/{clientId}/token/{accessToken}:
-    delete:
-      tags:
-        - "clients"
-      summary: 请求注销一个accessToken
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          description: 需要注销的clientId
-          schema:
-            type: string
-        - name: accessToken
-          in: path
-          required: true
-          description: 需要注销的clientId
-          schema:
-            type: string
-
-      responses:
-        "204":
-          description: OK
-        "400":
-          $ref: "#/components/responses/errorResponse"
+#  /clients/{clientId}/token/{accessToken}:
+#    delete:
+#      tags:
+#        - "clients"
+#      summary: 请求注销一个accessToken
+#      parameters:
+#        - name: clientId
+#          in: path
+#          required: true
+#          description: 需要注销的clientId
+#          schema:
+#            type: string
+#        - name: accessToken
+#          in: path
+#          required: true
+#          description: 需要注销的clientId
+#          schema:
+#            type: string
+#
+#      responses:
+#        "204":
+#          description: OK
+#        "400":
+#          $ref: "#/components/responses/errorResponse"
 
   # ===== 组织 =======
   # 查询单个组织信息
@@ -815,12 +821,12 @@ components:
     # 创建ISV附加属性 (WorkPlus本地)
     extraForWorkPlus:
       type: object
-      description: 填写必要的属性,当clientId
+      description: WorkPlus本地附加属性
       properties:
-        clientId:
+        appKey:
           type: string
-          description: WorkPlus应用的clientId类型为WorkPlusApp时必填
-        clientSecret:
+          description: WorkPlus内部应用(非ISV)的appKey
+        appSecret:
           type: string
           description: WorkPlus应用的clientSecret
         domainId:
@@ -828,13 +834,13 @@ components:
           description: 域ID
         api:
           type: string
-          description: workplus api
+          description: 部署的WorkPlus的后台API地址
         ownerId:
           type: string
-          description: 当前应用所属的组织或域ID，如果是组织应用，填写组织ID，如果是域，填写域ID
+          description: 组织ID
       required:
-        - clientId
-        - clientSecret
+        - appKey
+        - appSecret
         - domainId
         - api
         - ownerId
@@ -876,15 +882,9 @@ components:
         accessToken:
           type: string
           description: 生成的access token
-        refreshToken:
-          type: string
-          description: 刷新token,用来刷新access token
         accessExpiredIn:
           type: integer
           description: accessToken过期时间，单位（豪秒)
-        refreshExpiredIn:
-          type: integer
-          description: refreshToken过期时间,单位 (豪秒)
     # 组织
     organization:
       type: object

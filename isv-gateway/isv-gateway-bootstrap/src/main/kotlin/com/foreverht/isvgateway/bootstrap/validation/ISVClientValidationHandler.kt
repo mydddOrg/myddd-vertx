@@ -11,8 +11,8 @@ class ISVClientValidationHandler : AbstractValidationHandler() {
 
     internal val extraForWorkPlus: ObjectSchemaBuilder? by lazy {
         Schemas.objectSchema()
-            .requiredProperty("clientId",Schemas.stringSchema())
-            .requiredProperty("clientSecret",Schemas.stringSchema())
+            .requiredProperty("appKey",Schemas.stringSchema())
+            .requiredProperty("appSecret",Schemas.stringSchema())
             .requiredProperty("domainId",Schemas.stringSchema())
             .requiredProperty("api",Schemas.stringSchema())
             .requiredProperty("ownerId",Schemas.stringSchema())

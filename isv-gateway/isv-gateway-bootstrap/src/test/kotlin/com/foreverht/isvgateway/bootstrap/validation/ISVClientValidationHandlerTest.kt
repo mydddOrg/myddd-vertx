@@ -96,8 +96,8 @@ class ISVClientValidationHandlerTest {
                 val extraForWorkPlusValidation = isvClientValidationHandler.extraForWorkPlus?.build(isvClientValidationHandler.schemaParser)
 
                 val extraForWorkPlusJson = JsonObject()
-                    .put("clientId", UUID.randomUUID().toString())
-                    .put("clientSecret",UUID.randomUUID().toString())
+                    .put("appKey", UUID.randomUUID().toString())
+                    .put("appSecret",UUID.randomUUID().toString())
                     .put("api",UUID.randomUUID().toString())
                     .put("domainId",UUID.randomUUID().toString())
                     .put("ownerId",UUID.randomUUID().toString())
@@ -134,8 +134,8 @@ class ISVClientValidationHandlerTest {
                 val createISVClientValidation = ISVClientValidationHandler().createISVClientSchema?.build(ISVClientValidationHandler().schemaParser)
 
                 val extraForWorkPlusJson = JsonObject()
-                    .put("clientId", UUID.randomUUID().toString())
-                    .put("clientSecret",UUID.randomUUID().toString())
+                    .put("appKey", UUID.randomUUID().toString())
+                    .put("appSecret",UUID.randomUUID().toString())
                     .put("api",UUID.randomUUID().toString())
                     .put("domainId",UUID.randomUUID().toString())
                     .put("ownerId",UUID.randomUUID().toString())

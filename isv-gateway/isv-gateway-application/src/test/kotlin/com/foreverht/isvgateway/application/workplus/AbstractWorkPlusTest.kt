@@ -48,8 +48,8 @@ abstract class AbstractWorkPlusTest : AbstractTest() {
 
         private fun realISVClient() : ISVClientDTO {
             val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
-                clientId = clientId,
-                clientSecret = clientSecret,
+                appKey = clientId,
+                appSecret = clientSecret,
                 domainId = domainId,
                 api = api,
                 ownerId = ownerId

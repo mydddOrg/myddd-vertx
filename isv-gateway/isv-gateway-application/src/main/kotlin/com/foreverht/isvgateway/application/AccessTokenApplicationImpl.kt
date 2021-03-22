@@ -97,8 +97,8 @@ class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenAppl
                     "scope" to "app",
                     "domain_id" to extra.domainId,
                     "org_id" to extra.ownerId,
-                    "client_id" to extra.clientId,
-                    "client_secret" to extra.clientSecret
+                    "client_id" to extra.appKey,
+                    "client_secret" to extra.appSecret
                 )
             }
 

@@ -5,8 +5,8 @@ import com.foreverht.isvgateway.api.dto.ISVClientExtraDTO
 
 @JsonTypeName("WorkPlusApp")
 data class ISVClientExtraForWorkPlusDTO constructor(
-    var clientId:String,
-    var clientSecret:String,
+    var appKey:String,
+    var appSecret:String,
     var domainId:String,
     var api:String,
     var ownerId:String

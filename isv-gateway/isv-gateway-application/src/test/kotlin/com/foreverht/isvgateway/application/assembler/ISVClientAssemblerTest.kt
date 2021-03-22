@@ -26,8 +26,8 @@ class ISVClientAssemblerTest : AbstractTest() {
         isvClient.callback = UUID.randomUUID().toString()
 
         val isvClientExtra = ISVClientExtraForWorkPlusApp()
-        isvClientExtra.clientId = UUID.randomUUID().toString()
-        isvClientExtra.clientSecret = UUID.randomUUID().toString()
+        isvClientExtra.appKey = UUID.randomUUID().toString()
+        isvClientExtra.appSecret = UUID.randomUUID().toString()
         isvClientExtra.domainId = UUID.randomUUID().toString()
         isvClientExtra.api = UUID.randomUUID().toString()
         isvClientExtra.ownerId = UUID.randomUUID().toString()
@@ -50,8 +50,8 @@ class ISVClientAssemblerTest : AbstractTest() {
     @Test
     fun testToISVClient(){
         val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
-            clientId = randomIDString.randomString(),
-            clientSecret = randomIDString.randomString(),
+            appKey = randomIDString.randomString(),
+            appSecret = randomIDString.randomString(),
             domainId = randomIDString.randomString(),
             api = randomIDString.randomString(),
             ownerId = randomIDString.randomString()
@@ -68,8 +68,8 @@ class ISVClientAssemblerTest : AbstractTest() {
     @Test
     fun testToISVClientExtra(){
         val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
-            clientId = randomIDString.randomString(),
-        clientSecret = randomIDString.randomString(),
+            appKey = randomIDString.randomString(),
+        appSecret = randomIDString.randomString(),
             domainId = randomIDString.randomString(),
             api = randomIDString.randomString(),
             ownerId = randomIDString.randomString()
@@ -89,8 +89,8 @@ class ISVClientAssemblerTest : AbstractTest() {
     @Test
     fun testToISVClientExtraDTO(){
         val isvClientExtra = ISVClientExtraForWorkPlusApp()
-        isvClientExtra.clientId = UUID.randomUUID().toString()
-        isvClientExtra.clientSecret = UUID.randomUUID().toString()
+        isvClientExtra.appKey = UUID.randomUUID().toString()
+        isvClientExtra.appSecret = UUID.randomUUID().toString()
         isvClientExtra.domainId = UUID.randomUUID().toString()
         isvClientExtra.api = UUID.randomUUID().toString()
         isvClientExtra.ownerId = UUID.randomUUID().toString()

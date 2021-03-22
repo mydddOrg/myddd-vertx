@@ -118,6 +118,7 @@ class OrganizationRouterTest : AbstractISVRouterTest() {
                     .send()
                     .await()
                 testContext.verify {
+                    println(response.bodyAsString())
                     Assertions.assertEquals(200,response.statusCode())
                 }
 

@@ -101,7 +101,7 @@ class ISVClientApplicationTest : AbstractTest() {
                 }
 
                 created.clientName = UUID.randomUUID().toString()
-                (created.extra as ISVClientExtraForWorkPlusDTO).clientSecret = UUID.randomUUID().toString()
+                (created.extra as ISVClientExtraForWorkPlusDTO).appSecret = UUID.randomUUID().toString()
                 val updated = isvClientApplication.updateISVClient(created).await()
 
                 testContext.verify {
@@ -116,8 +116,8 @@ class ISVClientApplicationTest : AbstractTest() {
 
     private fun randomISVClient() : ISVClientDTO {
         val isvClientExtraDTO = ISVClientExtraForWorkPlusDTO(
-            clientId = UUID.randomUUID().toString(),
-            clientSecret = UUID.randomUUID().toString(),
+            appKey = UUID.randomUUID().toString(),
+            appSecret = UUID.randomUUID().toString(),
             domainId = UUID.randomUUID().toString(),
             api = UUID.randomUUID().toString(),
             ownerId = randomIDString.randomString()
