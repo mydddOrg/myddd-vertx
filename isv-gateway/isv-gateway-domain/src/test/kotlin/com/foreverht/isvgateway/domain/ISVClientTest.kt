@@ -1,10 +1,7 @@
 package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.AbstractTest
-import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForISV
-import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
-import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
-import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkWeiXin
+import com.foreverht.isvgateway.domain.extra.*
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
@@ -203,6 +200,13 @@ class ISVClientTest : AbstractTest() {
                 testContext.verify {
                     Assertions.assertNotNull(created)
                     Assertions.assertTrue(created.getId() > 0)
+                }
+
+                val authExtra = ISVClientAuthExtraForWorkWeiXin.createInstanceFromJson(UUID.randomUUID().toString(),7200)
+                val saved = created.saveClientAuthExtra(authExtra).await()
+
+                testContext.verify {
+                    Assertions.assertNotNull(saved)
                 }
             }catch (t:Throwable){
                 testContext.failNow(t)

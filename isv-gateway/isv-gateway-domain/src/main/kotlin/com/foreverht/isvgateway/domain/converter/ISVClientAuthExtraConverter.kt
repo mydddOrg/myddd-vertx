@@ -4,6 +4,7 @@ import com.foreverht.isvgateway.domain.ISVClientAuthExtra
 import com.foreverht.isvgateway.domain.ISVClientType
 import com.foreverht.isvgateway.domain.ISVErrorCode
 import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForISV
+import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForWorkWeiXin
 import io.vertx.core.json.JsonObject
 import org.myddd.vertx.base.BusinessLogicException
 import java.util.*
@@ -21,6 +22,7 @@ class ISVClientAuthExtraConverter: AttributeConverter<ISVClientAuthExtra?,String
         val jsonObject = JsonObject(dbData)
         return when (jsonObject.getString("clientType").toUpperCase()){
             ISVClientType.WorkPlusISV.toString().toUpperCase() -> jsonObject.mapTo(ISVClientAuthExtraForISV::class.java)
+            ISVClientType.WorkWeiXin.toString().toUpperCase() -> jsonObject.mapTo(ISVClientAuthExtraForWorkWeiXin::class.java)
             else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
         }
     }
