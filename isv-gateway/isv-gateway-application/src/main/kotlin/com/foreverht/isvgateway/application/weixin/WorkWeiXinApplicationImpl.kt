@@ -2,7 +2,10 @@ package com.foreverht.isvgateway.application.weixin
 
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
 import com.foreverht.isvgateway.application.WorkWeiXinApplication
+import com.foreverht.isvgateway.domain.ISVAuthCode
+import com.foreverht.isvgateway.domain.ISVAuthStatus
 import com.foreverht.isvgateway.domain.ISVClient
+import com.foreverht.isvgateway.domain.ISVClientType
 import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForWorkWeiXin
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkWeiXin
 import io.vertx.core.Future
@@ -92,6 +95,47 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
             Future.failedFuture(t)
         }
 
+    }
+
+    override suspend fun activeAuth(clientId: String, suiteId: String, authCode: String): Future<ISVAuthCode> {
+        return try {
+            val isvClient = requestSuiteAccessToken(clientId = clientId).await()
+            val extra = isvClient.extra as ISVClientExtraForWorkWeiXin
+            setSessionInfo(clientId = clientId,productionMode = false).await()
+            val (permanentCode,corpId) = requestPermanentAuthCode(isvClient = isvClient,authCode = authCode).await()
+            val isvAuthCode = ISVAuthCode.saveWorkWeiXinAuth(suiteId = extra.suiteId,orgCode = corpId,authCode = authCode,permanentCode = permanentCode).await()
+            Future.succeededFuture(isvAuthCode)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+
+    }
+
+    private suspend fun requestPermanentAuthCode(isvClient: ISVClient,authCode: String):Future<Pair<String,String>>{
+        return try {
+            val requestJson = json {
+                obj(
+                    "auth_code" to authCode
+                )
+            }
+            val extra = isvClient.clientAuthExtra as ISVClientAuthExtraForWorkWeiXin
+
+            val response = webClient.postAbs("$WORK_WEI_XIN_API/get_permanent_code?suite_access_token=${extra.suiteAccessToken}")
+                .sendJson(requestJson)
+                .await()
+            logger.info("request permanent code")
+            logger.info(response.bodyAsString())
+            if(response.statusCode() == 200){
+                val body  = response.bodyAsJsonObject()
+                val permanentCode = body.getString("permanent_code")
+                val corpId = body.getJsonObject("auth_corp_info").getString("corpid")
+                Future.succeededFuture(Pair(permanentCode,corpId))
+            }else{
+                Future.failedFuture(response.bodyAsString())
+            }
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
     private suspend fun requestSuiteAccessTokenFromRemote(isvClient: ISVClient):Future<ISVClient>{

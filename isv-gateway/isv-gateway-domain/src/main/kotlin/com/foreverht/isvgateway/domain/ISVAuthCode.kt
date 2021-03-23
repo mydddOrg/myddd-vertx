@@ -19,7 +19,6 @@ import javax.persistence.*
     uniqueConstraints = [UniqueConstraint(columnNames = ["suite_id","client_type","org_code","domain_id"])]
 )
 class ISVAuthCode : BaseEntity() {
-
     @Column(name = "suite_id",nullable = false,length = 64)
     lateinit var suiteId:String
 
@@ -42,6 +41,9 @@ class ISVAuthCode : BaseEntity() {
     var permanentAuthCode:String? = null
 
     companion object {
+        const val WORK_WEI_XIN = "WorkWeiXin"
+
+
         private val repository by lazy { InstanceFactory.getInstance(ISVClientRepository::class.java) }
 
         suspend fun queryAuthCode(suiteId: String,domainId:String, orgCode:String, clientType:ISVClientType):Future<ISVAuthCode?>{
@@ -63,6 +65,29 @@ class ISVAuthCode : BaseEntity() {
         suspend fun queryPermanentAuthCode(suiteId: String,domainId:String,orgCode:String, clientType: ISVClientType):Future<ISVAuthCode?>{
             return try{
                 return repository.queryPermanentAuthCode(suiteId = suiteId,domainId = domainId, clientType = clientType,orgCode = orgCode)
+            }catch (t:Throwable){
+                Future.failedFuture(t)
+            }
+        }
+
+        suspend fun saveWorkWeiXinAuth(suiteId: String,orgCode: String,authCode:String,permanentCode:String):Future<ISVAuthCode>{
+            return try {
+                val exists = repository.queryAuthCode(suiteId = suiteId,domainId = WORK_WEI_XIN,clientType = ISVClientType.WorkWeiXin,orgCode = orgCode).await()
+                return if(Objects.nonNull(exists)){
+                    exists!!.temporaryAuthCode = authCode
+                    exists.permanentAuthCode = permanentCode
+                    repository.save(exists)
+                }else{
+                    val isvAuthCode = ISVAuthCode()
+                    isvAuthCode.suiteId = suiteId
+                    isvAuthCode.clientType = ISVClientType.WorkWeiXin
+                    isvAuthCode.authStatus = ISVAuthStatus.Permanent
+                    isvAuthCode.domainId = WORK_WEI_XIN
+                    isvAuthCode.orgCode = orgCode
+                    isvAuthCode.temporaryAuthCode = authCode
+                    isvAuthCode.permanentAuthCode = permanentCode
+                    repository.save(isvAuthCode)
+                }
             }catch (t:Throwable){
                 Future.failedFuture(t)
             }

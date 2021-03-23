@@ -138,7 +138,6 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
             val param = bodyJson.getJsonObject("param")
 
 
-
             val clientId = it.pathParam("clientId")
             val domainId = param.getString("domain_id")
             val orgCode = param.getString("org_code")

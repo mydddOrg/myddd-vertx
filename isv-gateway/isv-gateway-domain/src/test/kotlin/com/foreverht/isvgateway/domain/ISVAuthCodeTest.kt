@@ -15,6 +15,26 @@ import java.util.*
 class ISVAuthCodeTest : AbstractTest() {
 
     @Test
+    fun testSaveWorkWeiXinAuth(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val created = ISVAuthCode.saveWorkWeiXinAuth(suiteId = randomString(),orgCode = randomString(),authCode = randomString(),permanentCode = randomString()).await()
+                testContext.verify {
+                    Assertions.assertNotNull(created)
+                }
+
+                val updated = ISVAuthCode.saveWorkWeiXinAuth(suiteId = created.suiteId,orgCode = randomString(),authCode = randomString(),permanentCode = randomString()).await()
+                testContext.verify {
+                    Assertions.assertNotNull(updated)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testSaveAuthCodeExtra(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {

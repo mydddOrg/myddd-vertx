@@ -15,6 +15,8 @@ import java.util.*
 class ISVSuiteTicketApplicationImpl : ISVSuiteTicketApplication {
 
     private val w6SBossApplication by lazy { InstanceFactory.getInstance(W6SBossApplication::class.java) }
+    private val weiXinApplication by lazy { InstanceFactory.getInstance(WorkWeiXinApplication::class.java) }
+
 
     override suspend fun saveSuiteTicket(suiteTicket: ISVSuiteTicketDTO): Future<Boolean> {
         return try {
@@ -43,6 +45,15 @@ class ISVSuiteTicketApplicationImpl : ISVSuiteTicketApplication {
         return try {
             w6SBossApplication.requestPermanentCode(clientId = clientId,domainId = domainId,orgCode = orgCode).await()
             w6SBossApplication.activeSuite(clientId = clientId,domainId = domainId,orgCode = orgCode).await()
+            Future.succeededFuture()
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
+    override suspend fun activeAuthForWeiXin(clientId: String, suiteId: String, authCode: String): Future<Unit> {
+        return try {
+            weiXinApplication.activeAuth(clientId = clientId,suiteId = suiteId,authCode = authCode).await()
             Future.succeededFuture()
         }catch (t:Throwable){
             Future.failedFuture(t)
