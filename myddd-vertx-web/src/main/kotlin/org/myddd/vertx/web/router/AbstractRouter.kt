@@ -94,6 +94,7 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
             GlobalScope.launch(vertx.dispatcher()) {
                 val failure = it.failure()
 
+                logger.error(failure.message,failure)
                 val language = it.request().getHeader(X_LANGUAGE_IN_HEADER)
 
                 val (statusCode,responseJson) = when (failure) {

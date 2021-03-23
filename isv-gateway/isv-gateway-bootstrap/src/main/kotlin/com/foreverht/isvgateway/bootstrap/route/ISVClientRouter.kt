@@ -1,12 +1,9 @@
 package com.foreverht.isvgateway.bootstrap.route
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.RequestTokenDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
-import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import com.foreverht.isvgateway.bootstrap.ISVClientErrorCode
 import com.foreverht.isvgateway.bootstrap.validation.ISVClientValidationHandler
 import io.vertx.core.Vertx
@@ -19,7 +16,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.json.JsonMapper
+import org.myddd.vertx.json.AsyncJsonMapper
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
 import org.myddd.vertx.web.router.AbstractRouter
@@ -58,7 +55,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
                         val bodyString = it.bodyAsString
-                        val isvClientDTO = JsonMapper.mapFrom(vertx,bodyString,ISVClientDTO::class.java).await()
+                        val isvClientDTO = AsyncJsonMapper.mapFrom(vertx,bodyString,ISVClientDTO::class.java).await()
                         val created = isvClientApplication.createISVClient(isvClientDTO).await()
                         it.end(JsonObject.mapFrom(created).toBuffer())
                     }catch (t:Throwable){
@@ -101,7 +98,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
                         val bodyString = it.bodyAsString
-                        val isvClientDTO = JsonMapper.mapFrom(vertx,bodyString,ISVClientDTO::class.java).await()
+                        val isvClientDTO = AsyncJsonMapper.mapFrom(vertx,bodyString,ISVClientDTO::class.java).await()
                         val created = isvClientApplication.updateISVClient(isvClientDTO).await()
                         it.end(JsonObject.mapFrom(created).toBuffer())
                     }catch (t:Throwable){
@@ -121,7 +118,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
                         val bodyString = it.bodyAsString
-                        val requestTokenDTO = JsonMapper.mapFrom(vertx,bodyString,RequestTokenDTO::class.java).await()
+                        val requestTokenDTO = AsyncJsonMapper.mapFrom(vertx,bodyString,RequestTokenDTO::class.java).await()
                         val tokenDTO = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
                         it.end(JsonObject.mapFrom(tokenDTO).toBuffer())
                     }catch (t:Throwable){

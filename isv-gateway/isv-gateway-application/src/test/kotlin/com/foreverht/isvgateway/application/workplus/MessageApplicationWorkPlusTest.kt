@@ -1,7 +1,5 @@
 package com.foreverht.isvgateway.application.workplus
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.foreverht.isvgateway.api.MessageApplication
 import com.foreverht.isvgateway.api.dto.message.MessageDTO
 import io.vertx.core.Vertx
@@ -16,7 +14,7 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.json.JsonMapper
+import org.myddd.vertx.json.AsyncJsonMapper
 import java.util.*
 
 class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
@@ -40,7 +38,7 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
                         )
                     )
                 }
-                val messageD = JsonMapper.mapFrom(vertx,msgJsonObject.toString(), MessageDTO::class.java).await()
+                val messageD = AsyncJsonMapper.mapFrom(vertx,msgJsonObject.toString(), MessageDTO::class.java).await()
 
                 val success = messageApplication.sendMessage(isvAccessToken = isvAccessToken,messageD).await()
                 testContext.verify { Assertions.assertTrue(success) }
@@ -68,7 +66,7 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
                     )
                 }
 
-                val messageD = JsonMapper.mapFrom(vertx,msgJsonObject.toString(), MessageDTO::class.java).await()
+                val messageD = AsyncJsonMapper.mapFrom(vertx,msgJsonObject.toString(), MessageDTO::class.java).await()
 
                 val success = messageApplication.sendMessage(isvAccessToken = isvAccessToken,messageD).await()
                 testContext.verify { Assertions.assertTrue(success) }
@@ -95,7 +93,7 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
                     )
                 }
 
-                val messageD =JsonMapper.mapFrom(vertx,msgJsonObject.toString(), MessageDTO::class.java).await()
+                val messageD =AsyncJsonMapper.mapFrom(vertx,msgJsonObject.toString(), MessageDTO::class.java).await()
 
                 val success = messageApplication.sendMessage(isvAccessToken = isvAccessToken,messageD).await()
                 testContext.verify { Assertions.assertTrue(success) }
@@ -125,7 +123,7 @@ class MessageApplicationWorkPlusTest: AbstractWorkPlusTest() {
                     )
                 }
 
-                val messageDTO = JsonMapper.mapFrom(vertx,imageMsgBodyJson.toString(), MessageDTO::class.java).await()
+                val messageDTO = AsyncJsonMapper.mapFrom(vertx,imageMsgBodyJson.toString(), MessageDTO::class.java).await()
 
                 val success = messageApplication.sendMessage(isvAccessToken = isvAccessToken,messageDTO).await()
                 testContext.verify { Assertions.assertTrue(success) }

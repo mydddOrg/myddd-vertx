@@ -1,7 +1,5 @@
 package com.foreverht.isvgateway.bootstrap.route
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.foreverht.isvgateway.api.dto.message.MessageDTO
 import com.foreverht.isvgateway.bootstrap.handler.ISVAccessTokenAuthorizationHandler
 import com.foreverht.isvgateway.bootstrap.validation.MessageValidationHandler
@@ -11,7 +9,7 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.myddd.vertx.json.JsonMapper
+import org.myddd.vertx.json.AsyncJsonMapper
 
 class MessageRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = vertx,router = router) {
 
@@ -31,7 +29,7 @@ class MessageRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = vert
                         val accessToken = it.get<String>("accessToken")
 
                         val bodyString = it.bodyAsString
-                        val messageDTO = JsonMapper.mapFrom(vertx,bodyString,MessageDTO::class.java).await()
+                        val messageDTO = AsyncJsonMapper.mapFrom(vertx,bodyString,MessageDTO::class.java).await()
                         val messageApplication = getMessageApplication(accessToken = accessToken).await()
 
                         messageApplication.sendMessage(isvAccessToken = accessToken,message = messageDTO).await()

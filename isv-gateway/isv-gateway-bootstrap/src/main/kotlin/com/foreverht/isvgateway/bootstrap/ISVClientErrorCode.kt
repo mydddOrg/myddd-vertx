@@ -5,5 +5,5 @@ import org.myddd.vertx.error.ErrorCode
 enum class ISVClientErrorCode : ErrorCode {
     CLIENT_NOT_EXISTS,
 
-    ORGANIZATION_NOT_FOUND
+    EVENT_TYPE_NOT_SUPPORT
 }

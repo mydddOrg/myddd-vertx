@@ -7,6 +7,7 @@ import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForISV
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
 import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusISV
 import io.vertx.core.Future
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
@@ -20,6 +21,7 @@ class W6SBossApplicationImpl:W6SBossApplication {
     private val webClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
 
+    private val logger by lazy { LoggerFactory.getLogger(W6SBossApplication::class.java) }
     companion object {
         private const val PERMANENT_URL = "%s/permanent-code?access_token=%s"
         private const val ACTIVATE_SUITE_URL = "%s/suite-activation?access_token=%s"
@@ -39,18 +41,9 @@ class W6SBossApplicationImpl:W6SBossApplication {
 
     override suspend fun requestISVToken(clientId: String): Future<ISVClient> {
         return try {
-
             val isvClient = queryExistClient(clientId).await()
-
-            val clientAuthExtra = isvClient.clientAuthExtra as ISVClientAuthExtraForISV?
-
-            if (Objects.nonNull(clientAuthExtra) && clientAuthExtra!!.clientTokenValid()){
-                Future.succeededFuture(isvClient)
-            }
-            else{
-                val generated = generateToken(isvClient).await()
-                Future.succeededFuture(generated)
-            }
+            val generated = generateToken(isvClient).await()
+            Future.succeededFuture(generated)
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
@@ -220,6 +213,8 @@ class W6SBossApplicationImpl:W6SBossApplication {
             val response = webClient.postAbs(requestApi)
                 .sendJsonObject(requestJson)
                 .await()
+            logger.info("REQUEST SUITE TOKEN:$requestApi")
+            logger.info(response.bodyAsString())
             if(response.resultSuccess()){
                 val result = response.bodyAsJsonObject().getJsonObject("result")
                 Future.succeededFuture(Pair(result.getString(ACCESS_TOKEN),result.getLong(EXPIRE_TIME)))

@@ -150,7 +150,7 @@ abstract class AbstractWorkPlusISVTest : AbstractTest() {
 
         suspend fun saveTmpAuthCodeToLocal(webClient: WebClient):Future<Unit>{
             return try {
-                val response = webClient.getAbs("http://isvgateway.workplus.io:8080/v1/w6s/authCode/temporary/njVwg-pgkeI5nK11iAdduH/2975ff5f83a34f458280fd25fbd3a356")
+                val response = webClient.getAbs("http://isvgateway.workplus.io:8080/v1/w6s/authCode/pernament/njVwg-pgkeI5nK11iAdduH/2975ff5f83a34f458280fd25fbd3a356")
                     .send().await()
                 if(response.statusCode() == 200){
                     val body = response.bodyAsJsonObject()
@@ -158,7 +158,7 @@ abstract class AbstractWorkPlusISVTest : AbstractTest() {
                         suiteId = body.getString("suiteId"),
                         clientType = body.getString("clientType"),
                         authStatus = body.getString("authStatus"),
-                        orgCode = body.getString("orgId"),
+                        orgCode = body.getString("orgCode"),
                         domainId = body.getString("domainId"),
                         temporaryAuthCode = body.getString("temporaryAuthCode")
                     )

@@ -6,7 +6,7 @@ import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.kotlin.coroutines.await
 
-object JsonMapper {
+object AsyncJsonMapper {
 
     suspend fun <T> mapFrom(vertx: Vertx, jsonString:String, clazz: Class<T>): Future<T> {
         return try {

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 
 @ExtendWith(VertxExtension::class)
-class JsonMapperTest {
+class AsyncJsonMapperTest {
 
     @Test
     fun testMapperFrom(vertx: Vertx,testContext: VertxTestContext){
@@ -23,7 +23,7 @@ class JsonMapperTest {
                 val user = UserDTO(username = UUID.randomUUID().toString(),age = 10)
                 val json = JsonObject.mapFrom(user)
 
-                val mappedJson = JsonMapper.mapFrom(vertx,json.toString(),user::class.java).await()
+                val mappedJson = AsyncJsonMapper.mapFrom(vertx,json.toString(),user::class.java).await()
                 testContext.verify {
                     Assertions.assertNotNull(mappedJson)
                 }

@@ -140,8 +140,8 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
 
 
             val clientId = it.pathParam("clientId")
-            var domainId = param.getString("domain_id")
-            var orgCode = param.getString("org_code")
+            val domainId = param.getString("domain_id")
+            val orgCode = param.getString("org_code")
 
             val isvAuthCodeDTO = ISVAuthCodeDTO(
                 suiteId = bodyJson.getString("suite_key"),

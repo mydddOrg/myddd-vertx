@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
-import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
 import com.foreverht.isvgateway.bootstrap.AbstractRouteTest
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
@@ -21,7 +20,7 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.json.JsonMapper
+import org.myddd.vertx.json.AsyncJsonMapper
 import java.util.*
 
 class ISVClientRouterTest : AbstractRouteTest(){
@@ -84,7 +83,7 @@ class ISVClientRouterTest : AbstractRouteTest(){
     fun testJsonToObject(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val dto = JsonMapper.mapFrom(vertx,randomAppClient().toString(),ISVClientDTO::class.java).await()
+                val dto = AsyncJsonMapper.mapFrom(vertx,randomAppClient().toString(),ISVClientDTO::class.java).await()
                 logger.info(dto)
             }catch (t:Throwable){
                 logger.error(t)
