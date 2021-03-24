@@ -5,7 +5,6 @@ import com.foreverht.isvgateway.api.dto.ISVAuthCodeDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.ISVSuiteTicketDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusISVDTO
-import com.foreverht.isvgateway.application.W6SBossApplication
 import com.foreverht.isvgateway.domain.ISVClientType
 import io.vertx.core.Future
 import io.vertx.core.Vertx

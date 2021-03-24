@@ -217,16 +217,7 @@ class ISVAuthCodeTest : AbstractTest() {
         return extra
     }
 
-    private fun randomISVAuthCode():ISVAuthCode {
-        val isvAuthCode = ISVAuthCode()
-        isvAuthCode.suiteId = randomString()
-        isvAuthCode.clientType = ISVClientType.WorkPlusISV
-        isvAuthCode.authStatus = ISVAuthStatus.Temporary
-        isvAuthCode.domainId = randomString()
-        isvAuthCode.orgCode = randomString()
-        isvAuthCode.temporaryAuthCode = randomString()
-        return isvAuthCode
-    }
+
 
 
 }

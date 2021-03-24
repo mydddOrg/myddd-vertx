@@ -1,4 +1,4 @@
-package com.foreverht.isvgateway.application.workplus
+package com.foreverht.isvgateway.application
 
 import com.foreverht.isvgateway.domain.ISVClientToken
 import com.foreverht.isvgateway.domain.ISVErrorCode
@@ -9,13 +9,20 @@ import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import java.util.*
 
-abstract class AbstractApplicationWorkPlus {
+abstract class AbstractApplication {
 
-    val logger: Logger by lazy { LoggerFactory.getLogger(AbstractApplicationWorkPlus::class.java) }
+    val logger: Logger by lazy { LoggerFactory.getLogger(AbstractApplication::class.java) }
 
-    suspend fun getRemoteAccessToken(accessToken:String): Future<ISVClientToken> {
+    companion object {
+        //微信服务API
+        const val WORK_WEI_XIN_SERVICE_API = "https://qyapi.weixin.qq.com/cgi-bin/service"
+        //微信调用第三方企业api
+        const val WORK_WEI_XIN_AGENT_API = "https://qyapi.weixin.qq.com/cgi-bin/agent"
+    }
+
+    suspend fun getRemoteAccessToken(isvAccessToken:String): Future<ISVClientToken> {
         return try {
-            val isvClientToken = ISVClientToken.queryByToken(token = accessToken).await()
+            val isvClientToken = ISVClientToken.queryByToken(token = isvAccessToken).await()
             if(Objects.nonNull(isvClientToken) && isvClientToken!!.extra.accessTokenValid()){
                 Future.succeededFuture(isvClientToken)
             }else{

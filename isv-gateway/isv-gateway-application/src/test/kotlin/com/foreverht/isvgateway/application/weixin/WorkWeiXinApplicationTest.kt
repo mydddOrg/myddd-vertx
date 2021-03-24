@@ -1,9 +1,6 @@
 package com.foreverht.isvgateway.application.weixin
 
-import com.foreverht.isvgateway.api.ISVAuthCodeApplication
-import com.foreverht.isvgateway.api.dto.ISVAuthCodeDTO
 import com.foreverht.isvgateway.application.WorkWeiXinApplication
-import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
@@ -21,6 +18,36 @@ class WorkWeiXinApplicationTest:AbstractWorkWeiXinTest() {
 
     @Test
     @Order(6)
+    fun testQueryAgentId(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                saveAuthCodeToLocal(WebClient.create(vertx)).await()
+
+                val clientToken = workWeiXinApplication.requestCorpAccessToken(clientId = isvWorkWeiXinClientId,corpId = "ww6dc4e6c2cbfbb62c").await()
+
+                val corpAccessToken = clientToken.extra.accessToken()
+
+                val agentId = workWeiXinApplication.queryAgentId(corpAccessToken).await()
+
+                testContext.verify { Assertions.assertNotNull(agentId) }
+
+                try {
+                    workWeiXinApplication.queryAgentId(randomString()).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    @Order(5)
     fun testRequestCorpAccessToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {

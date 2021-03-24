@@ -1,0 +1,45 @@
+package com.foreverht.isvgateway.domain
+
+import io.vertx.core.Future
+import org.myddd.vertx.domain.BaseEntity
+import org.myddd.vertx.ioc.InstanceFactory
+import javax.persistence.*
+
+@Entity
+@Table(name = "proxy_employee",
+    indexes = [
+        Index(name = "index_auth_code_id",columnList = "auth_code_id"),
+        Index(name = "index_user_id",columnList = "user_id")
+    ],
+    uniqueConstraints = [UniqueConstraint(columnNames = ["user_id"])]
+)
+class ProxyEmployee: BaseEntity() {
+
+    @ManyToOne(cascade = [],fetch = FetchType.EAGER)
+    @JoinColumn(name = "auth_code_id")
+    lateinit var authCode:ISVAuthCode
+
+    @Column(name = "user_id",nullable = false)
+    lateinit var userId:String
+
+    lateinit var name:String
+
+    var avatar:String? = null
+
+    var mobile:String? = null
+
+    var email:String? = null
+
+    companion object {
+        private val proxyRepository by lazy { InstanceFactory.getInstance(ProxyRepository::class.java) }
+    }
+
+    suspend fun createEmployee():Future<ProxyEmployee>{
+        return try {
+            return proxyRepository.save(this)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
+}

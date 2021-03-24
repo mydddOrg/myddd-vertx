@@ -2,11 +2,9 @@ package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.domain.converter.ISVClientTokenExtraConverter
 import io.vertx.core.Future
-import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.BaseEntity
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.string.RandomIDString
-import java.util.*
 import javax.persistence.*
 
 @Entity

@@ -24,7 +24,7 @@ class ISVClientTokenExtraForWorkWeiXin: ISVClientTokenExtra() {
     var expireTime:Long = 0
 
     override fun accessTokenValid(): Boolean {
-        return System.currentTimeMillis() > expireTime
+        return System.currentTimeMillis() < expireTime
     }
 
     override fun accessToken(): String {

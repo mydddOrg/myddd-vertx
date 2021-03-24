@@ -1,7 +1,8 @@
 package com.foreverht.isvgateway
 
-import com.foreverht.isvgateway.domain.ISVClientRepository
+import com.foreverht.isvgateway.domain.*
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
+import com.foreverht.isvgateway.domain.infra.ProxyRepositoryHibernate
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.vertx.core.Vertx
@@ -42,6 +43,8 @@ abstract class AbstractTest {
 
                     bind(ISVClientRepository::class.java).to(ISVClientRepositoryHibernate::class.java)
                     bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+
+                    bind(ProxyRepository::class.java).to(ProxyRepositoryHibernate::class.java)
                 }
             })))
             testContext.completeNow()
@@ -50,5 +53,37 @@ abstract class AbstractTest {
 
     fun randomString():String {
         return randomIDString.randomString()
+    }
+
+    fun randomISVAuthCode(): ISVAuthCode {
+        val isvAuthCode = ISVAuthCode()
+        isvAuthCode.suiteId = randomString()
+        isvAuthCode.clientType = ISVClientType.WorkPlusISV
+        isvAuthCode.authStatus = ISVAuthStatus.Temporary
+        isvAuthCode.domainId = randomString()
+        isvAuthCode.orgCode = randomString()
+        isvAuthCode.temporaryAuthCode = randomString()
+        return isvAuthCode
+    }
+
+    fun randomEmployee(authCode: ISVAuthCode):ProxyEmployee{
+        val employee = ProxyEmployee()
+        employee.authCode = authCode
+        employee.userId = randomString()
+        employee.name = randomString()
+        employee.avatar = randomString()
+        employee.mobile = randomString()
+        employee.email = randomString()
+        return employee
+    }
+
+    fun randomOrganization(authCode: ISVAuthCode):ProxyOrganization {
+        val organization = ProxyOrganization()
+        organization.authCode = authCode
+        organization.orgId = randomString()
+        organization.orgCode = randomString()
+        organization.parentOrgId = randomString()
+        organization.path = randomString()
+        return organization
     }
 }

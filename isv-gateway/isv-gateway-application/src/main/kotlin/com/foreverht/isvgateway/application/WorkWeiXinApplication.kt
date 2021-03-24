@@ -17,4 +17,6 @@ interface WorkWeiXinApplication {
 
     suspend fun requestCorpAccessToken(clientId: String,corpId:String):Future<ISVClientToken>
 
+    suspend fun queryAgentId(corpAccessToken:String):Future<String>
+
 }

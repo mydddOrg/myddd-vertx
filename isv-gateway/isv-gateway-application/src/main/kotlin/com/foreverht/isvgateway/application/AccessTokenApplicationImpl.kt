@@ -5,8 +5,7 @@ import com.foreverht.isvgateway.api.RequestTokenDTO
 import com.foreverht.isvgateway.api.TokenDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.application.assembler.toISVClientDTO
-import com.foreverht.isvgateway.application.workplus.AbstractApplicationWorkPlus
-import com.foreverht.isvgateway.application.workplus.resultSuccess
+import com.foreverht.isvgateway.application.extention.resultSuccess
 import com.foreverht.isvgateway.domain.ISVClient
 import com.foreverht.isvgateway.domain.ISVClientToken
 import com.foreverht.isvgateway.domain.ISVClientType
@@ -22,7 +21,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
 
-class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenApplication{
+class AccessTokenApplicationImpl : AbstractApplication(),AccessTokenApplication{
 
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 

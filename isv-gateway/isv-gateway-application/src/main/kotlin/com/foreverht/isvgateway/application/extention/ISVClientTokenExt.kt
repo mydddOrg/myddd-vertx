@@ -12,6 +12,7 @@ fun String.deleteLastSlash():String {
     return if(this.endsWith("/")) this.substring(0,this.length - 1) else this
 }
 
+private const val WORK_WEI_XIN_API = "https://qyapi.weixin.qq.com/cgi-bin/service"
 
 fun ISVClientToken.api():String{
     return when(this.client.clientType){
@@ -22,6 +23,9 @@ fun ISVClientToken.api():String{
         ISVClientType.WorkPlusISV -> {
             val extra = this.extra as ISVClientTokenExtraForWorkPlusISV
             extra.accessEndpoint.deleteLastSlash()
+        }
+        ISVClientType.WorkWeiXin -> {
+            WORK_WEI_XIN_API
         }
         else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
     }

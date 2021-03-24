@@ -2,10 +2,8 @@ package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.api.MessageApplication
 import com.foreverht.isvgateway.api.dto.message.MessageDTO
-import com.foreverht.isvgateway.application.extention.accessToken
-import com.foreverht.isvgateway.application.extention.api
-import com.foreverht.isvgateway.application.extention.appId
-import com.foreverht.isvgateway.application.extention.appType
+import com.foreverht.isvgateway.application.AbstractApplication
+import com.foreverht.isvgateway.application.extention.*
 import io.vertx.core.Future
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.core.json.json
@@ -13,7 +11,7 @@ import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.ioc.InstanceFactory
 
-class MessageApplicationWorkPlus :AbstractApplicationWorkPlus(),MessageApplication {
+class MessageApplicationWorkPlus : AbstractApplication(),MessageApplication {
 
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 

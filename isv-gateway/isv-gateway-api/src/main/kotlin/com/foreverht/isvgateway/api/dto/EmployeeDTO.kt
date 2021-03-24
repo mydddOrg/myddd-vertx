@@ -2,16 +2,17 @@ package com.foreverht.isvgateway.api.dto
 
 import io.vertx.core.json.JsonObject
 
-data class EmployeeDTO(var userId:String,var name:String,var avatar:String?,var mobile:String?,var positions:List<PositionDTO> = emptyList()) {
+data class EmployeeDTO(var userId:String,var name:String,var avatar:String? = null,var mobile:String? = null,var positions:List<PositionDTO> = emptyList()) {
+
     companion object {
         fun createInstanceFromJsomObject(jsonObject: JsonObject):EmployeeDTO{
             val userId = jsonObject.getString("user_id")
-            var name = jsonObject.getString("nickname")
+            val name = jsonObject.getString("nickname")
             val avatar = jsonObject.getString("avatar")
             val mobile = jsonObject.getString("avatar")
 
-            var positionJsonArray = jsonObject.getJsonArray("positions")
-            var positions = mutableListOf<PositionDTO>()
+            val positionJsonArray = jsonObject.getJsonArray("positions")
+            val positions = mutableListOf<PositionDTO>()
             positionJsonArray.forEach{
                 positions.add(PositionDTO.createInstanceFromJsonObject(it as JsonObject))
             }

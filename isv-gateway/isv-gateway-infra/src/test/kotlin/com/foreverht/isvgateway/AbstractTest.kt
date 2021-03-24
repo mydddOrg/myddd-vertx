@@ -1,7 +1,8 @@
 package com.foreverht.isvgateway
 
-import com.foreverht.isvgateway.domain.ISVClientRepository
+import com.foreverht.isvgateway.domain.*
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
+import com.foreverht.isvgateway.domain.infra.ProxyRepositoryHibernate
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.vertx.junit5.VertxExtension
@@ -34,6 +35,7 @@ abstract class AbstractTest {
                 bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
 
                 bind(ISVClientRepository::class.java).to(ISVClientRepositoryHibernate::class.java)
+                bind(ProxyRepository::class.java).to(ProxyRepositoryHibernate::class.java)
 
                 bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
             }
@@ -42,5 +44,16 @@ abstract class AbstractTest {
 
     fun randomString():String {
         return UUID.randomUUID().toString()
+    }
+
+    fun randomISVAuthCode(): ISVAuthCode {
+        val isvAuthCode = ISVAuthCode()
+        isvAuthCode.suiteId = randomString()
+        isvAuthCode.clientType = ISVClientType.WorkPlusISV
+        isvAuthCode.authStatus = ISVAuthStatus.Temporary
+        isvAuthCode.domainId = randomString()
+        isvAuthCode.orgCode = randomString()
+        isvAuthCode.temporaryAuthCode = randomString()
+        return isvAuthCode
     }
 }

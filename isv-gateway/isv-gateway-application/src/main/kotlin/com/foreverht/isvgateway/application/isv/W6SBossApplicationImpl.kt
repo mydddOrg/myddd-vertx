@@ -1,7 +1,7 @@
 package com.foreverht.isvgateway.application.isv
 
 import com.foreverht.isvgateway.application.W6SBossApplication
-import com.foreverht.isvgateway.application.workplus.resultSuccess
+import com.foreverht.isvgateway.application.extention.resultSuccess
 import com.foreverht.isvgateway.domain.*
 import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForISV
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV

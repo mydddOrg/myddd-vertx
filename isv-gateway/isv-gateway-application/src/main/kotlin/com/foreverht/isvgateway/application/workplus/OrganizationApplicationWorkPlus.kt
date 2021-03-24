@@ -4,15 +4,17 @@ import com.foreverht.isvgateway.api.OrganizationApplication
 import com.foreverht.isvgateway.api.dto.EmployeeDTO
 import com.foreverht.isvgateway.api.dto.OrgPageQueryDTO
 import com.foreverht.isvgateway.api.dto.OrganizationDTO
+import com.foreverht.isvgateway.application.AbstractApplication
 import com.foreverht.isvgateway.application.extention.accessToken
 import com.foreverht.isvgateway.application.extention.api
+import com.foreverht.isvgateway.application.extention.resultSuccess
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.ioc.InstanceFactory
 
-class OrganizationApplicationWorkPlus :AbstractApplicationWorkPlus(),OrganizationApplication {
+class OrganizationApplicationWorkPlus : AbstractApplication(),OrganizationApplication {
 
     private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 

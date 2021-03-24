@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.application.weixin
 
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
 import com.foreverht.isvgateway.application.WorkWeiXinApplication
+import com.foreverht.isvgateway.application.extention.resultSuccessForWorkWeiXin
 import com.foreverht.isvgateway.domain.*
 import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForWorkWeiXin
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkWeiXin
@@ -23,7 +24,8 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
     private val logger by lazy { LoggerFactory.getLogger(WorkWeiXinApplication::class.java) }
 
     companion object {
-        private const val WORK_WEI_XIN_API = "https://qyapi.weixin.qq.com/cgi-bin/service"
+        private const val WORK_WEI_XIN_SERVICE_API = "https://qyapi.weixin.qq.com/cgi-bin/service"
+        private const val WORK_WEI_XIN_AGENT_API = "https://qyapi.weixin.qq.com/cgi-bin/agent"
         private const val CLIENT_TYPE_WORK_WEI_XIN = "WorkWeiXin"
     }
 
@@ -52,10 +54,10 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
             val isvClient = requestSuiteAccessToken(clientId = clientId).await()
 
             val extra = isvClient.clientAuthExtra as ISVClientAuthExtraForWorkWeiXin
-            val response = webClient.getAbs("$WORK_WEI_XIN_API/get_pre_auth_code?suite_access_token=${extra.suiteAccessToken}")
+            val response = webClient.getAbs("$WORK_WEI_XIN_SERVICE_API/get_pre_auth_code?suite_access_token=${extra.suiteAccessToken}")
                 .send().await()
-            val body = response.bodyAsJsonObject()
-            if(response.statusCode() == 200 && body.getLong("errcode",0L) == 0L){
+            if(response.resultSuccessForWorkWeiXin()){
+                val body = response.bodyAsJsonObject()
                 val preAuthCode = body.getString("pre_auth_code")
                 Future.succeededFuture(preAuthCode)
             }else{
@@ -82,11 +84,10 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
                     )
                 )
             }
-            val response = webClient.postAbs("$WORK_WEI_XIN_API/set_session_info?suite_access_token=${extra.suiteAccessToken}")
+            val response = webClient.postAbs("$WORK_WEI_XIN_SERVICE_API/set_session_info?suite_access_token=${extra.suiteAccessToken}")
                 .sendJson(requestJson)
                 .await()
-            val body = response.bodyAsJsonObject()
-            if(response.statusCode() == 200 && body.getLong("errcode",0L) == 0L){
+            if(response.resultSuccessForWorkWeiXin()){
                 Future.succeededFuture()
             }else{
                 Future.failedFuture(response.bodyAsString())
@@ -129,21 +130,44 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
                 )
             }
 
-            val response = webClient.postAbs("$WORK_WEI_XIN_API/get_corp_token?suite_access_token=${authExtra.suiteAccessToken}")
+            val response = webClient.postAbs("$WORK_WEI_XIN_SERVICE_API/get_corp_token?suite_access_token=${authExtra.suiteAccessToken}")
                 .sendJsonObject(requestJson)
                 .await()
 
-            val body = response.bodyAsJsonObject()
-            if(response.statusCode() == 200 && body.getLong("errcode",0L) == 0L){
-                logger.debug(response.bodyAsString())
+            if(response.resultSuccessForWorkWeiXin()){
+                val body = response.bodyAsJsonObject()
                 val clientTokenExtra = ISVClientTokenExtraForWorkWeiXin.createInstance(body.getString("access_token"),body.getLong("expires_in"))
-                val isvClientToken = ISVClientToken.createInstanceByExtra(client = isvClient,extra = clientTokenExtra,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = corpId)
+                var isvClientToken = ISVClientToken.queryClientToken(clientId = isvClient.clientId,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode =  corpId).await()
+
+                isvClientToken = if(Objects.isNull(isvClientToken)){
+                    ISVClientToken.createInstanceByExtra(client = isvClient,extra = clientTokenExtra,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = corpId)
+                }else{
+                    isvClientToken!!.updateByExtraToken(extra = clientTokenExtra).await()
+                }
                 val createdIsvClientToken = isvClientToken.createClientToken().await()
                 Future.succeededFuture(createdIsvClientToken)
             }else{
                 Future.failedFuture(response.bodyAsString())
             }
 
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
+    override suspend fun queryAgentId(corpAccessToken:String): Future<String> {
+        return try {
+            val response = webClient.getAbs("$WORK_WEI_XIN_AGENT_API/list?access_token=$corpAccessToken")
+                .send()
+                .await()
+
+            if(response.resultSuccessForWorkWeiXin()){
+                val body = response.bodyAsJsonObject()
+                val agentId = body.getJsonArray("agentlist").getJsonObject(0).getString("agentid")
+                Future.succeededFuture(agentId)
+            }else{
+                Future.failedFuture(response.bodyAsString())
+            }
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
@@ -158,11 +182,11 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
             }
             val extra = isvClient.clientAuthExtra as ISVClientAuthExtraForWorkWeiXin
 
-            val response = webClient.postAbs("$WORK_WEI_XIN_API/get_permanent_code?suite_access_token=${extra.suiteAccessToken}")
+            val response = webClient.postAbs("$WORK_WEI_XIN_SERVICE_API/get_permanent_code?suite_access_token=${extra.suiteAccessToken}")
                 .sendJson(requestJson)
                 .await()
-            val body  = response.bodyAsJsonObject()
-            if(response.statusCode() == 200 && body.getLong("errcode",0L) == 0L){
+            if(response.resultSuccessForWorkWeiXin()){
+                val body  = response.bodyAsJsonObject()
                 val permanentCode = body.getString("permanent_code")
                 val corpId = body.getJsonObject("auth_corp_info").getString("corpid")
                 Future.succeededFuture(Pair(permanentCode,corpId))
@@ -186,12 +210,11 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
                     "suite_ticket" to suiteTicket.suiteTicket
                 )
             }
-            val response = webClient.postAbs("$WORK_WEI_XIN_API/get_suite_token")
+            val response = webClient.postAbs("$WORK_WEI_XIN_SERVICE_API/get_suite_token")
                 .sendJsonObject(requestJson)
                 .await()
-            val body = response.bodyAsJsonObject()
-            if(response.statusCode() == 200 && body.getLong("errcode",0L) == 0L){
-                logger.debug(response.bodyAsString())
+            if(response.resultSuccessForWorkWeiXin()){
+                val body = response.bodyAsJsonObject()
                 val extra = ISVClientAuthExtraForWorkWeiXin.createInstanceFromJson(suiteAccessToken = body.getString("suite_access_token"),expiresIn = body.getLong("expires_in"))
                 val updated = isvClient.saveClientAuthExtra(extra).await()
                 Future.succeededFuture(updated)

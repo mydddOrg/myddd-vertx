@@ -10,19 +10,14 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.myddd.vertx.ioc.InstanceFactory
 
 class WorkWeiXinAccessTokenApplicationTest : AbstractWorkWeiXinTest() {
-
-
-    private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplicationImpl::class.java) }
-
 
     @Test
     fun testRequestAccessToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val requestTokenDTO = RequestTokenDTO(clientId = isvWorkWeiXinClientId, clientSecret = isvWorkWeiXinClientSecret,orgCode = "ww6dc4e6c2cbfbb62c")
+                val requestTokenDTO = RequestTokenDTO(clientId = randomString(), clientSecret = isvWorkWeiXinClientSecret,orgCode = "ww6dc4e6c2cbfbb62c")
 
                 try {
                     accessTokenApplication.requestAccessToken(requestTokenDTO).await()
@@ -31,13 +26,7 @@ class WorkWeiXinAccessTokenApplicationTest : AbstractWorkWeiXinTest() {
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
 
-                saveAuthCodeToLocal(webClient).await()
-
-                val accessToken = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
-                testContext.verify { Assertions.assertNotNull(accessToken) }
-
-                val accessTokenRepeat = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
-                testContext.verify { Assertions.assertNotNull(accessTokenRepeat) }
+                testContext.verify { Assertions.assertNotNull(isvAccessToken) }
             }catch (t:Throwable){
                 testContext.failNow(t)
             }

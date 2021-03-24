@@ -1,7 +1,6 @@
 package com.foreverht.isvgateway.application
 
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
-import com.foreverht.isvgateway.api.dto.ISVAuthCodeDTO
 import com.foreverht.isvgateway.api.dto.ISVSuiteTicketDTO
 import com.foreverht.isvgateway.application.assembler.toISVSuiteTicket
 import com.foreverht.isvgateway.application.assembler.toISVSuiteTicketDTO

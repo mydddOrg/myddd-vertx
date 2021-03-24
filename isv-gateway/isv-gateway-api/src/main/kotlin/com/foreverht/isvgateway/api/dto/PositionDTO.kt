@@ -7,8 +7,8 @@ data class PositionDTO(var orgCode:String,var orgId:String,var jobTitle:String,v
         fun createInstanceFromJsonObject(jsonObject: JsonObject):PositionDTO{
             val orgId = jsonObject.getString("org_id")
             val orgCode = jsonObject.getString("code")
-            var path = jsonObject.getString("path")
-            var jobTitle = jsonObject.getString("job_title")
+            val path = jsonObject.getString("path")
+            val jobTitle = jsonObject.getString("job_title")
             val primary = jsonObject.getBoolean("primary")
             return PositionDTO(orgCode = orgCode,orgId = orgId,path = path,jobTitle = jobTitle,primary = primary)
         }

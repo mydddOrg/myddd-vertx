@@ -6,7 +6,6 @@ import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.domain.BaseEntity
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.string.RandomIDString
-import java.util.*
 import javax.persistence.*
 
 @Entity

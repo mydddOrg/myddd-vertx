@@ -2,8 +2,10 @@ package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.api.MediaApplication
 import com.foreverht.isvgateway.api.dto.MediaDTO
+import com.foreverht.isvgateway.application.AbstractApplication
 import com.foreverht.isvgateway.application.extention.accessToken
 import com.foreverht.isvgateway.application.extention.api
+import com.foreverht.isvgateway.application.extention.resultSuccess
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.file.AsyncFile
@@ -17,7 +19,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import java.io.File
 import java.util.*
 
-class MediaApplicationWorkPlus:AbstractApplicationWorkPlus(),MediaApplication {
+class MediaApplicationWorkPlus: AbstractApplication(),MediaApplication {
 
     private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }

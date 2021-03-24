@@ -6,7 +6,6 @@ import com.google.inject.Injector
 import com.google.inject.name.Names
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 

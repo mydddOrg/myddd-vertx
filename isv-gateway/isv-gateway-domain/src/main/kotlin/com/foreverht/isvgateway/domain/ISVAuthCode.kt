@@ -43,7 +43,6 @@ class ISVAuthCode : BaseEntity() {
     companion object {
         const val WORK_WEI_XIN = "WorkWeiXin"
 
-
         private val repository by lazy { InstanceFactory.getInstance(ISVClientRepository::class.java) }
 
         suspend fun queryAuthCode(suiteId: String,domainId:String, orgCode:String, clientType:ISVClientType):Future<ISVAuthCode?>{
