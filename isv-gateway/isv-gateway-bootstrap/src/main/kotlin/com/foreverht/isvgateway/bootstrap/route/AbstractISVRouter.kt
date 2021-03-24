@@ -5,6 +5,7 @@ import com.foreverht.isvgateway.domain.ISVErrorCode
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
+import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
@@ -66,7 +67,7 @@ abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(v
         return getApplicationByClientType(applicationMap = appApplicationMap,isvAccessToken = accessToken)
     }
 
-    private suspend fun <T>  getApplicationByClientType(applicationMap:Map<String,T>, isvAccessToken: String):Future<T>{
+    private suspend fun <T> getApplicationByClientType(applicationMap:Map<String,T>, isvAccessToken: String):Future<T>{
         return try {
             val isvClient = accessTokenApplication.queryClientByAccessToken(isvAccessToken).await()
             if(Objects.nonNull(isvClient)){
