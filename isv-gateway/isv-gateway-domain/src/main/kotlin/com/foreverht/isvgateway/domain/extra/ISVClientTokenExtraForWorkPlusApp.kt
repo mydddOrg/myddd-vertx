@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.domain.extra
 
 import com.foreverht.isvgateway.domain.ISVClientTokenExtra
 import com.foreverht.isvgateway.domain.ISVClientType
+import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 
@@ -13,7 +14,7 @@ class ISVClientTokenExtraForWorkPlusApp : ISVClientTokenExtra() {
     }
 
     companion object {
-        val logger by lazy { LoggerFactory.getLogger(ISVClientTokenExtraForWorkPlusApp::class.java) }
+        val logger: Logger by lazy { LoggerFactory.getLogger(ISVClientTokenExtraForWorkPlusApp::class.java) }
 
 
         fun createInstanceFormJsonObject(result:JsonObject):ISVClientTokenExtraForWorkPlusApp{

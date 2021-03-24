@@ -2,7 +2,6 @@ package com.foreverht.isvgateway.application.workplus
 
 import com.foreverht.isvgateway.domain.ISVClientToken
 import com.foreverht.isvgateway.domain.ISVErrorCode
-import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
 import io.vertx.core.Future
 import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory

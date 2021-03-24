@@ -1,10 +1,12 @@
 package com.foreverht.isvgateway.bootstrap.route
 
+import com.foreverht.isvgateway.api.ISVAuthCodeApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
 import com.foreverht.isvgateway.api.dto.ISVSuiteTicketDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkWeiXinDTO
 import com.foreverht.isvgateway.bootstrap.ISVClientErrorCode
+import com.qq.weixin.mp.aes.AesException
 import com.qq.weixin.mp.aes.WXBizMsgCrypt
 import io.vertx.core.Future
 import io.vertx.core.Vertx
@@ -28,12 +30,14 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
         processCallbackHelloRoute()
         processCallbackEventRoute()
         querySuiteTicketRoute()
+        queryPermanentAuthCodeRoute()
     }
 
     companion object {
         private val logger by lazy { LoggerFactory.getLogger(WorkWeiXinRoute::class.java) }
         private val isvSuiteTicketApplication by lazy { InstanceFactory.getInstance(ISVSuiteTicketApplication::class.java) }
         private val isvClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
+        private val isvAuthCodeApplication by lazy { InstanceFactory.getInstance(ISVAuthCodeApplication::class.java) }
 
         private const val CLIENT_TYPE_WORK_WEI_XIN = "WorkWeiXin"
         private const val SUCCESS = "success"
@@ -86,7 +90,6 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
                         }
 
                         val content = it.bodyAsString
-                        logger.info("[WeiXin Event Body]:$content")
 
                         val sVerifyMsgSig = it.singleQueryParam("msg_signature")
                         val sVerifyTimeStamp = it.singleQueryParam("timestamp")
@@ -94,19 +97,28 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
                         val extra = weiXinClient.extra as ISVClientExtraForWorkWeiXinDTO
 
 
-                        val wept = WXBizMsgCrypt(extra.token, extra.encodingAESKey, extra.suiteId)
-                        val decryptXml = wept.DecryptMsg(sVerifyMsgSig, sVerifyTimeStamp,sVerifyNonce, content)
+                        var wept = WXBizMsgCrypt(extra.token, extra.encodingAESKey, extra.suiteId)
+                        var decryptXml:String
+                        try {
+                            decryptXml = wept.DecryptMsg(sVerifyMsgSig, sVerifyTimeStamp,sVerifyNonce, content)
+                        }catch (e: AesException){
+                            wept = WXBizMsgCrypt(extra.token, extra.encodingAESKey, extra.corpId)
+                            decryptXml = wept.DecryptMsg(sVerifyMsgSig, sVerifyTimeStamp,sVerifyNonce, content)
+                        }
 
                         val document = AsyncXPathParse.parseXml(vertx,decryptXml.byteInputStream()).await()
 
                         val infoType = AsyncXPathParse.queryStringValue(vertx = vertx,document = document,expression = "/xml/InfoType").await()
 
+                        logger.info("[InfoType]:$infoType")
+                        logger.info(decryptXml)
+
                         when(infoType.toLowerCase()){
                             "suite_ticket" -> processSuiteEvent(document).await()
                             "create_auth" -> processCreateAuth(clientId,document).await()
+                            "cancel_auth" -> processCancelAuth(clientId,document).await()
                             else -> {
-                                logger.info("[UnKnow Event]:$infoType")
-                                logger.info(decryptXml)
+
                                 logger.info(it.request().absoluteURI())
                                 throw BusinessLogicException(ISVClientErrorCode.EVENT_TYPE_NOT_SUPPORT)
                             }
@@ -144,6 +156,28 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
         }
     }
 
+    private fun queryPermanentAuthCodeRoute(){
+        createGetRoute(path = "/$version/weixin/authCode/:suiteId/:orgId"){ route ->
+
+            route.handler {
+                GlobalScope.launch(vertx.dispatcher()) {
+
+                    try {
+                        val suiteId = it.pathParam("suiteId")
+                        val orgId = it.pathParam("orgId")
+                        val authCodeDTO = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = suiteId,domainId = "WorkWeiXin",orgCode = orgId,clientType = "WorkWeiXin").await()
+                        it.end(JsonObject.mapFrom(authCodeDTO).toBuffer())
+                    }catch (t:Throwable){
+                        it.fail(t)
+                    }
+
+                }
+            }
+
+        }
+    }
+
+
 
     private suspend fun processSuiteEvent(document: Document):Future<Unit> {
         return try {
@@ -160,7 +194,15 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
         return try {
             val suiteId = AsyncXPathParse.queryStringValue(vertx = vertx,document = document,expression = "/xml/SuiteId").await()
             val authCode =  AsyncXPathParse.queryStringValue(vertx = vertx,document = document,expression = "/xml/AuthCode").await()
-            isvSuiteTicketApplication.activeAuthForWeiXin(clientId = clientId,authCode = authCode,suiteId = suiteId)
+            isvSuiteTicketApplication.activeAuthForWeiXin(clientId = clientId,authCode = authCode,suiteId = suiteId).await()
+            Future.succeededFuture()
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
+    private fun processCancelAuth(clientId: String,document: Document):Future<Unit> {
+        return try {
             Future.succeededFuture()
         }catch (t:Throwable){
             Future.failedFuture(t)

@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.application
 
 import com.foreverht.isvgateway.domain.ISVAuthCode
 import com.foreverht.isvgateway.domain.ISVClient
+import com.foreverht.isvgateway.domain.ISVClientToken
 import io.vertx.core.Future
 
 interface WorkWeiXinApplication {
@@ -13,5 +14,7 @@ interface WorkWeiXinApplication {
     suspend fun setSessionInfo(clientId: String, productionMode:Boolean = false):Future<Unit>
 
     suspend fun activeAuth(clientId: String,suiteId:String,authCode:String):Future<ISVAuthCode>
+
+    suspend fun requestCorpAccessToken(clientId: String,corpId:String):Future<ISVClientToken>
 
 }

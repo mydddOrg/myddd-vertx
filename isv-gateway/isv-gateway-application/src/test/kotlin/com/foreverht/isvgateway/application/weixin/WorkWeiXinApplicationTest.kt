@@ -1,21 +1,46 @@
 package com.foreverht.isvgateway.application.weixin
 
+import com.foreverht.isvgateway.api.ISVAuthCodeApplication
+import com.foreverht.isvgateway.api.dto.ISVAuthCodeDTO
 import com.foreverht.isvgateway.application.WorkWeiXinApplication
+import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.myddd.vertx.ioc.InstanceFactory
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class WorkWeiXinApplicationTest:AbstractWorkWeiXinTest() {
 
     private val workWeiXinApplication by lazy { InstanceFactory.getInstance(WorkWeiXinApplication::class.java) }
 
     @Test
+    @Order(6)
+    fun testRequestCorpAccessToken(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+
+                saveAuthCodeToLocal(WebClient.create(vertx)).await()
+
+                val corpAccessToken = workWeiXinApplication.requestCorpAccessToken(clientId = isvWorkWeiXinClientId,corpId = "ww6dc4e6c2cbfbb62c").await()
+
+                testContext.verify {
+                    Assertions.assertNotNull(corpAccessToken)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    @Order(4)
     fun testSetSessionInfo(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -37,6 +62,7 @@ class WorkWeiXinApplicationTest:AbstractWorkWeiXinTest() {
     }
 
     @Test
+    @Order(3)
     fun testRequestPreAuthCode(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -59,6 +85,7 @@ class WorkWeiXinApplicationTest:AbstractWorkWeiXinTest() {
     }
 
     @Test
+    @Order(2)
     fun testRequestSuiteAccessToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -75,6 +102,7 @@ class WorkWeiXinApplicationTest:AbstractWorkWeiXinTest() {
 
 
     @Test
+    @Order(1)
     fun testSuiteTicketExists(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {

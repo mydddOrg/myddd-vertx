@@ -1,9 +1,7 @@
 package com.foreverht.isvgateway.domain
 
 import com.foreverht.isvgateway.AbstractTest
-import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
-import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
-import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusApp
+import com.foreverht.isvgateway.domain.extra.*
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -56,11 +54,26 @@ class ISVClientTokenTest : AbstractTest() {
     fun testCreateInstance(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-
                 val isvClientTokenExtra = isvClientTokenExtraForWorkPlusApp()
                 val instance = ISVClientToken.createInstanceByExtra(client = createdISVClient,extra = isvClientTokenExtra,domainId = randomString(),orgCode = randomString())
                 testContext.verify {
                     Assertions.assertNotNull(instance)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testCreateWorkWeiXinInstance(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val workWeiXinExtra = isvClientTokenExtraForWorkWeiXin()
+                val weiXinInstance = ISVClientToken.createInstanceByExtra(client = createdISVClient,extra = workWeiXinExtra,domainId = "WorkWeiXin",orgCode = randomString())
+                testContext.verify {
+                    Assertions.assertNotNull(weiXinInstance)
                 }
             }catch (t:Throwable){
                 testContext.failNow(t)
@@ -182,5 +195,8 @@ class ISVClientTokenTest : AbstractTest() {
         return isvClientTokenExtra
     }
 
+    private fun isvClientTokenExtraForWorkWeiXin():ISVClientTokenExtra {
+        return ISVClientTokenExtraForWorkWeiXin.createInstance(randomString(),7200)
+    }
 
 }

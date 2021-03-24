@@ -1,8 +1,10 @@
 package com.foreverht.isvgateway.application.weixin
 
 import com.foreverht.isvgateway.AbstractTest
+import com.foreverht.isvgateway.api.ISVAuthCodeApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
+import com.foreverht.isvgateway.api.dto.ISVAuthCodeDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.ISVSuiteTicketDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkWeiXinDTO
@@ -28,8 +30,11 @@ abstract class AbstractWorkWeiXinTest: AbstractTest() {
         val isvSuiteTicketApplication by lazy { InstanceFactory.getInstance(ISVSuiteTicketApplication::class.java) }
 
         val isvClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
+        private val isvAuthCodeApplication by lazy { InstanceFactory.getInstance(ISVAuthCodeApplication::class.java) }
 
         lateinit var isvWorkWeiXinClientId:String
+        lateinit var isvWorkWeiXinClientSecret:String
+
         @BeforeAll
         @JvmStatic
         fun prepareWorkWeiXinData(vertx: Vertx,testContext: VertxTestContext){
@@ -81,11 +86,39 @@ abstract class AbstractWorkWeiXinTest: AbstractTest() {
                 val isvClient = ISVClientDTO(clientName = randomIDString.randomString(),callback = randomIDString.randomString(),extra = extra)
                 val created = isvClientApplication.createISVClient(isvClientDTO = isvClient).await()
                 isvWorkWeiXinClientId = created.clientId!!
+                isvWorkWeiXinClientSecret = created.clientSecret!!
                 Future.succeededFuture()
             }catch (t:Throwable){
                 Future.failedFuture(t)
             }
         }
 
+    }
+
+    suspend fun saveAuthCodeToLocal(webClient: WebClient): Future<Unit> {
+        return try {
+            val response = webClient.getAbs("http://isvgateway.workplus.io:8080/v1/weixin/authCode/wx2547800152da0539/ww6dc4e6c2cbfbb62c")
+                .send().await()
+            if(response.statusCode() == 200){
+                val body = response.bodyAsJsonObject()
+                val isvAuthCode = ISVAuthCodeDTO(
+                    suiteId = body.getString("suiteId"),
+                    clientType = body.getString("clientType"),
+                    authStatus = body.getString("authStatus"),
+                    orgCode = body.getString("orgCode"),
+                    domainId = body.getString("domainId"),
+                    temporaryAuthCode = body.getString("temporaryAuthCode"),
+                    permanentAuthCode = body.getString("permanentAuthCode")
+                )
+
+                isvAuthCodeApplication.createTemporaryAuthCode(authCode = isvAuthCode).await()
+                isvAuthCodeApplication.toPermanent(authCode = isvAuthCode).await()
+                Future.succeededFuture()
+            }else{
+                Future.failedFuture(response.bodyAsString())
+            }
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 }

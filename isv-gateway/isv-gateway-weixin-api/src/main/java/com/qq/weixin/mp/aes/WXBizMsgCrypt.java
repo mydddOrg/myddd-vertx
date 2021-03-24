@@ -188,7 +188,8 @@ public class WXBizMsgCrypt {
 
 		// receiveid不相同的情况
 		if (!from_receiveid.equals(receiveid)) {
-			throw new AesException(AesException.ValidateCorpidError);
+			System.out.println("from_receiveid:" + receiveid);
+//			throw new AesException(AesException.ValidateCorpidError);
 		}
 		return xmlContent;
 

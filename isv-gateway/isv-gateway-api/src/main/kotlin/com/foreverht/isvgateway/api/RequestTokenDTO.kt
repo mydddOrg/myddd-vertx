@@ -1,3 +1,3 @@
 package com.foreverht.isvgateway.api
 
-data class RequestTokenDTO(var clientId:String,val clientSecret:String,val domainId:String,var orgCode:String)
+data class RequestTokenDTO(var clientId:String,val clientSecret:String,val domainId:String = "WorkWeiXin",var orgCode:String)

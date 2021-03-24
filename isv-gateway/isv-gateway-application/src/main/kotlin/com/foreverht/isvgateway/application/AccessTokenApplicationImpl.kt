@@ -28,6 +28,8 @@ class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenAppl
 
     private val bossApplication:W6SBossApplication by lazy { InstanceFactory.getInstance(W6SBossApplication::class.java) }
 
+    private val workWeiXinApplication by lazy { InstanceFactory.getInstance(WorkWeiXinApplication::class.java) }
+
     override suspend fun requestAccessToken(requestTokenDTO: RequestTokenDTO): Future<TokenDTO> {
         return try {
             val isvClientToken = ISVClientToken.queryClientToken(clientId = requestTokenDTO.clientId,domainId = requestTokenDTO.domainId,orgCode = requestTokenDTO.orgCode).await()
@@ -41,6 +43,10 @@ class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenAppl
                         val extra = isvClientToken.client.clientAuthExtra as ISVClientAuthExtraForISV
                         Future.succeededFuture(TokenDTO(accessToken = isvClientToken.token,accessExpiredIn = extra.expireTime))
                     }
+                    ISVClientType.WorkWeiXin -> {
+                        val extra = isvClientToken.extra as ISVClientTokenExtraForWorkWeiXin
+                        Future.succeededFuture(TokenDTO(accessToken = isvClientToken.token,accessExpiredIn = extra.expireTime))
+                    }
                     else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
                 }
 
@@ -50,6 +56,7 @@ class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenAppl
                 return when(isvClient.clientType){
                     ISVClientType.WorkPlusApp -> requestFromRemoteForWorkPlusApp(requestTokenDTO)
                     ISVClientType.WorkPlusISV -> requestFromRemoteWorkPlusISV(requestTokenDTO)
+                    ISVClientType.WorkWeiXin -> requestFromRemoteWorkWeiXin(requestTokenDTO)
                     else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
                 }
             }
@@ -71,6 +78,19 @@ class AccessTokenApplicationImpl : AbstractApplicationWorkPlus(),AccessTokenAppl
             Future.failedFuture(t)
         }
 
+    }
+
+    private suspend fun requestFromRemoteWorkWeiXin(requestTokenDTO: RequestTokenDTO):Future<TokenDTO> {
+        return try {
+            val isvClientToken = workWeiXinApplication.requestCorpAccessToken(clientId = requestTokenDTO.clientId,corpId = requestTokenDTO.orgCode).await()
+            val extra = isvClientToken.extra as ISVClientTokenExtraForWorkWeiXin
+            Future.succeededFuture(TokenDTO(
+                accessToken = isvClientToken.token,
+                accessExpiredIn = extra.expireTime
+            ))
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
     private suspend fun requestFromRemoteWorkPlusISV(requestTokenDTO: RequestTokenDTO):Future<TokenDTO> {

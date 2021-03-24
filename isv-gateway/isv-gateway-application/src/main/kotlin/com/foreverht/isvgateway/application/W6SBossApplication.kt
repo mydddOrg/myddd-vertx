@@ -14,4 +14,5 @@ interface W6SBossApplication {
     suspend fun activeSuite(clientId: String, domainId: String, orgCode: String):Future<Boolean>
 
     suspend fun requestApiAccessToken(clientId: String, domainId:String, orgCode: String): Future<ISVClientToken>
+
 }
