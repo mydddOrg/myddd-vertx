@@ -11,4 +11,6 @@ interface ISVClientApplication {
 
     suspend fun createISVClient(isvClientDTO: ISVClientDTO):Future<ISVClientDTO>
 
+    suspend fun listAllClients():Future<List<ISVClientDTO>>
+
 }

@@ -7,8 +7,14 @@ import com.foreverht.isvgateway.application.assembler.toISVClientDTO
 import com.foreverht.isvgateway.domain.ISVClient
 import io.vertx.core.Future
 import io.vertx.kotlin.coroutines.await
+import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.querychannel.api.QueryChannel
+import org.myddd.vertx.querychannel.api.QueryParam
+import kotlin.streams.toList
 
 class ISVClientApplicationImpl : ISVClientApplication {
+
+    private val queryChannel by lazy { InstanceFactory.getInstance(QueryChannel::class.java) }
 
     override suspend fun queryClientByClientId(clientId: String): Future<ISVClientDTO?> {
         return try {
@@ -38,6 +44,18 @@ class ISVClientApplicationImpl : ISVClientApplication {
             Future.failedFuture(t)
         }
 
+    }
+
+    override suspend fun listAllClients(): Future<List<ISVClientDTO>> {
+        return try {
+            val lists = queryChannel.queryList(QueryParam(
+                clazz = ISVClient::class.java,
+                sql = "from ISVClient"
+            )).await()
+            Future.succeededFuture(lists.stream().map { toISVClientDTO(it) }.toList())
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
 }

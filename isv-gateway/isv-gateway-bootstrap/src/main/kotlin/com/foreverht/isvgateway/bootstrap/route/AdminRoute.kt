@@ -4,7 +4,9 @@ import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.SyncDataApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.bootstrap.validation.ISVClientValidationHandler
+import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.await
@@ -24,7 +26,24 @@ class AdminRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,ro
     init {
         createISVClientRoute()
         syncDataRoute()
+        listAllClients()
     }
+
+    private fun listAllClients(){
+        createGetRoute(path = "/$version/clients"){ route ->
+            route.handler {
+                GlobalScope.launch(vertx.dispatcher()) {
+                    try {
+                        val clients = isvClientApplication.listAllClients().await()
+                        it.end(JsonArray(clients.map(JsonObject::mapFrom)).toBuffer())
+                    }catch (t:Throwable){
+                        it.fail(t)
+                    }
+                }
+            }
+        }
+    }
+
 
     private fun syncDataRoute(){
         createGetRoute(path = "/$version/sync/employeeAndOrganization/:clientId"){ route ->

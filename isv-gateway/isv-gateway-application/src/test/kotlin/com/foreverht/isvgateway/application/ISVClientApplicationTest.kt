@@ -32,6 +32,27 @@ class ISVClientApplicationTest : AbstractTest() {
     }
 
     @Test
+    fun testListAll(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val isvClientDTO = randomISVClient()
+                val created = isvClientApplication.createISVClient(isvClientDTO).await()
+                testContext.verify {
+                    Assertions.assertNotNull(created)
+                    Assertions.assertNotNull(created.clientId)
+                    Assertions.assertNotNull(created.clientSecret)
+                }
+
+
+                val queryAll = isvClientApplication.listAllClients().await()
+                testContext.verify { Assertions.assertTrue(queryAll.isNotEmpty()) }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+    @Test
     fun testCreateISVClient(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {

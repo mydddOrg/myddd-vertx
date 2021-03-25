@@ -94,6 +94,36 @@ class ISVClientRouteTest : AbstractRouteTest(){
     }
 
     @Test
+    fun testListAllClientRoute(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val clients = arrayOf(randomAppClient(),randomISVClient(),randomWorkWeiXinClient())
+                clients.forEach {
+                    val response = webClient.post(port, host,"/v1/clients")
+                        .sendJsonObject(it).await()
+
+                    testContext.verify {
+                        logger.debug(response.bodyAsString())
+                        Assertions.assertEquals(200,response.statusCode())
+                    }
+                }
+
+                val listResponse = webClient.get(port,host,"/v1/clients")
+                    .send()
+                    .await()
+
+                testContext.verify {
+                    logger.debug(listResponse.bodyAsString())
+                    Assertions.assertEquals(200,listResponse.statusCode())
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testCreateISVClientRoute(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
