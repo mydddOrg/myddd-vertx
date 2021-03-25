@@ -13,7 +13,7 @@ import javax.persistence.*
         Index(name = "index_org_id",columnList = "org_id"),
         Index(name = "index_parent_org_id",columnList = "parent_org_id")
     ],
-    uniqueConstraints = [UniqueConstraint(columnNames = ["org_id"])]
+    uniqueConstraints = [UniqueConstraint(columnNames = ["auth_code_id","org_id"])]
 )
 class ProxyOrganization: BaseEntity() {
 
@@ -34,9 +34,9 @@ class ProxyOrganization: BaseEntity() {
     companion object {
         private val proxyRepository by lazy { InstanceFactory.getInstance(ProxyRepository::class.java) }
 
-        suspend fun batchSaveOrganization(orgList:List<ProxyOrganization>):Future<Unit>{
+        suspend fun batchSaveOrganization(isvAuthCodeId:Long,orgList:List<ProxyOrganization>):Future<Unit>{
             return try {
-                proxyRepository.batchSave(orgList.toTypedArray()).await()
+                proxyRepository.syncOrganizationList(isvAuthCodeId = isvAuthCodeId,organizationList = orgList).await()
                 Future.succeededFuture()
             }catch (t:Throwable){
                 Future.failedFuture(t)

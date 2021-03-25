@@ -26,7 +26,7 @@ class ProxyOrganizationTest: AbstractTest() {
                     orgList.add(randomOrganization(createdAuthCode))
                 }
 
-                ProxyOrganization.batchSaveOrganization(orgList).await()
+                ProxyOrganization.batchSaveOrganization(createdAuthCode.id,orgList).await()
 
                 val list = ProxyOrganization.queryOrganizations(authCodeId = createdAuthCode.id).await()
                 testContext.verify {
@@ -54,7 +54,7 @@ class ProxyOrganizationTest: AbstractTest() {
                 }
 
                 val begin = System.currentTimeMillis()
-                ProxyOrganization.batchSaveOrganization(orgList).await()
+                ProxyOrganization.batchSaveOrganization(createdAuthCode.id,orgList).await()
                 logger.debug("批量事务时间：${System.currentTimeMillis() - begin}")
             }catch (t:Throwable){
                 testContext.failNow(t)

@@ -38,8 +38,13 @@ class ProxyRepositoryHibernate: EntityRepositoryHibernate(),ProxyRepository {
             val promise = PromiseImpl<Unit>()
             sessionFactory.withTransaction { session, _ ->
                 session
-                    .createQuery<ProxyEmployee>("delete from ProxyOrganization where authCode.id = :authCodeId").setParameter("authCodeId",isvAuthCodeId)
+                    .createQuery<ProxyEmployee>("delete from ProxyEmpOrgRelation where authCode = :authCodeId").setParameter("authCodeId",isvAuthCodeId)
                     .executeUpdate()
+                    .chain { _ ->
+                        session
+                            .createQuery<ProxyEmployee>("delete from ProxyOrganization where authCode.id = :authCodeId").setParameter("authCodeId",isvAuthCodeId)
+                            .executeUpdate()
+                    }
                     .chain { _ -> session.persistAll(*organizationList.toTypedArray()) }
                     .call { _ -> session.flush() }
             }.subscribe().with({

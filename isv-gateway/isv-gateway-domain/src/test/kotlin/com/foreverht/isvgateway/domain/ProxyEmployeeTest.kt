@@ -47,6 +47,27 @@ class ProxyEmployeeTest:AbstractTest() {
     }
 
     @Test
+    fun testBatchSaveEmployee(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val createdAuthCode = randomISVAuthCode().createTemporaryAuth().await()
+                testContext.verify {
+                    Assertions.assertNotNull(createdAuthCode)
+                }
+
+                val employee = randomEmployee(createdAuthCode)
+                val organization = proxyRepository.save(randomOrganization(createdAuthCode)).await()
+                employee.relations = arrayListOf(ProxyEmpOrgRelation.createInstance(employee = employee,organization = organization))
+
+                ProxyEmployee.batchSaveEmployeeList(isvAuthCodeId = createdAuthCode.id,employeeList = arrayListOf(employee)).await()
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testCreateEmployee(vertx: Vertx, testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {

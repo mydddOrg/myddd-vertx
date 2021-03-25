@@ -10,9 +10,12 @@ import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.ISVSuiteTicketDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkWeiXinDTO
 import com.foreverht.isvgateway.application.AccessTokenApplicationImpl
+import com.foreverht.isvgateway.application.assembler.toISVAuthCode
+import com.foreverht.isvgateway.domain.ISVAuthCode
 import com.foreverht.isvgateway.domain.ISVClientType
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -28,6 +31,8 @@ abstract class AbstractWorkWeiXinTest: AbstractTest() {
     companion object {
         const val WORK_WEI_XIN = "WorkWeiXin"
 
+        val logger by lazy { LoggerFactory.getLogger(WeiXinSyncDataApplicationTest::class.java) }
+        
         val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
         val isvSuiteTicketApplication by lazy { InstanceFactory.getInstance(ISVSuiteTicketApplication::class.java) }
@@ -40,6 +45,8 @@ abstract class AbstractWorkWeiXinTest: AbstractTest() {
         lateinit var isvWorkWeiXinClientSecret:String
 
         lateinit var isvAccessToken:String
+
+        lateinit var createdAuthCode:ISVAuthCode
 
         @BeforeAll
         @JvmStatic
@@ -121,7 +128,7 @@ abstract class AbstractWorkWeiXinTest: AbstractTest() {
                     .send().await()
                 if(response.statusCode() == 200){
                     val body = response.bodyAsJsonObject()
-                    val isvAuthCode = ISVAuthCodeDTO(
+                    val isvAuthCodeDTO = ISVAuthCodeDTO(
                         suiteId = body.getString("suiteId"),
                         clientType = body.getString("clientType"),
                         authStatus = body.getString("authStatus"),
@@ -131,8 +138,10 @@ abstract class AbstractWorkWeiXinTest: AbstractTest() {
                         permanentAuthCode = body.getString("permanentAuthCode")
                     )
 
-                    isvAuthCodeApplication.createTemporaryAuthCode(authCode = isvAuthCode).await()
-                    isvAuthCodeApplication.toPermanent(authCode = isvAuthCode).await()
+                    isvAuthCodeApplication.createTemporaryAuthCode(authCode = isvAuthCodeDTO).await()
+                    isvAuthCodeApplication.toPermanent(authCode = isvAuthCodeDTO).await()
+
+                    createdAuthCode = toISVAuthCode(isvAuthCodeDTO)
 
                     Future.succeededFuture()
                 }else{

@@ -29,7 +29,7 @@ class SyncDataApplicationImpl:SyncDataApplication {
                     requireNotNull(isvAuthCode){
                         "AUTH_CODE_NOT_FOUND"
                     }
-                    weiXinSyncDataApplication.syncOrganization(isvAuthCode)
+                    weiXinSyncDataApplication.syncAllData(clientId,isvAuthCode)
                 }
                 else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
             }
