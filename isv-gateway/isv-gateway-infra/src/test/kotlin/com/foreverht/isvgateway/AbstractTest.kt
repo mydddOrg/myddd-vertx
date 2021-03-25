@@ -56,4 +56,25 @@ abstract class AbstractTest {
         isvAuthCode.temporaryAuthCode = randomString()
         return isvAuthCode
     }
+
+    fun randomEmployee(authCode: ISVAuthCode,):ProxyEmployee{
+        val employee = ProxyEmployee()
+        employee.authCode = authCode
+        employee.userId = randomString()
+        employee.name = randomString()
+        employee.avatar = randomString()
+        employee.mobile = randomString()
+        employee.email = randomString()
+        return employee
+    }
+
+    fun randomOrganization(authCode: ISVAuthCode):ProxyOrganization {
+        val organization = ProxyOrganization()
+        organization.authCode = authCode
+        organization.orgId = randomString()
+        organization.orgCode = randomString()
+        organization.parentOrgId = randomString()
+        organization.path = randomString()
+        return organization
+    }
 }

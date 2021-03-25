@@ -1,5 +1,7 @@
 package com.foreverht.isvgateway.domain
 
+import io.vertx.core.Future
+import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.BaseEntity
 import org.myddd.vertx.ioc.InstanceFactory
 import javax.persistence.*
@@ -31,6 +33,26 @@ class ProxyOrganization: BaseEntity() {
 
     companion object {
         private val proxyRepository by lazy { InstanceFactory.getInstance(ProxyRepository::class.java) }
+
+        suspend fun batchSaveOrganization(orgList:List<ProxyOrganization>):Future<Unit>{
+            return try {
+                proxyRepository.batchSave(orgList.toTypedArray()).await()
+                Future.succeededFuture()
+            }catch (t:Throwable){
+                Future.failedFuture(t)
+            }
+        }
+
+        suspend fun queryOrganizations(authCodeId:Long):Future<List<ProxyOrganization>>{
+            return try {
+                return proxyRepository.listQuery(ProxyOrganization::class.java,"from ProxyOrganization where authCode.id = :authCodeId",
+                    mapOf("authCodeId" to authCodeId))
+            }catch (t:Throwable){
+                Future.failedFuture(t)
+            }
+        }
     }
+
+
 
 }

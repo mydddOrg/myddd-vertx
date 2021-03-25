@@ -12,10 +12,10 @@
         <class>com.foreverht.isvgateway.domain.ISVClientToken</class>
         <class>com.foreverht.isvgateway.domain.ISVSuiteTicket</class>
         <class>com.foreverht.isvgateway.domain.ISVAuthCode</class>
-        <class>com.foreverht.isvgateway.domain.ProxyEmployee</class>
-        <class>com.foreverht.isvgateway.domain.ProxyOrganization</class>
-        <class>com.foreverht.isvgateway.domain.ProxyEmpOrgRelation</class>
 
+        <class>com.foreverht.isvgateway.domain.ProxyEmpOrgRelation</class>
+        <class>com.foreverht.isvgateway.domain.ProxyOrganization</class>
+        <class>com.foreverht.isvgateway.domain.ProxyEmployee</class>
         <properties>
 
             <!-- MySQL -->

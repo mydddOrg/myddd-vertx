@@ -2,7 +2,7 @@ package com.foreverht.isvgateway.application
 
 import com.foreverht.isvgateway.AbstractW6SBossTest
 import com.foreverht.isvgateway.api.AccessTokenApplication
-import com.foreverht.isvgateway.api.RequestTokenDTO
+import com.foreverht.isvgateway.api.dto.RequestTokenDTO
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await

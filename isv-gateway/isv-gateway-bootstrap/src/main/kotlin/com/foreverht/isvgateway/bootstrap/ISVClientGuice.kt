@@ -3,6 +3,7 @@ package com.foreverht.isvgateway.bootstrap
 import com.foreverht.isvgateway.api.*
 import com.foreverht.isvgateway.application.*
 import com.foreverht.isvgateway.application.isv.W6SBossApplicationImpl
+import com.foreverht.isvgateway.application.weixin.WeiXinSyncDataApplication
 import com.foreverht.isvgateway.application.weixin.WorkWeiXinApplicationImpl
 import com.foreverht.isvgateway.application.workplus.*
 import com.foreverht.isvgateway.domain.ISVClientRepository
@@ -32,6 +33,8 @@ class ISVClientGuice(vertx: Vertx) : AbstractWebModule(vertx = vertx) {
         bind(AppApplication::class.java).annotatedWith(Names.named(ANNOTATED_WORKPLUS_APP)).to(AppApplicationWorkPlus::class.java)
         bind(MessageApplication::class.java).annotatedWith(Names.named(ANNOTATED_WORKPLUS_APP)).to(MessageApplicationWorkPlus::class.java)
 
+        bind(SyncDataApplication::class.java).to(SyncDataApplicationImpl::class.java)
+        bind(WeiXinSyncDataApplication::class.java)
     }
 
 

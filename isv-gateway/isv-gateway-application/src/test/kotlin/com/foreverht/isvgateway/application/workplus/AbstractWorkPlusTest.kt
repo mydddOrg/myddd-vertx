@@ -3,7 +3,7 @@ package com.foreverht.isvgateway.application.workplus
 import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
-import com.foreverht.isvgateway.api.RequestTokenDTO
+import com.foreverht.isvgateway.api.dto.RequestTokenDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import io.vertx.core.Future

@@ -2,7 +2,7 @@ package com.foreverht.isvgateway.bootstrap.route
 
 import com.foreverht.isvgateway.api.AccessTokenApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
-import com.foreverht.isvgateway.api.RequestTokenDTO
+import com.foreverht.isvgateway.api.dto.RequestTokenDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.bootstrap.ISVClientErrorCode
 import com.foreverht.isvgateway.bootstrap.validation.ISVClientValidationHandler
@@ -118,7 +118,7 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
                         val bodyString = it.bodyAsString
-                        val requestTokenDTO = AsyncJsonMapper.mapFrom(vertx,bodyString,RequestTokenDTO::class.java).await()
+                        val requestTokenDTO = AsyncJsonMapper.mapFrom(vertx,bodyString, RequestTokenDTO::class.java).await()
                         val tokenDTO = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
                         it.end(JsonObject.mapFrom(tokenDTO).toBuffer())
                     }catch (t:Throwable){

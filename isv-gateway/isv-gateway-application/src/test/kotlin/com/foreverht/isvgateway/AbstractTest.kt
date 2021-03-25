@@ -4,6 +4,7 @@ import com.foreverht.isvgateway.api.*
 import com.foreverht.isvgateway.application.*
 import com.foreverht.isvgateway.application.isv.W6SBossApplicationImpl
 import com.foreverht.isvgateway.application.weixin.AppApplicationWorkWeiXin
+import com.foreverht.isvgateway.application.weixin.WeiXinSyncDataApplication
 import com.foreverht.isvgateway.application.weixin.WorkWeiXinApplicationImpl
 import com.foreverht.isvgateway.application.workplus.*
 import com.foreverht.isvgateway.domain.ISVClientRepository
@@ -71,6 +72,9 @@ abstract class AbstractTest {
 
 
                     bind(AppApplication::class.java).annotatedWith(Names.named("WorkWeiXin")).to(AppApplicationWorkWeiXin::class.java)
+
+                    bind(SyncDataApplication::class.java).to(SyncDataApplicationImpl::class.java)
+                    bind(WeiXinSyncDataApplication::class.java)
 
                 }
             })))

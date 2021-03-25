@@ -6,6 +6,7 @@ import com.foreverht.isvgateway.domain.infra.ProxyRepositoryHibernate
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.vertx.core.Vertx
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import org.hibernate.reactive.mutiny.Mutiny
@@ -26,6 +27,9 @@ import javax.persistence.Persistence
 abstract class AbstractTest {
 
     companion object {
+
+        val logger by lazy { LoggerFactory.getLogger(AbstractTest::class.java) }
+
         val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
 
         @BeforeAll

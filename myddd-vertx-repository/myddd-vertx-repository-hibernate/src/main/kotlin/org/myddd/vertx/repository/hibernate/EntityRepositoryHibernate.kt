@@ -1,5 +1,6 @@
 package org.myddd.vertx.repository.hibernate
 
+import io.smallrye.mutiny.Uni
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
 import org.hibernate.reactive.mutiny.Mutiny
@@ -19,7 +20,7 @@ open class EntityRepositoryHibernate : EntityRepository {
         exists(entity::class.java,entity.getId()).onSuccess { exists ->
             if(exists) {
                 sessionFactory.withTransaction { session, _ ->
-                    session.merge(entity)
+                    session.merge(entity).call{ _ -> session.flush()}
                 }.subscribe().with({
                     promise.onSuccess(it)
                 },{
@@ -27,7 +28,7 @@ open class EntityRepositoryHibernate : EntityRepository {
                 })
             }else{
                 sessionFactory.withTransaction { session, _ ->
-                    session.persist(entity)
+                    session.persist(entity).call{ _ -> session.flush()}
                 }.subscribe().with({
                     promise.onSuccess(entity)
                 }, {
@@ -67,7 +68,7 @@ open class EntityRepositoryHibernate : EntityRepository {
     override suspend fun <T : Entity> batchSave(entityList:Array<T>): Future<Boolean> {
         val promise = PromiseImpl<Boolean>()
         sessionFactory.withTransaction { session, _ ->
-            session.persistAll(*entityList)
+            session.persistAll(*entityList).call { _ -> session.flush() }
         }.subscribe().with({promise.onSuccess(true)},{promise.fail(it)})
         return promise
     }
@@ -75,16 +76,12 @@ open class EntityRepositoryHibernate : EntityRepository {
     override suspend fun <T : Entity> delete(clazz: Class<T>?, id: Serializable?): Future<Boolean> {
         val promise = PromiseImpl<Boolean>()
         sessionFactory.withSession { session ->
-            session.find(clazz,id)
+            session.find(clazz,id).chain { it -> if(Objects.nonNull(it)) session.remove(it) else Uni.createFrom().nullItem()}.chain { _ -> session.flush() }
         }.subscribe().with({
-            if(Objects.nonNull(it))
-                sessionFactory.withTransaction { session, _ ->
-                    session.merge(it).chain { merge ->
-                        session.remove(merge)
-                    }
-                }.subscribe().with { promise.onSuccess(true) }
-            else promise.onSuccess(false)
-        },{promise.fail(it)})
+            promise.onSuccess(true)
+        },{
+            promise.fail(it)}
+        )
         return promise.future()
     }
 
@@ -122,7 +119,7 @@ open class EntityRepositoryHibernate : EntityRepository {
 
             val query = session.createQuery<Any>(sql)
             params.forEach { (key, value) -> query.setParameter(key,value)  }
-            query.executeUpdate()
+            query.executeUpdate().call { _ -> session.flush() }
         }.subscribe().with( {
             promise.onSuccess(it)
         },{

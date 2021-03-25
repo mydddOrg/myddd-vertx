@@ -1,8 +1,8 @@
 package com.foreverht.isvgateway.application
 
 import com.foreverht.isvgateway.api.AccessTokenApplication
-import com.foreverht.isvgateway.api.RequestTokenDTO
-import com.foreverht.isvgateway.api.TokenDTO
+import com.foreverht.isvgateway.api.dto.RequestTokenDTO
+import com.foreverht.isvgateway.api.dto.TokenDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.application.assembler.toISVClientDTO
 import com.foreverht.isvgateway.application.extention.resultSuccess
@@ -83,10 +83,12 @@ class AccessTokenApplicationImpl : AbstractApplication(),AccessTokenApplication{
         return try {
             val isvClientToken = workWeiXinApplication.requestCorpAccessToken(clientId = requestTokenDTO.clientId,corpId = requestTokenDTO.orgCode).await()
             val extra = isvClientToken.extra as ISVClientTokenExtraForWorkWeiXin
-            Future.succeededFuture(TokenDTO(
-                accessToken = isvClientToken.token,
-                accessExpiredIn = extra.expireTime
-            ))
+            Future.succeededFuture(
+                TokenDTO(
+                    accessToken = isvClientToken.token,
+                    accessExpiredIn = extra.expireTime
+                )
+            )
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
@@ -96,10 +98,12 @@ class AccessTokenApplicationImpl : AbstractApplication(),AccessTokenApplication{
         return try {
             val isvClientToken = bossApplication.requestApiAccessToken(clientId = requestTokenDTO.clientId,domainId = requestTokenDTO.domainId,orgCode = requestTokenDTO.orgCode).await()
             val extra = isvClientToken.extra as ISVClientTokenExtraForWorkPlusISV
-            Future.succeededFuture(TokenDTO(
-                accessToken = isvClientToken.token,
-                accessExpiredIn = extra.expireTime
-            ))
+            Future.succeededFuture(
+                TokenDTO(
+                    accessToken = isvClientToken.token,
+                    accessExpiredIn = extra.expireTime
+                )
+            )
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

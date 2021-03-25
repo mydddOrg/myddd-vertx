@@ -30,8 +30,20 @@ class ProxyEmployee: BaseEntity() {
 
     var email:String? = null
 
+    @OneToMany(cascade=[CascadeType.ALL],fetch=FetchType.LAZY,mappedBy = "employee")
+    var relations:List<ProxyEmpOrgRelation> = arrayListOf()
+
     companion object {
         private val proxyRepository by lazy { InstanceFactory.getInstance(ProxyRepository::class.java) }
+
+        suspend fun queryByAuthCode(authCodeId:Long):Future<List<ProxyEmployee>>{
+            return try {
+                return proxyRepository.listQuery(ProxyEmployee::class.java,"from ProxyEmployee where authCode.id = :authCodeId",
+                    mapOf("authCodeId" to authCodeId))
+            }catch (t:Throwable){
+                Future.failedFuture(t)
+            }
+        }
     }
 
     suspend fun createEmployee():Future<ProxyEmployee>{

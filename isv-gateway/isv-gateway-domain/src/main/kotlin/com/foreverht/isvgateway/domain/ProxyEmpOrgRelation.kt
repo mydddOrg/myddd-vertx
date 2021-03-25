@@ -1,32 +1,34 @@
 package com.foreverht.isvgateway.domain
 
 import org.myddd.vertx.domain.BaseEntity
-import org.myddd.vertx.ioc.InstanceFactory
 import javax.persistence.*
 
 @Entity
 @Table(name = "proxy_employee_organization")
 class ProxyEmpOrgRelation: BaseEntity() {
 
-    @ManyToOne(cascade = [],fetch = FetchType.EAGER)
+    @Column(name = "auth_code_id")
+    var authCode:Long = 0
+
+    @ManyToOne(cascade=[],fetch=FetchType.EAGER)
     @JoinColumn(name = "employee_id")
     lateinit var employee: ProxyEmployee
 
-    @ManyToOne(cascade = [],fetch = FetchType.EAGER)
+    @ManyToOne(cascade=[],fetch= FetchType.EAGER)
     @JoinColumn(name = "organization_id")
     lateinit var organization: ProxyOrganization
 
-    var main:Boolean = true
+    var main:Boolean = false
 
     companion object {
-        private val proxyRepository by lazy { InstanceFactory.getInstance(ProxyRepository::class.java) }
-
-        fun createInstance(employee: ProxyEmployee,organization: ProxyOrganization):ProxyEmpOrgRelation{
-            val proxyEmpOrgRelation = ProxyEmpOrgRelation()
-            proxyEmpOrgRelation.employee = employee
-            proxyEmpOrgRelation.organization = organization
-            return proxyEmpOrgRelation
+        fun createInstance(employee:ProxyEmployee,organization: ProxyOrganization,isMain: Boolean = false):ProxyEmpOrgRelation{
+            val instance = ProxyEmpOrgRelation()
+            instance.authCode = employee.authCode.id
+            instance.employee = employee
+            instance.organization = organization
+            instance.main = isMain
+            return instance
         }
-    }
 
+    }
 }

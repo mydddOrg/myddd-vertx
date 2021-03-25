@@ -16,6 +16,37 @@ class ProxyEmployeeTest:AbstractTest() {
     private val proxyRepository by lazy { InstanceFactory.getInstance(ProxyRepository::class.java) }
 
     @Test
+    fun testQueryEmployeeByAuthCode(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val createdAuthCode = randomISVAuthCode().createTemporaryAuth().await()
+                testContext.verify {
+                    Assertions.assertNotNull(createdAuthCode)
+                }
+
+                val employee = randomEmployee(createdAuthCode)
+                val organization = proxyRepository.save(randomOrganization(createdAuthCode)).await()
+                employee.relations = arrayListOf(ProxyEmpOrgRelation.createInstance(employee = employee,organization = organization))
+
+                val created = employee.createEmployee().await()
+                testContext.verify {
+                    Assertions.assertNotNull(created)
+                }
+
+                val list = ProxyEmployee.queryByAuthCode(authCodeId = createdAuthCode.id).await()
+                testContext.verify {
+                    Assertions.assertTrue(list.isNotEmpty())
+                }
+
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testCreateEmployee(vertx: Vertx, testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -24,16 +55,23 @@ class ProxyEmployeeTest:AbstractTest() {
                     Assertions.assertNotNull(createdAuthCode)
                 }
 
-                val employee = randomEmployee(createdAuthCode).createEmployee().await()
-                testContext.verify { Assertions.assertNotNull(employee) }
-
+                val employee = randomEmployee(createdAuthCode)
                 val organization = proxyRepository.save(randomOrganization(createdAuthCode)).await()
-                testContext.verify { Assertions.assertNotNull(organization) }
+                employee.relations = arrayListOf(ProxyEmpOrgRelation.createInstance(employee = employee,organization = organization))
 
-                val relation = ProxyEmpOrgRelation.createInstance(employee = employee,organization = organization)
+                val created = employee.createEmployee().await()
+                testContext.verify {
+                    Assertions.assertNotNull(created)
+                }
 
-                val updated = proxyRepository.save(relation).await()
-                testContext.verify { Assertions.assertNotNull(updated) }
+                employee.relations = arrayListOf()
+                proxyRepository.save(employee).await()
+
+                val query = proxyRepository.get(ProxyEmployee::class.java,employee.id).await()
+                testContext.verify {
+                    Assertions.assertNotNull(query)
+                }
+
 
             }catch (t:Throwable){
                 testContext.failNow(t)

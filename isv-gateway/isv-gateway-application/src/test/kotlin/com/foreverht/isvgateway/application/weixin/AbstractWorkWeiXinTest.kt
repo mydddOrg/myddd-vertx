@@ -4,7 +4,7 @@ import com.foreverht.isvgateway.AbstractTest
 import com.foreverht.isvgateway.api.ISVAuthCodeApplication
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
-import com.foreverht.isvgateway.api.RequestTokenDTO
+import com.foreverht.isvgateway.api.dto.RequestTokenDTO
 import com.foreverht.isvgateway.api.dto.ISVAuthCodeDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.ISVSuiteTicketDTO
