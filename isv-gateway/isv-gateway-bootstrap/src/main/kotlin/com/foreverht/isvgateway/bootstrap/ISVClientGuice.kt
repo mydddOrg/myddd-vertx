@@ -7,10 +7,11 @@ import com.foreverht.isvgateway.application.weixin.WeiXinSyncDataApplication
 import com.foreverht.isvgateway.application.weixin.WorkWeiXinApplicationImpl
 import com.foreverht.isvgateway.application.workplus.*
 import com.foreverht.isvgateway.domain.ISVClientRepository
+import com.foreverht.isvgateway.domain.ProxyRepository
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
+import com.foreverht.isvgateway.domain.infra.ProxyRepositoryHibernate
 import com.google.inject.name.Names
 import io.vertx.core.Vertx
-import io.vertx.ext.web.client.WebClient
 
 class ISVClientGuice(vertx: Vertx) : AbstractWebModule(vertx = vertx) {
 
@@ -36,6 +37,8 @@ class ISVClientGuice(vertx: Vertx) : AbstractWebModule(vertx = vertx) {
 
         bind(SyncDataApplication::class.java).to(SyncDataApplicationImpl::class.java)
         bind(WeiXinSyncDataApplication::class.java)
+
+        bind(ProxyRepository::class.java).to(ProxyRepositoryHibernate::class.java)
     }
 
 

@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.bootstrap
 
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -12,7 +13,6 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 
@@ -21,6 +21,7 @@ abstract class AbstractRouteTest {
 
     companion object {
 
+        val logger by lazy { LoggerFactory.getLogger(AbstractRouteTest::class.java) }
         lateinit var deployId:String
 
         const val port:Int = 8080

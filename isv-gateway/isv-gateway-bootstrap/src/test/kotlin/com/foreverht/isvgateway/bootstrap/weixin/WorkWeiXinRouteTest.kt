@@ -1,6 +1,9 @@
 package com.foreverht.isvgateway.bootstrap.weixin
 
+import com.foreverht.isvgateway.api.dto.ISVSuiteTicketDTO
 import com.foreverht.isvgateway.bootstrap.AbstractRouteTest
+import com.foreverht.isvgateway.domain.ISVClientType
+import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.json.JsonObject
@@ -23,7 +26,6 @@ class WorkWeiXinRouteTest: AbstractRouteTest() {
         private const val ECHO_PARAMS = "msg_signature=8d61584c28e564ccabaf066070cd16dbc5de2b2e&timestamp=1616466608&nonce=1616164906&echostr=VfgGwdAdAvQV3UnJbDg9KljnXBN9d5YaM8DIBdguAeN41kYeMT5aFdzyHMwTux980vOU5FU/hMJ7K+F+18BcKw=="
         private const val XML_CONTENT = "<xml><ToUserName><![CDATA[wx2547800152da0539]]></ToUserName><Encrypt><![CDATA[E+UWkD1sqnWU5FNOQcm/4zQMAeSjy/GxMkmA/f0b+n++xwL5S4A9JlkJAUqfAioVUPaBfKINjY8DehZc0FODeiwtnQKuirGxp5Wo2Cgku1nzI6xU7XpH3mNm5+8tGtNVskQyq8nnHbaccWfGYjhvwYjnNE7xRDUBKB49vOEKSFdlQHrbVupEH9aaOJU779p9J+0uiUw7obXHkIIO/Jr5uNYpw/8nqVYoMYsOfcVJfUuBicA1yzBfG9UdgcQLIvZCY4baMZg4Ey/e//hGFEjlxUzaTKAMzxoBQuCXjvr6BOOQdCfakGii4UfjhNd7qM+t8i6MxhXGdTtrtagK/xd5ekbSPkSW4GyqDe2IoV/SpmEuL+yHSYgcAU/X5o3T0bXx]]></Encrypt><AgentID><![CDATA[]]></AgentID></xml>"
         private const val POST_SUITE_TICKET_PARAMS = "?msg_signature=fe94dd77f4ead72c0090c1477155fd5a49a79501&timestamp=1616475993&nonce=1616584089"
-
         private lateinit var isvClientId:String
 
     }
