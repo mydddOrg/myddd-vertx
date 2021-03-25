@@ -23,9 +23,9 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.json.AsyncJsonMapper
 import java.util.*
 
-class ISVClientRouterTest : AbstractRouteTest(){
+class ISVClientRouteTest : AbstractRouteTest(){
 
-    private val logger by lazy { LoggerFactory.getLogger(ISVClientRouterTest::class.java) }
+    private val logger by lazy { LoggerFactory.getLogger(ISVClientRouteTest::class.java) }
 
     private val isvClientApplication: ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
 

@@ -4,7 +4,7 @@ import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.api.dto.extra.ISVClientExtraForWorkPlusDTO
 import com.foreverht.isvgateway.bootstrap.AbstractRouteTest
-import com.foreverht.isvgateway.bootstrap.route.AbstractISVRouter
+import com.foreverht.isvgateway.bootstrap.route.AbstractISVRoute
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
@@ -21,13 +21,13 @@ import org.junit.jupiter.api.*
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 
-open class AbstractISVRouterTest : AbstractRouteTest() {
+open class AbstractISVRouteTest : AbstractRouteTest() {
 
     val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
     companion object {
 
-        val logger = LoggerFactory.getLogger(AbstractISVRouterTest::class.java)
+        val logger = LoggerFactory.getLogger(AbstractISVRouteTest::class.java)
 
         private val databaseOAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java)}
         private val isvClientApplication:ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
@@ -58,8 +58,8 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
                     obj(
                         "clientId" to created.clientId,
                         "clientSecret" to created.clientSecret,
-                        "domainId" to ISVClientRouterTest.domainId,
-                        "orgCode" to ISVClientRouterTest.ownerId
+                        "domainId" to ISVClientRouteTest.domainId,
+                        "orgCode" to ISVClientRouteTest.ownerId
                     )
                 }
 
@@ -109,7 +109,7 @@ open class AbstractISVRouterTest : AbstractRouteTest() {
     fun test(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val testRoute = object : AbstractISVRouter(vertx = vertx,router = Router.router(vertx)){}
+                val testRoute = object : AbstractISVRoute(vertx = vertx,router = Router.router(vertx)){}
                 val organizationApplication = testRoute.getOrganizationApplication(accessToken!!).await()
                 testContext.verify { Assertions.assertNotNull(organizationApplication) }
 

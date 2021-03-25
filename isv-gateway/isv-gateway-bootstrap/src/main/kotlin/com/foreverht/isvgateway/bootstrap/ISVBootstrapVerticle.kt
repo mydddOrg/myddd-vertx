@@ -5,6 +5,7 @@ import com.google.inject.AbstractModule
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
 import org.myddd.vertx.web.router.BootstrapVerticle
+import org.myddd.vertx.web.router.config.GlobalConfig
 
 class ISVBootstrapVerticle (port:Int = 8080) : BootstrapVerticle(port = port){
 
@@ -14,16 +15,21 @@ class ISVBootstrapVerticle (port:Int = 8080) : BootstrapVerticle(port = port){
 
     override fun routers(vertx: Vertx, router: Router): () -> Unit {
         return {
-            ISVClientRouter(vertx,router)
-            OrganizationRouter(vertx,router)
-            EmployeesRouter(vertx,router)
-            MediaRouter(vertx,router)
-            AppRouter(vertx,router)
-            MessageRouter(vertx,router)
+            AdminRoute(vertx,router)
+            ISVClientRoute(vertx,router)
+            OrganizationRoute(vertx,router)
+            EmployeesRoute(vertx,router)
+            MediaRoute(vertx,router)
+            AppRoute(vertx,router)
+            MessageRoute(vertx,router)
             StaticResourceRouter(vertx,router)
 
             ISVW6SSuiteRoute(vertx,router)
             WorkWeiXinRoute(vertx,router)
+
+            if(!GlobalConfig.getBoolean("production",false)){
+                MockRoute(vertx,router)
+            }
         }
     }
 

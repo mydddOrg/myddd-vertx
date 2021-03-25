@@ -11,7 +11,7 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class EmployeesRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = vertx,router = router) {
+class EmployeesRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,router = router) {
 
     init {
         queryEmployeeByIdRoute()

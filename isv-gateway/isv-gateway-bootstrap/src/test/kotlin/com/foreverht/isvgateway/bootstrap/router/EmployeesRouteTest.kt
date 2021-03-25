@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class EmployeesRouterTest : AbstractISVRouterTest() {
+class EmployeesRouteTest : AbstractISVRouteTest() {
 
     companion object {
         private const val userId = "ce48a6e05f8e4cb8a8a796684d5c991a"
         private const val query = "136318341"
-        private val logger:Logger = LoggerFactory.getLogger(EmployeesRouterTest::class.java)
+        private val logger:Logger = LoggerFactory.getLogger(EmployeesRouteTest::class.java)
     }
 
 

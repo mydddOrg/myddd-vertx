@@ -29,8 +29,6 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
     init {
         processCallbackHelloRoute()
         processCallbackEventRoute()
-        querySuiteTicketRoute()
-        queryPermanentAuthCodeRoute()
     }
 
     companion object {
@@ -133,50 +131,6 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
 
         }.consumes("text/xml")
     }
-
-
-    private fun querySuiteTicketRoute(){
-        createGetRoute(path = "/$version/weixin/tickets/:suiteId"){ route ->
-
-            route.handler {
-                GlobalScope.launch(vertx.dispatcher()) {
-
-                    try {
-                        val suiteId = it.pathParam("suiteId")
-                        val isvSuiteTicketDTO = isvSuiteTicketApplication.querySuiteTicket(suiteId = suiteId,clientType = CLIENT_TYPE_WORK_WEI_XIN).await()
-
-                        it.end(JsonObject.mapFrom(isvSuiteTicketDTO).toBuffer())
-                    }catch (t:Throwable){
-                        it.fail(t)
-                    }
-
-                }
-            }
-
-        }
-    }
-
-    private fun queryPermanentAuthCodeRoute(){
-        createGetRoute(path = "/$version/weixin/authCode/:suiteId/:orgId"){ route ->
-
-            route.handler {
-                GlobalScope.launch(vertx.dispatcher()) {
-
-                    try {
-                        val suiteId = it.pathParam("suiteId")
-                        val orgId = it.pathParam("orgId")
-                        val authCodeDTO = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = suiteId,domainId = "WorkWeiXin",orgCode = orgId,clientType = "WorkWeiXin").await()
-                        it.end(JsonObject.mapFrom(authCodeDTO).toBuffer())
-                    }catch (t:Throwable){
-                        it.fail(t)
-                    }
-
-                }
-            }
-
-        }
-    }
-
 
 
     private suspend fun processSuiteEvent(document: Document):Future<Unit> {

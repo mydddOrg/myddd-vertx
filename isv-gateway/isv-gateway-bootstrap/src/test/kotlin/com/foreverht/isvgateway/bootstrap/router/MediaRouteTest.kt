@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class MediaRouterTest: AbstractISVRouterTest() {
+class MediaRouteTest: AbstractISVRouteTest() {
 
     companion object {
         private const val mediaId = "ad6a568cfbb540f0ad75d10e77d233de"
-        private val logger by lazy { LoggerFactory.getLogger(MediaRouterTest::class.java) }
+        private val logger by lazy { LoggerFactory.getLogger(MediaRouteTest::class.java) }
     }
 
     @Test
@@ -24,7 +24,7 @@ class MediaRouterTest: AbstractISVRouterTest() {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val path = "META-INF/my_avatar.png"
-                val absolutePath = MediaRouterTest::class.java.classLoader.getResource(path)!!.path
+                val absolutePath = MediaRouteTest::class.java.classLoader.getResource(path)!!.path
 
                 val form = MultipartForm.create()
                     .binaryFileUpload("file","my_avatar.png",absolutePath, "application/octet-stream ")

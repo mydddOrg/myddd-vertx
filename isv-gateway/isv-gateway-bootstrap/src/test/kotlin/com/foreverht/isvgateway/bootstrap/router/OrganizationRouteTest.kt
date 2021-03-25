@@ -1,6 +1,7 @@
 package com.foreverht.isvgateway.bootstrap.router
 
 import io.vertx.core.Vertx
+import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
@@ -8,9 +9,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
-class OrganizationRouterTest : AbstractISVRouterTest() {
+class OrganizationRouteTest : AbstractISVRouteTest() {
+
 
     @Test
     fun testQueryOrganizationEmployee(vertx: Vertx,testContext: VertxTestContext){

@@ -22,7 +22,7 @@ import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
 import org.myddd.vertx.web.router.AbstractRouter
 import java.util.*
 
-class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,router = router) {
+class ISVClientRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = vertx,router = router) {
 
     private val oAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }
     private val oAuth2ClientApplication by lazy {InstanceFactory.getInstance(OAuth2ClientApplication::class.java)}
@@ -32,11 +32,10 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
     private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
 
     companion object {
-        private val logger by lazy { LoggerFactory.getLogger(ISVClientRouter::class.java) }
+        private val logger by lazy { LoggerFactory.getLogger(ISVClientRoute::class.java) }
     }
 
     init {
-        createISVClientRoute()
         queryISVClientRoute()
         updateISVClientRoute()
         requestClientTokenRoute()
@@ -46,26 +45,6 @@ class ISVClientRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vert
         requestApiTokenRoute()
     }
 
-    private fun createISVClientRoute(){
-        createPostRoute("/$version/clients"){ route ->
-
-            route.handler(ISVClientValidationHandler().createISVClientValidation())
-
-            route.handler {
-                GlobalScope.launch(vertx.dispatcher()) {
-                    try {
-                        val bodyString = it.bodyAsString
-                        val isvClientDTO = AsyncJsonMapper.mapFrom(vertx,bodyString,ISVClientDTO::class.java).await()
-                        val created = isvClientApplication.createISVClient(isvClientDTO).await()
-                        it.end(JsonObject.mapFrom(created).toBuffer())
-                    }catch (t:Throwable){
-                        logger.error(t)
-                        it.fail(HTTP_400_RESPONSE, t)
-                    }
-                }
-            }
-        }
-    }
 
 
     private fun queryISVClientRoute(){

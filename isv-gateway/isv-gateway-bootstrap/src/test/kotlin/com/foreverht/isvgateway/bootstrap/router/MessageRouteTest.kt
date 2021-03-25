@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class MessageRouterTest : AbstractISVRouterTest() {
+class MessageRouteTest : AbstractISVRouteTest() {
 
     @Test
     fun testSendFileMessage(vertx: Vertx,testContext: VertxTestContext){

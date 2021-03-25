@@ -18,7 +18,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.web.router.ext.singleQueryParam
 
-class OrganizationRouter(vertx: Vertx,router: Router):AbstractISVRouter(vertx = vertx,router = router) {
+class OrganizationRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,router = router) {
 
     init {
         queryOrganizationRoute()

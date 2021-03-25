@@ -33,6 +33,7 @@ class ISVAccessTokenAuthorizationHandler(private val vertx: Vertx) : Handler<Rou
                     rc.next()
                 }
             }catch (t:Throwable){
+                t.printStackTrace()
                 rc?.fail(BadAuthorizationException())
             }
         }

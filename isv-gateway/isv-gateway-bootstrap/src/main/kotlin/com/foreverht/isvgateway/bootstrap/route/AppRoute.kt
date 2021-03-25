@@ -10,7 +10,7 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class AppRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = vertx,router = router)  {
+class AppRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,router = router)  {
 
     init {
         queryAppDetailRoute()

@@ -11,7 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.json.AsyncJsonMapper
 
-class MessageRouter(vertx: Vertx, router: Router):AbstractISVRouter(vertx = vertx,router = router) {
+class MessageRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,router = router) {
 
     init {
         sendMessageRoute()

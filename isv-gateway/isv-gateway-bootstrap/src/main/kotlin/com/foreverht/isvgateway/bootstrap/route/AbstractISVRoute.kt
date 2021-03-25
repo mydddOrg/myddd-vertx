@@ -12,7 +12,7 @@ import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.web.router.AbstractRouter
 import java.util.*
 
-abstract class AbstractISVRouter(vertx: Vertx, router: Router): AbstractRouter(vertx = vertx,router = router) {
+abstract class AbstractISVRoute(vertx: Vertx, router: Router): AbstractRouter(vertx = vertx,router = router) {
 
     companion object {
         const val WorkPlusApp = "WorkPlusApp"

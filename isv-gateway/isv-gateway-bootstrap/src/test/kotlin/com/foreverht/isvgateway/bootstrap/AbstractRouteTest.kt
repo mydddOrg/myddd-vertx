@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.ioc.InstanceFactory
 
 @ExtendWith(VertxExtension::class)
 abstract class AbstractRouteTest {
@@ -30,7 +31,6 @@ abstract class AbstractRouteTest {
 
         suspend fun startVerticle(vertx: Vertx,testContext: VertxTestContext):Future<Unit>{
             return try {
-                webClient = WebClient.create(vertx)
                 deployId = vertx.deployVerticle(ISVBootstrapVerticle(port = port)).await()
                 testContext.verify {
                     Assertions.assertNotNull(deployId)
@@ -48,6 +48,7 @@ abstract class AbstractRouteTest {
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
                     startVerticle(vertx,testContext).await()
+                    webClient = InstanceFactory.getInstance(WebClient::class.java)
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }

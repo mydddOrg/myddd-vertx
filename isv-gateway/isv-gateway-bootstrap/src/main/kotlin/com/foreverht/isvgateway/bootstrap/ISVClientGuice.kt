@@ -10,6 +10,7 @@ import com.foreverht.isvgateway.domain.ISVClientRepository
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
 import com.google.inject.name.Names
 import io.vertx.core.Vertx
+import io.vertx.ext.web.client.WebClient
 
 class ISVClientGuice(vertx: Vertx) : AbstractWebModule(vertx = vertx) {
 

@@ -11,10 +11,10 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class StaticResourceRouterTest : AbstractRouteTest() {
+class StaticResourceRouteTest : AbstractRouteTest() {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(StaticResourceRouterTest::class.java)
+        private val logger = LoggerFactory.getLogger(StaticResourceRouteTest::class.java)
     }
 
     @Test

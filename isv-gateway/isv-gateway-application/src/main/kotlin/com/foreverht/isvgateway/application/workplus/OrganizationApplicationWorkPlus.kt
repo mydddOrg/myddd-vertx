@@ -18,11 +18,7 @@ class OrganizationApplicationWorkPlus : AbstractApplication(),OrganizationApplic
 
     private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
-    override suspend fun queryOrganizationById(
-        isvAccessToken:String,
-        orgCode: String,
-        orgId: String?
-    ): Future<OrganizationDTO> {
+    override suspend fun queryOrganizationById(isvAccessToken:String, orgCode: String, orgId: String?): Future<OrganizationDTO> {
         return try {
             val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
             val requestUrl = "${isvClientToken.api()}/admin/organizations/$orgCode/view?employee_limit=0&org_limit=0&org_id=$orgId&access_token=${isvClientToken.accessToken()}"

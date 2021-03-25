@@ -27,9 +27,6 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
 
     init {
         processCallbackRoute()
-        querySuiteTicketRoute()
-        queryTemporaryAuthCodeRoute()
-        queryPermanentAuthCodeRoute()
     }
 
     companion object {
@@ -55,69 +52,6 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
                 }
             }
         }.consumes(CONTENT_TYPE_JSON)
-    }
-
-    private fun querySuiteTicketRoute(){
-        createGetRoute(path = "/$version/w6s/tickets/:suiteId"){ route ->
-
-            route.handler {
-                GlobalScope.launch(vertx.dispatcher()) {
-
-                    try {
-                        val suiteId = it.pathParam("suiteId")
-                        val isvSuiteTicketDTO = isvSuiteTicketApplication.querySuiteTicket(suiteId = suiteId,clientType = CLIENT_TYPE_WORKPLUS_ISV).await()
-
-                        it.end(JsonObject.mapFrom(isvSuiteTicketDTO).toBuffer())
-                    }catch (t:Throwable){
-                        it.fail(t)
-                    }
-
-                }
-            }
-
-        }
-    }
-
-    private fun queryTemporaryAuthCodeRoute(){
-        createGetRoute(path = "/$version/w6s/authCode/temporary/:suiteId/:orgId"){ route ->
-
-            route.handler {
-                GlobalScope.launch(vertx.dispatcher()) {
-
-                    try {
-                        val suiteId = it.pathParam("suiteId")
-                        val orgId = it.pathParam("orgId")
-                        val authCodeDTO = isvAuthCodeApplication.queryTemporaryAuthCode(suiteId = suiteId,domainId = "workplus",orgCode = orgId,clientType = CLIENT_TYPE_WORKPLUS_ISV).await()
-                        it.end(JsonObject.mapFrom(authCodeDTO).toBuffer())
-                    }catch (t:Throwable){
-                        it.fail(t)
-                    }
-
-                }
-            }
-
-        }
-    }
-
-    private fun queryPermanentAuthCodeRoute(){
-        createGetRoute(path = "/$version/w6s/authCode/pernament/:suiteId/:orgId"){ route ->
-
-            route.handler {
-                GlobalScope.launch(vertx.dispatcher()) {
-
-                    try {
-                        val suiteId = it.pathParam("suiteId")
-                        val orgId = it.pathParam("orgId")
-                        val authCodeDTO = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = suiteId,domainId = "workplus",orgCode = orgId,clientType = CLIENT_TYPE_WORKPLUS_ISV).await()
-                        it.end(JsonObject.mapFrom(authCodeDTO).toBuffer())
-                    }catch (t:Throwable){
-                        it.fail(t)
-                    }
-
-                }
-            }
-
-        }
     }
 
     private suspend fun processSuiteTicketEvent(it:RoutingContext){
