@@ -12,4 +12,10 @@ class RandomIDStringTest {
         val randomString = randomIDString.randomString(32)
         Assertions.assertEquals(32,randomString.length)
     }
+
+    @Test
+    fun testRandomUUID(){
+        val randomUUID = randomIDString.randomUUID()
+        Assertions.assertNotNull(randomUUID)
+    }
 }
