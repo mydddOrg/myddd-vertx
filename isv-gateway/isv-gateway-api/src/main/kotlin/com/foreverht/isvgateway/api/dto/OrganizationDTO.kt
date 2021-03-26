@@ -2,7 +2,7 @@ package com.foreverht.isvgateway.api.dto
 
 import io.vertx.core.json.JsonObject
 
-data class OrganizationDTO(var orgId:String,var orgCode:String,var domainId:String,var path:String,var name:String,var logo:String?) {
+data class OrganizationDTO(var orgId:String,var orgCode:String,var domainId:String,var path:String,var name:String,var logo:String? = null) {
 
 
     companion object {

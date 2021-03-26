@@ -14,36 +14,31 @@ import java.util.*
 
 abstract class AbstractISVRoute(vertx: Vertx, router: Router): AbstractRouter(vertx = vertx,router = router) {
 
+
+    private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
+
+    private val organizationApplicationMap:Map<String,OrganizationApplication> = mapOf(
+        WorkPlusApp to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkPlusApp)
+    )
+
+    private val employeeApplicationMap:Map<String,EmployeeApplication> = mapOf(
+        WorkPlusApp to InstanceFactory.getInstance(EmployeeApplication::class.java,WorkPlusApp)
+    )
+
+    private val mediaApplicationMap:Map<String,MediaApplication> = mapOf(
+        WorkPlusApp to InstanceFactory.getInstance(MediaApplication::class.java,WorkPlusApp)
+    )
+
+    private val appApplicationMap:Map<String,AppApplication> = mapOf(
+        WorkPlusApp to InstanceFactory.getInstance(AppApplication::class.java,WorkPlusApp)
+    )
+
+    private val messageApplicationMap:Map<String,MessageApplication> = mapOf(
+        WorkPlusApp to InstanceFactory.getInstance(MessageApplication::class.java,WorkPlusApp)
+    )
+
     companion object {
         const val WorkPlusApp = "WorkPlusApp"
-
-        private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
-
-        private val organizationApplicationMap:Map<String,OrganizationApplication> = mapOf(
-            WorkPlusApp to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkPlusApp)
-        )
-
-        private val employeeApplicationMap:Map<String,EmployeeApplication> = mapOf(
-            WorkPlusApp to InstanceFactory.getInstance(EmployeeApplication::class.java,WorkPlusApp)
-        )
-
-        private val mediaApplicationMap:Map<String,MediaApplication> = mapOf(
-            WorkPlusApp to InstanceFactory.getInstance(MediaApplication::class.java,WorkPlusApp)
-        )
-
-        private val appApplicationMap:Map<String,AppApplication> = mapOf(
-            WorkPlusApp to InstanceFactory.getInstance(AppApplication::class.java,WorkPlusApp)
-        )
-
-        private val messageApplicationMap:Map<String,MessageApplication> = mapOf(
-            WorkPlusApp to InstanceFactory.getInstance(MessageApplication::class.java,WorkPlusApp)
-        )
-
-        private val oauth2Application:OAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }
-
-        private val isvClientApplication:ISVClientApplication by lazy { InstanceFactory.getInstance(ISVClientApplication::class.java) }
-
-
     }
 
 

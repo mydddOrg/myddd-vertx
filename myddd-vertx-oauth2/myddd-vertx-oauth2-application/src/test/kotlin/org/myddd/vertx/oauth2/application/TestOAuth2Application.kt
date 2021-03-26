@@ -81,7 +81,7 @@ class TestOAuth2Application : AbstractTest() {
                         Assertions.assertFalse(userDTO!!.expired())
                     }
 
-                    val disabled = client.disable().await()
+                    val disabled = created.disable().await()
 
                     try {
                         databaseOAuth2Application.requestClientToken(disabled.clientId,disabled.clientSecret).await()

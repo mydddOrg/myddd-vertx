@@ -58,7 +58,7 @@ class TestQueryChannelHibernate {
 
                 val pageResult = queryChannel.pageQuery(
                     QueryParam(clazz = User::class.java,sql = "from User where username like :username",params = mapOf("username" to "%lingen%")),
-                    PageParam(pageSize = 10)
+                    PageParam(limit = 10)
                 ).await()
                 testContext.verify {
                     Assertions.assertTrue(pageResult.totalCount > 0)

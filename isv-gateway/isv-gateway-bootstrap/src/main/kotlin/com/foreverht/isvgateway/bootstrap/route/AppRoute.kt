@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.bootstrap.route
 
+import com.foreverht.isvgateway.bootstrap.ext.jsonFormatEnd
 import com.foreverht.isvgateway.bootstrap.handler.ISVAccessTokenAuthorizationHandler
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonArray
@@ -29,7 +30,7 @@ class AppRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,rout
 
                         val appApplication = getAppApplication(accessToken = accessToken).await()
                         val appDTO = appApplication.getAppDetail(isvAccessToken = accessToken).await()
-                        it.end(JsonObject.mapFrom(appDTO).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(appDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -49,7 +50,7 @@ class AppRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,rout
                         val accessToken = it.get<String>("accessToken")
                         val appApplication = getAppApplication(accessToken = accessToken).await()
                         val admins = appApplication.getAdminList(isvAccessToken = accessToken).await()
-                        it.end(JsonArray(admins.map(JsonObject::mapFrom)).toBuffer())
+                        it.jsonFormatEnd(JsonArray(admins.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }

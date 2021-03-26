@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.bootstrap.route
 
+import com.foreverht.isvgateway.bootstrap.ext.jsonFormatEnd
 import com.foreverht.isvgateway.bootstrap.handler.ISVAccessTokenAuthorizationHandler
 import com.foreverht.isvgateway.bootstrap.validation.EmployeeValidationHandler
 import io.vertx.core.Vertx
@@ -31,11 +32,11 @@ class EmployeesRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vert
                         val accessToken = it.get<String>("accessToken")
                         val employeeApplication = getEmployeeApplication(accessToken = accessToken).await()
 
-                        var orgCode = it.pathParam("orgCode")
+                        val orgCode = it.pathParam("orgCode")
                         val query = it.queryParam("query")[0]
 
                         val employeeList = employeeApplication.searchEmployees(isvAccessToken = accessToken,orgCode = orgCode,query = query).await()
-                        it.end(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
+                        it.jsonFormatEnd(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -57,11 +58,11 @@ class EmployeesRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vert
                         val accessToken = it.get<String>("accessToken")
                         val employeeApplication = getEmployeeApplication(accessToken = accessToken).await()
 
-                        var orgCode = it.pathParam("orgCode")
+                        val orgCode = it.pathParam("orgCode")
                         val userIds = it.queryParam("userIds")[0]
 
                         val employeeList = employeeApplication.batchQueryEmployeeByIds(isvAccessToken = accessToken,orgCode = orgCode,userIdList = userIds.split(",")).await()
-                        it.end(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
+                        it.jsonFormatEnd(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -84,10 +85,10 @@ class EmployeesRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vert
                         val employeeApplication = getEmployeeApplication(accessToken = accessToken).await()
 
                         val employeeId = it.pathParam("employeeId")
-                        var orgCode = it.pathParam("orgCode")
+                        val orgCode = it.pathParam("orgCode")
 
                         val employeeDTO = employeeApplication.queryEmployeeById(isvAccessToken = accessToken,orgCode = orgCode,userId = employeeId).await()
-                        it.end(JsonObject.mapFrom(employeeDTO).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(employeeDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }

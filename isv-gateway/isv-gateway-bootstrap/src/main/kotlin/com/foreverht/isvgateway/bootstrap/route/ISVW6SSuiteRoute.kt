@@ -4,6 +4,7 @@ import com.foreverht.isvgateway.api.ISVAuthCodeApplication
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
 import com.foreverht.isvgateway.api.dto.ISVAuthCodeDTO
 import com.foreverht.isvgateway.api.dto.ISVSuiteTicketDTO
+import com.foreverht.isvgateway.bootstrap.ext.jsonFormatEnd
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
@@ -60,7 +61,7 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
             val suiteKey = bodyJson.getString("suite_key")
             val suiteTicket = bodyJson.getJsonObject("param").getString("suite_ticket")
             isvSuiteTicketApplication.saveSuiteTicket(ISVSuiteTicketDTO(suiteId = suiteKey,suiteTicket = suiteTicket,clientType = CLIENT_TYPE_WORKPLUS_ISV))
-            it.end(JsonObject().put("status",0).toBuffer())
+            it.jsonFormatEnd(JsonObject().put("status",0).toBuffer())
         }catch (t:Throwable){
             it.fail(t)
         }
@@ -86,7 +87,7 @@ class ISVW6SSuiteRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ve
             )
             isvAuthCodeApplication.createTemporaryAuthCode(isvAuthCodeDTO).await()
             isvSuiteTicketApplication.activeSuite(clientId = clientId,domainId = domainId,orgCode = orgCode).await()
-            it.end(JsonObject().put("status",0).toBuffer())
+            it.jsonFormatEnd(JsonObject().put("status",0).toBuffer())
         }catch (t:Throwable){
             it.fail(t)
         }

@@ -25,10 +25,10 @@ class QueryChannelHibernate : QueryChannel {
             val queryResult = withContext(Dispatchers.Default) {
                 pageQueryResult(queryParam, pageParam)
             }
-            var queryCount = withContext(Dispatchers.Default) {
+            val queryCount = withContext(Dispatchers.Default) {
                 pageQueryCount(queryParam)
             }
-            future.onSuccess(Page(dataList = queryResult.await(),totalCount = queryCount.await(),page = pageParam.page,pageSize = pageParam.pageSize))
+            future.onSuccess(Page(dataList = queryResult.await(),totalCount = queryCount.await(),skip = pageParam.skip,limit = pageParam.limit))
         }
         return future
     }
@@ -53,7 +53,7 @@ class QueryChannelHibernate : QueryChannel {
             val query = session.createQuery(queryParam.sql,queryParam.clazz)
             queryParam.params.forEach { (key, value) -> query.setParameter(key,value)  }
 
-            query.setFirstResult(pageParam.page * pageParam.pageSize).setMaxResults(pageParam.pageSize).resultList
+            query.setFirstResult(pageParam.skip).setMaxResults(pageParam.limit).resultList
         }.subscribe().with({
             future.onSuccess(it)
         },{

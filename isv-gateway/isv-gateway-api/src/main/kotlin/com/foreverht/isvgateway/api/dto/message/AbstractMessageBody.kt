@@ -10,6 +10,7 @@ import com.foreverht.isvgateway.api.dto.message.body.FileMessageBody
 import com.foreverht.isvgateway.api.dto.message.body.ImageMessageBody
 import com.foreverht.isvgateway.api.dto.message.body.TextMessageBody
 import com.foreverht.isvgateway.api.dto.message.body.VoiceMessageBody
+import io.vertx.core.json.JsonObject
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -30,5 +31,9 @@ abstract class AbstractMessageBody(val msgType:String) {
         const val VOICE_MSG_TYPE = "VOICE"
         const val FILE_MSG_TYPE  = "FILE"
     }
+
+    abstract fun weiXinBodyKey():String
+
+    abstract fun weiXinBodyValue():JsonObject
 
 }

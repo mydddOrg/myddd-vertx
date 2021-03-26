@@ -48,6 +48,8 @@ abstract class AbstractWorkWeiXinTest: AbstractTest() {
 
         lateinit var createdAuthCode:ISVAuthCode
 
+        const val ORG_CODE = "ww6dc4e6c2cbfbb62c"
+
         @BeforeAll
         @JvmStatic
         fun prepareWorkWeiXinData(vertx: Vertx,testContext: VertxTestContext){

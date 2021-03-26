@@ -5,6 +5,7 @@ import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.dto.RequestTokenDTO
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
 import com.foreverht.isvgateway.bootstrap.ISVClientErrorCode
+import com.foreverht.isvgateway.bootstrap.ext.jsonFormatEnd
 import com.foreverht.isvgateway.bootstrap.validation.ISVClientValidationHandler
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
@@ -55,7 +56,7 @@ class ISVClientRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = vert
                         val clientId = it.pathParam("clientId")
                         val queryClient = isvClientApplication.queryClientByClientId(clientId).await()
                         if(Objects.nonNull(queryClient)){
-                            it.end(JsonObject.mapFrom(queryClient).toBuffer())
+                            it.jsonFormatEnd(JsonObject.mapFrom(queryClient).toBuffer())
                         }else{
                             throw BusinessLogicException(ISVClientErrorCode.CLIENT_NOT_EXISTS)
                         }
@@ -79,7 +80,7 @@ class ISVClientRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = vert
                         val bodyString = it.bodyAsString
                         val isvClientDTO = AsyncJsonMapper.mapFrom(vertx,bodyString,ISVClientDTO::class.java).await()
                         val created = isvClientApplication.updateISVClient(isvClientDTO).await()
-                        it.end(JsonObject.mapFrom(created).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(created).toBuffer())
                     }catch (t:Throwable){
                         logger.error(t)
                         it.fail(HTTP_400_RESPONSE,t)
@@ -99,7 +100,7 @@ class ISVClientRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = vert
                         val bodyString = it.bodyAsString
                         val requestTokenDTO = AsyncJsonMapper.mapFrom(vertx,bodyString, RequestTokenDTO::class.java).await()
                         val tokenDTO = accessTokenApplication.requestAccessToken(requestTokenDTO).await()
-                        it.end(JsonObject.mapFrom(tokenDTO).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(tokenDTO).toBuffer())
                     }catch (t:Throwable){
                         t.printStackTrace()
                         it.fail(t)
@@ -122,7 +123,7 @@ class ISVClientRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = vert
                         val clientSecret = jsonBody.getString("clientSecret")
                         val userDTO = oAuth2Application.requestClientToken(clientId,clientSecret).await()
                         val requestToken = JsonObject.mapFrom(userDTO?.tokenDTO)
-                        it.end(requestToken.toBuffer())
+                        it.jsonFormatEnd(requestToken.toBuffer())
                     }catch (t:Throwable){
                         logger.error(t)
                         it.fail(HTTP_400_RESPONSE,t)
@@ -145,7 +146,7 @@ class ISVClientRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = vert
                         val tokenDTO = oAuth2Application.refreshUserToken(clientId,refreshToken).await()
                         val requestToken = JsonObject.mapFrom(tokenDTO?.tokenDTO)
 
-                        it.end(requestToken.toBuffer())
+                        it.jsonFormatEnd(requestToken.toBuffer())
 
                     }catch (t:Throwable){
                         logger.error(t)
@@ -183,7 +184,7 @@ class ISVClientRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = vert
                     try{
                         val clientId = it.pathParam("clientId")
                         val resetSecret = oAuth2ClientApplication.resetClientSecret(clientId).await()
-                        it.end(JsonObject().put("clientSecret",resetSecret).toBuffer())
+                        it.jsonFormatEnd(JsonObject().put("clientSecret",resetSecret).toBuffer())
                     }catch (e:Exception){
                         it.fail(HTTP_400_RESPONSE,e)
                     }
