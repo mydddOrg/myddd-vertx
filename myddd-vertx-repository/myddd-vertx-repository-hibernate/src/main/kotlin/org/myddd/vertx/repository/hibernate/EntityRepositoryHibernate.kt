@@ -17,25 +17,15 @@ open class EntityRepositoryHibernate : EntityRepository {
 
     override suspend fun <T : Entity> save(entity: T): Future<T> {
         val promise = PromiseImpl<T>()
-        exists(entity::class.java,entity.getId()).onSuccess { exists ->
-            if(exists) {
-                sessionFactory.withTransaction { session, _ ->
-                    session.merge(entity).call{ _ -> session.flush()}
-                }.subscribe().with({
-                    promise.onSuccess(it)
-                },{
-                    promise.fail(it)
-                })
-            }else{
-                sessionFactory.withTransaction { session, _ ->
-                    session.persist(entity).call{ _ -> session.flush()}
-                }.subscribe().with({
-                    promise.onSuccess(entity)
-                }, {
-                    promise.fail(it)
-                })
-            }
-        }
+
+        sessionFactory.withTransaction { session, _ ->
+            session.find(entity::class.java,entity.getId())
+                .chain { t -> if(Objects.isNull(t)) session.persist(entity) else session.merge(entity) }
+        }.subscribe().with({
+            promise.onSuccess(entity)
+        },{
+            promise.fail(it)
+        })
 
         return promise.future()
     }

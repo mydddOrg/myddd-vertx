@@ -70,7 +70,7 @@ class TestEntityRepositoryHibernate {
 
                 repository.save(createdUser).await()
 
-                var queryUser = repository.get(User::class.java,createdUser.id).await()
+                val queryUser = repository.get(User::class.java,createdUser.id).await()
                 testContext.verify {
                     Assertions.assertEquals(queryUser?.age,36)
                 }
@@ -96,11 +96,11 @@ class TestEntityRepositoryHibernate {
             try {
                 val user =  User(username = "lingen",age = 35)
                 val createdUser =  repository.save(user).await()
-                var queryUser = repository.get(User::class.java,createdUser.id).await()
+                val queryUser = repository.get(User::class.java,createdUser.id).await()
 
                 if(queryUser == null)testContext.failed()
 
-                var notExistsUser = repository.get(User::class.java,Long.MAX_VALUE).await()
+                val notExistsUser = repository.get(User::class.java,Long.MAX_VALUE).await()
                 testContext.verify {
                     Assertions.assertFalse(notExistsUser != null)
                 }
@@ -118,7 +118,7 @@ class TestEntityRepositoryHibernate {
             try {
                 val user =  User(username = "lingen",age = 35)
                 val createdUser =  repository.save(user).await()
-                var exists =repository.exists(User::class.java,createdUser.id).await()
+                val exists =repository.exists(User::class.java,createdUser.id).await()
                 testContext.verify {
                     Assertions.assertTrue(exists)
                 }
@@ -140,7 +140,7 @@ class TestEntityRepositoryHibernate {
                 }
 
                 val userArray:Array<User> = users.toTypedArray()
-                val success = repository.batchSave(userArray).await();
+                val success = repository.batchSave(userArray).await()
                 testContext.verify {
                     Assertions.assertTrue(success)
                 }
