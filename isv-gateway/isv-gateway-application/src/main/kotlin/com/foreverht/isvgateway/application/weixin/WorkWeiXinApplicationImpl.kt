@@ -140,12 +140,12 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
                 var isvClientToken = ISVClientToken.queryClientToken(clientId = isvClient.clientId,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode =  corpId).await()
 
                 isvClientToken = if(Objects.isNull(isvClientToken)){
-                    ISVClientToken.createInstanceByExtra(client = isvClient,extra = clientTokenExtra,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = corpId)
+                    val newClientToken = ISVClientToken.createInstanceByExtra(client = isvClient,extra = clientTokenExtra,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = corpId)
+                    newClientToken.createClientToken().await()
                 }else{
                     isvClientToken!!.updateByExtraToken(extra = clientTokenExtra).await()
                 }
-                val createdIsvClientToken = isvClientToken.createClientToken().await()
-                Future.succeededFuture(createdIsvClientToken)
+                Future.succeededFuture(isvClientToken)
             }else{
                 Future.failedFuture(response.bodyAsString())
             }

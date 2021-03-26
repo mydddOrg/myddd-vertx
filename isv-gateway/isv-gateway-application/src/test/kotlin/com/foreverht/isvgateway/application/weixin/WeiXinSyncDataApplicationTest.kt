@@ -78,6 +78,7 @@ class WeiXinSyncDataApplicationTest:AbstractWorkWeiXinTest() {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 saveAuthCodeToLocal(WebClient.create(vertx)).await()
+
                 val tokenDTO = workWeiXinApplication.requestCorpAccessToken(clientId = isvWorkWeiXinClientId,corpId = "ww6dc4e6c2cbfbb62c").await()
                 testContext.verify { Assertions.assertNotNull(tokenDTO) }
 
