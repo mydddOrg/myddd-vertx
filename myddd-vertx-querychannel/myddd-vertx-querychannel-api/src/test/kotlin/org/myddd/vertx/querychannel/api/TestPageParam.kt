@@ -7,12 +7,12 @@ class TestPageParam {
 
     @Test
     fun testPageParam() {
-        val pageParam = PageParam(page = 10,pageSize = 1)
-        Assertions.assertEquals(pageParam.page ,10)
-        Assertions.assertEquals(pageParam.pageSize,1)
+        val pageParam = PageParam(limit = 10,skip = 0)
+        Assertions.assertEquals(pageParam.skip ,0)
+        Assertions.assertEquals(pageParam.limit,10)
 
         val defaultPagParam = PageParam()
-        Assertions.assertEquals(defaultPagParam.page ,0)
-        Assertions.assertEquals(defaultPagParam.pageSize,20)
+        Assertions.assertEquals(defaultPagParam.skip ,0)
+        Assertions.assertEquals(defaultPagParam.limit,20)
     }
 }
