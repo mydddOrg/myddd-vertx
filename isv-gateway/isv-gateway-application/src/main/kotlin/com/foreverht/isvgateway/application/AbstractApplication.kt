@@ -4,6 +4,7 @@ import com.foreverht.isvgateway.domain.ISVAuthCode
 import com.foreverht.isvgateway.domain.ISVClientToken
 import com.foreverht.isvgateway.domain.ISVClientType
 import com.foreverht.isvgateway.domain.ISVErrorCode
+import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForWorkWeiXin
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkWeiXin
 import io.vertx.core.Future
 import io.vertx.core.impl.logging.Logger
@@ -37,22 +38,17 @@ abstract class AbstractApplication {
         }
     }
 
-    suspend fun getAuthCode(isvAccessToken: String, orgCode: String,):Future<ISVAuthCode>{
+    suspend fun getAuthCode(isvAccessToken: String):Future<Pair<ISVAuthCode,ISVClientToken>>{
         return try {
             val isvClientToken = getRemoteAccessToken(isvAccessToken = isvAccessToken).await()
 
-            require(orgCode == isvClientToken.orgCode){
-                throw BadAuthorizationException()
-            }
-
             val clientExtra = isvClientToken.client.extra as ISVClientExtraForWorkWeiXin
-
-            val isvAuthCode = ISVAuthCode.queryPermanentAuthCode(suiteId = clientExtra.suiteId,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = orgCode,
+            val isvAuthCode = ISVAuthCode.queryPermanentAuthCode(suiteId = clientExtra.suiteId,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = isvClientToken.orgCode,
                 ISVClientType.WorkWeiXin).await()
             if(Objects.isNull(isvAuthCode)){
                 throw BusinessLogicException(ISVErrorCode.PERMANENT_CODE_NOT_FOUND)
             }
-            Future.succeededFuture(isvAuthCode)
+            Future.succeededFuture(Pair(isvAuthCode!!,isvClientToken))
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

@@ -3,6 +3,7 @@ package com.foreverht.isvgateway.application.extention
 import com.foreverht.isvgateway.domain.ISVClientToken
 import com.foreverht.isvgateway.domain.ISVClientType
 import com.foreverht.isvgateway.domain.ISVErrorCode
+import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForWorkWeiXin
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusApp
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkPlusISV
 import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkPlusISV
@@ -53,6 +54,16 @@ fun ISVClientToken.appType():String {
     return when(this.client.clientType){
         ISVClientType.WorkPlusApp -> "NATIVE"
         ISVClientType.WorkPlusISV -> "ISV"
+        else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
+    }
+}
+
+fun ISVClientToken.suiteAccessToken():String {
+    return when(this.client.clientType){
+        ISVClientType.WorkWeiXin -> {
+            val clientAuthExtra = this.client.clientAuthExtra as ISVClientAuthExtraForWorkWeiXin
+            clientAuthExtra.suiteAccessToken
+        }
         else -> throw BusinessLogicException(ISVErrorCode.CLIENT_TYPE_NOT_SUPPORT)
     }
 }

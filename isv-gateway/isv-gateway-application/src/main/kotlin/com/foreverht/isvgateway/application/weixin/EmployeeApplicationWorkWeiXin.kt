@@ -22,7 +22,7 @@ class EmployeeApplicationWorkWeiXin:AbstractApplication(),EmployeeApplication {
 
     override suspend fun queryEmployeeById(isvAccessToken: String, orgCode: String, userId: String): Future<EmployeeDTO> {
         return try {
-            val isvAuthCode = getAuthCode(isvAccessToken = isvAccessToken,orgCode = orgCode).await()
+            val (isvAuthCode,_) = getAuthCode(isvAccessToken = isvAccessToken).await()
 
             val queryEmployee = ProxyEmployee.queryEmployee(authCodeId = isvAuthCode.id,userId = userId).await()
             if(Objects.isNull(queryEmployee)) throw BusinessLogicException(ISVErrorCode.USER_ID_NOT_FOUND)
@@ -35,7 +35,7 @@ class EmployeeApplicationWorkWeiXin:AbstractApplication(),EmployeeApplication {
 
     override suspend fun batchQueryEmployeeByIds(isvAccessToken: String, orgCode: String, userIdList: List<String>): Future<List<EmployeeDTO>> {
         return try {
-            val isvAuthCode = getAuthCode(isvAccessToken = isvAccessToken,orgCode = orgCode).await()
+            val (isvAuthCode,_)  = getAuthCode(isvAccessToken = isvAccessToken).await()
 
             val list = queryChannel.queryList(QueryParam(
                 clazz = ProxyEmployee::class.java,
@@ -53,7 +53,7 @@ class EmployeeApplicationWorkWeiXin:AbstractApplication(),EmployeeApplication {
 
     override suspend fun searchEmployees(isvAccessToken: String, orgCode: String, query: String): Future<List<EmployeeDTO>> {
         return try {
-            val isvAuthCode = getAuthCode(isvAccessToken = isvAccessToken,orgCode = orgCode).await()
+            val (isvAuthCode,_)  = getAuthCode(isvAccessToken = isvAccessToken).await()
 
             val list = queryChannel.queryList(QueryParam(
                 clazz = ProxyEmployee::class.java,

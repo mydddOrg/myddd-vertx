@@ -7,20 +7,14 @@ import com.foreverht.isvgateway.application.AbstractApplication
 import com.foreverht.isvgateway.application.WorkWeiXinApplication
 import com.foreverht.isvgateway.application.extention.accessToken
 import com.foreverht.isvgateway.application.extention.resultSuccessForWorkWeiXin
-import com.foreverht.isvgateway.domain.ISVAuthCode
-import com.foreverht.isvgateway.domain.ISVClientType
-import com.foreverht.isvgateway.domain.ISVErrorCode
-import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForWorkWeiXin
-import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkWeiXin
+import com.foreverht.isvgateway.application.extention.suiteAccessToken
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
-import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
-import java.util.*
 
 class AppApplicationWorkWeiXin:AbstractApplication(),AppApplication {
 
@@ -30,25 +24,18 @@ class AppApplicationWorkWeiXin:AbstractApplication(),AppApplication {
 
     override suspend fun getAdminList(isvAccessToken: String): Future<List<EmployeeDTO>> {
         return try {
-            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
-            val clientExtra = isvClientToken.client.extra as ISVClientExtraForWorkWeiXin
-            val clientAuthExtra = isvClientToken.client.clientAuthExtra as ISVClientAuthExtraForWorkWeiXin
+            val (isvAuthCode,isvClientToken) = getAuthCode(isvAccessToken = isvAccessToken).await()
 
             val agentId = weiXinApplication.queryAgentId(isvClientToken.accessToken()).await()
 
-            val isvAuthCode = ISVAuthCode.queryPermanentAuthCode(suiteId = clientExtra.suiteId,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = isvClientToken.orgCode,ISVClientType.WorkWeiXin).await()
-            if(Objects.isNull(isvAuthCode)){
-                throw BusinessLogicException(ISVErrorCode.PERMANENT_CODE_NOT_FOUND)
-            }
-
             val requestBody = json {
                 obj(
-                    "auth_corpid" to isvAuthCode!!.orgCode,
+                    "auth_corpid" to isvAuthCode.orgCode,
                     "agentid" to agentId
                 )
             }
 
-            val response = webClient.postAbs("$WORK_WEI_XIN_SERVICE_API/get_admin_list?suite_access_token=${clientAuthExtra.suiteAccessToken}")
+            val response = webClient.postAbs("$WORK_WEI_XIN_SERVICE_API/get_admin_list?suite_access_token=${isvClientToken.suiteAccessToken()}")
                 .sendJsonObject(requestBody)
                 .await()
 
@@ -72,23 +59,16 @@ class AppApplicationWorkWeiXin:AbstractApplication(),AppApplication {
 
     override suspend fun getAppDetail(isvAccessToken: String): Future<AppDTO> {
         return try {
-            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
-            val clientExtra = isvClientToken.client.extra as ISVClientExtraForWorkWeiXin
-            val clientAuthExtra = isvClientToken.client.clientAuthExtra as ISVClientAuthExtraForWorkWeiXin
-
-            val isvAuthCode = ISVAuthCode.queryPermanentAuthCode(suiteId = clientExtra.suiteId,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = isvClientToken.orgCode,ISVClientType.WorkWeiXin).await()
-            if(Objects.isNull(isvAuthCode)){
-                throw BusinessLogicException(ISVErrorCode.PERMANENT_CODE_NOT_FOUND)
-            }
+            val (isvAuthCode,isvClientToken) = getAuthCode(isvAccessToken = isvAccessToken).await()
 
             val requestBody = json {
                 obj(
-                    "auth_corpid" to isvAuthCode!!.orgCode,
+                    "auth_corpid" to isvAuthCode.orgCode,
                     "permanent_code" to isvAuthCode.permanentAuthCode
                 )
             }
 
-            val response = webClient.postAbs("$WORK_WEI_XIN_SERVICE_API/get_auth_info?suite_access_token=${clientAuthExtra.suiteAccessToken}")
+            val response = webClient.postAbs("$WORK_WEI_XIN_SERVICE_API/get_auth_info?suite_access_token=${isvClientToken.suiteAccessToken()}")
                 .sendJsonObject(requestBody)
                 .await()
 

@@ -11,6 +11,7 @@ import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.ioc.InstanceFactory
 
+
 class MessageApplicationWorkPlus : AbstractApplication(),MessageApplication {
 
     private val webClient: WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }

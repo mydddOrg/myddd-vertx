@@ -38,6 +38,10 @@ abstract class AbstractTest {
 
         val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
 
+        private const val WORK_WEI_XIN = "WorkWeiXin"
+        private const val WORKPLUS_APP = "WorkPlusApp"
+
+
         init {
             InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
                 override fun configure() {
@@ -64,16 +68,17 @@ abstract class AbstractTest {
 
                     bind(AccessTokenApplication::class.java).to(AccessTokenApplicationImpl::class.java)
 
-                    bind(OrganizationApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to((OrganizationApplicationWorkPlus::class.java))
-                    bind(EmployeeApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(EmployeeApplicationWorkPlus::class.java)
-                    bind(MediaApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(MediaApplicationWorkPlus::class.java)
-                    bind(AppApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(AppApplicationWorkPlus::class.java)
-                    bind(MessageApplication::class.java).annotatedWith(Names.named("WorkPlusApp")).to(MessageApplicationWorkPlus::class.java)
+                    bind(OrganizationApplication::class.java).annotatedWith(Names.named(WORKPLUS_APP)).to((OrganizationApplicationWorkPlus::class.java))
+                    bind(EmployeeApplication::class.java).annotatedWith(Names.named(WORKPLUS_APP)).to(EmployeeApplicationWorkPlus::class.java)
+                    bind(MediaApplication::class.java).annotatedWith(Names.named(WORKPLUS_APP)).to(MediaApplicationWorkPlus::class.java)
+                    bind(AppApplication::class.java).annotatedWith(Names.named(WORKPLUS_APP)).to(AppApplicationWorkPlus::class.java)
+                    bind(MessageApplication::class.java).annotatedWith(Names.named(WORKPLUS_APP)).to(MessageApplicationWorkPlus::class.java)
 
 
-                    bind(AppApplication::class.java).annotatedWith(Names.named("WorkWeiXin")).to(AppApplicationWorkWeiXin::class.java)
-                    bind(OrganizationApplication::class.java).annotatedWith(Names.named("WorkWeiXin")).to(OrganizationApplicationWorkWeiXin::class.java)
-                    bind(EmployeeApplication::class.java).annotatedWith(Names.named("WorkWeiXin")).to(EmployeeApplicationWorkWeiXin::class.java)
+                    bind(AppApplication::class.java).annotatedWith(Names.named(WORK_WEI_XIN)).to(AppApplicationWorkWeiXin::class.java)
+                    bind(OrganizationApplication::class.java).annotatedWith(Names.named(WORK_WEI_XIN)).to(OrganizationApplicationWorkWeiXin::class.java)
+                    bind(EmployeeApplication::class.java).annotatedWith(Names.named(WORK_WEI_XIN)).to(EmployeeApplicationWorkWeiXin::class.java)
+                    bind(MessageApplication::class.java).annotatedWith(Names.named(WORK_WEI_XIN)).to(MessageApplicationWorkWeiXin::class.java)
 
                     bind(ProxyRepository::class.java).to(ProxyRepositoryHibernate::class.java)
                     bind(SyncDataApplication::class.java).to(SyncDataApplicationImpl::class.java)

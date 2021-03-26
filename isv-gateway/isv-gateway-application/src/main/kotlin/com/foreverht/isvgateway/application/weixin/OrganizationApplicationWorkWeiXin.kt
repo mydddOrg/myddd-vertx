@@ -45,7 +45,7 @@ class OrganizationApplicationWorkWeiXin: AbstractApplication(),OrganizationAppli
         return try {
             val queryOrgId = if(Objects.isNull(orgPageQueryDTO.orgId)) WEI_XIN_ROOT_ORG_ID else orgPageQueryDTO.orgId!!
 
-            val isvAuthCode = getAuthCode(isvAccessToken = orgPageQueryDTO.accessToken,orgCode = orgPageQueryDTO.orgCode).await()
+            val (isvAuthCode,_) = getAuthCode(isvAccessToken = orgPageQueryDTO.accessToken).await()
 
             val pageQueryDTO = queryChannel.pageQuery(
                 queryParam = QueryParam(
@@ -89,7 +89,7 @@ class OrganizationApplicationWorkWeiXin: AbstractApplication(),OrganizationAppli
     private suspend fun getOrganization(isvAccessToken: String, orgCode: String, orgId: String?):Future<ProxyOrganization>{
         return try {
             val queryOrgId = if(Objects.isNull(orgId)) WEI_XIN_ROOT_ORG_ID else orgId!!
-            val isvAuthCode = getAuthCode(isvAccessToken = isvAccessToken,orgCode = orgCode).await()
+            val (isvAuthCode,_)  = getAuthCode(isvAccessToken = isvAccessToken).await()
 
             val organization = ProxyOrganization.queryOrganization(authCodeId = isvAuthCode.id,orgCode = isvAuthCode.orgCode,orgId = queryOrgId).await()
             requireNotNull(organization){
