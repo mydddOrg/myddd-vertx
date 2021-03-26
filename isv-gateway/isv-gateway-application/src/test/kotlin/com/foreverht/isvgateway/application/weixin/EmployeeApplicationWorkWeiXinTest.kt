@@ -1,7 +1,6 @@
 package com.foreverht.isvgateway.application.weixin
 
-import com.foreverht.isvgateway.api.OrganizationApplication
-import com.foreverht.isvgateway.api.dto.OrgPageQueryDTO
+import com.foreverht.isvgateway.api.EmployeeApplication
 import com.foreverht.isvgateway.domain.ISVAuthCode
 import io.vertx.core.Future
 import io.vertx.core.Vertx
@@ -15,31 +14,32 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 
-class OrganizationApplicationWorkWeiXinTest:AbstractWorkWeiXinTest() {
+class EmployeeApplicationWorkWeiXinTest:AbstractWorkWeiXinTest() {
 
     private val weiXinSyncDataApplication by lazy { InstanceFactory.getInstance(WeiXinSyncDataApplication::class.java) }
-    private val organizationApplication by lazy { InstanceFactory.getInstance(OrganizationApplication::class.java,WORK_WEI_XIN) }
+    private val employeeApplication by lazy { InstanceFactory.getInstance(EmployeeApplication::class.java, WORK_WEI_XIN) }
 
     @Test
-    fun testQueryOrganizationEmployees(vertx: Vertx,testContext: VertxTestContext){
+    fun testSearchEmployees(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val employeeList = organizationApplication.queryOrganizationEmployees(OrgPageQueryDTO(
-                    accessToken = isvAccessToken,
+                val list = employeeApplication.searchEmployees(
+                    isvAccessToken = isvAccessToken,
                     orgCode = ORG_CODE,
-                    orgId = "1"
-                )).await()
+                    query = "Liu"
+                ).await()
 
                 testContext.verify {
-                    Assertions.assertNotNull(employeeList)
+                    Assertions.assertNotNull(list)
+                    Assertions.assertTrue(list.isNotEmpty())
                 }
 
                 try {
-                    organizationApplication.queryOrganizationEmployees(OrgPageQueryDTO(
-                        accessToken = randomString(),
-                        orgCode = ORG_CODE,
-                        orgId = "1"
-                    )).await()
+                    employeeApplication.searchEmployees(
+                        isvAccessToken = randomString(),
+                        orgCode = randomString(),
+                        query = "Liu"
+                    ).await()
                     testContext.failNow("不可能到这")
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
@@ -53,28 +53,26 @@ class OrganizationApplicationWorkWeiXinTest:AbstractWorkWeiXinTest() {
     }
 
     @Test
-    fun testQueryChildrenOrganizations(vertx: Vertx,testContext: VertxTestContext){
+    fun testBatchQueryEmployeeByIds(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-
-                val subOrganizations = organizationApplication.queryChildrenOrganizations(OrgPageQueryDTO(
-                    accessToken = isvAccessToken,
+                val list = employeeApplication.batchQueryEmployeeByIds(
+                    isvAccessToken = isvAccessToken,
                     orgCode = ORG_CODE,
-                    orgId = "1"
-                )).await()
+                    userIdList = arrayListOf("LiuLin","yunjian_a")
+                ).await()
 
                 testContext.verify {
-                    Assertions.assertNotNull(subOrganizations)
-                    Assertions.assertTrue(subOrganizations.isNotEmpty())
+                    Assertions.assertNotNull(list)
+                    Assertions.assertTrue(list.isNotEmpty())
                 }
 
                 try {
-                    organizationApplication.queryChildrenOrganizations(OrgPageQueryDTO(
-                        accessToken = randomString(),
+                    employeeApplication.batchQueryEmployeeByIds(
+                        isvAccessToken = randomString(),
                         orgCode = ORG_CODE,
-                        orgId = "1"
-                    )).await()
-
+                        userIdList = arrayListOf("LiuLin","yunjian_a")
+                    ).await()
                     testContext.failNow("不可能到这")
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
@@ -87,20 +85,19 @@ class OrganizationApplicationWorkWeiXinTest:AbstractWorkWeiXinTest() {
     }
 
     @Test
-    fun testQueryOrganizationById(vertx: Vertx,testContext: VertxTestContext){
+    fun testQueryEmployeeById(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val rootOrganizationDTO = organizationApplication.queryOrganizationById(isvAccessToken = isvAccessToken,orgCode = ORG_CODE).await()
-                testContext.verify { Assertions.assertNotNull(rootOrganizationDTO) }
-
-                val organizationDTO = organizationApplication.queryOrganizationById(isvAccessToken = isvAccessToken,orgCode = ORG_CODE,orgId = "2").await()
-                testContext.verify { Assertions.assertNotNull(organizationDTO) }
-
                 try {
-                    organizationApplication.queryOrganizationById(isvAccessToken = isvAccessToken,orgCode = ORG_CODE,orgId = randomString()).await()
+                    employeeApplication.queryEmployeeById(isvAccessToken = isvAccessToken, userId = randomString(),orgCode = ORG_CODE).await()
                     testContext.failNow("不可能到这")
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
+                }
+
+                val employee = employeeApplication.queryEmployeeById(isvAccessToken = isvAccessToken, userId = "LiuLin",orgCode = ORG_CODE).await()
+                testContext.verify {
+                    Assertions.assertNotNull(employee)
                 }
             }catch (t:Throwable){
                 testContext.failNow(t)
@@ -110,7 +107,7 @@ class OrganizationApplicationWorkWeiXinTest:AbstractWorkWeiXinTest() {
     }
 
     @BeforeEach
-    fun prepareData(vertx: Vertx,testContext: VertxTestContext){
+    fun prepareData(vertx: Vertx, testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 syncAllData().await()
@@ -121,7 +118,7 @@ class OrganizationApplicationWorkWeiXinTest:AbstractWorkWeiXinTest() {
         }
     }
 
-    private suspend fun syncAllData():Future<Unit>{
+    private suspend fun syncAllData(): Future<Unit> {
         return try {
             val authCode = ISVAuthCode.queryAuthCode(suiteId = createdAuthCode.suiteId,domainId = createdAuthCode.domainId,orgCode = createdAuthCode.orgCode,clientType = createdAuthCode.clientType).await()
             weiXinSyncDataApplication.syncAllData(clientId = isvWorkWeiXinClientId,isvAuthCode = authCode!!).await()
@@ -130,6 +127,5 @@ class OrganizationApplicationWorkWeiXinTest:AbstractWorkWeiXinTest() {
             Future.failedFuture(t)
         }
     }
-
 
 }

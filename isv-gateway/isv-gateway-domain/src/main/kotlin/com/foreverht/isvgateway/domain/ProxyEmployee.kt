@@ -54,6 +54,21 @@ class ProxyEmployee: BaseEntity() {
                 Future.failedFuture(t)
             }
         }
+
+        suspend fun queryEmployee(authCodeId: Long,userId:String):Future<ProxyEmployee?>{
+            return try {
+                 proxyRepository.singleQuery(
+                    clazz = ProxyEmployee::class.java,
+                    sql = "from ProxyEmployee where authCode.id = :authCodeId and userId = :userId",
+                    mapOf(
+                        "authCodeId" to authCodeId,
+                        "userId" to userId
+                    )
+                )
+            }catch (t:Throwable){
+                Future.failedFuture(t)
+            }
+        }
     }
 
     suspend fun createEmployee():Future<ProxyEmployee>{

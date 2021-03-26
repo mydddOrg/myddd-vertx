@@ -63,7 +63,7 @@ class OAuth2Client:BaseEntity() {
     suspend fun disable():Future<OAuth2Client>{
         return try {
             this.disabled = true
-            val disabled  =repository.save(this).await()
+            val disabled  = repository.save(this).await()
             Future.succeededFuture(disabled)
         }catch (e:Exception){
             Future.failedFuture(e)

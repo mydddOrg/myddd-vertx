@@ -73,6 +73,7 @@ abstract class AbstractTest {
 
                     bind(AppApplication::class.java).annotatedWith(Names.named("WorkWeiXin")).to(AppApplicationWorkWeiXin::class.java)
                     bind(OrganizationApplication::class.java).annotatedWith(Names.named("WorkWeiXin")).to(OrganizationApplicationWorkWeiXin::class.java)
+                    bind(EmployeeApplication::class.java).annotatedWith(Names.named("WorkWeiXin")).to(EmployeeApplicationWorkWeiXin::class.java)
 
                     bind(ProxyRepository::class.java).to(ProxyRepositoryHibernate::class.java)
                     bind(SyncDataApplication::class.java).to(SyncDataApplicationImpl::class.java)

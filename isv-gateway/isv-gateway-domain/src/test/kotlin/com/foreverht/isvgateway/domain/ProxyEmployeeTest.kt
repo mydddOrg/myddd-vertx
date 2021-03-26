@@ -16,6 +16,41 @@ class ProxyEmployeeTest:AbstractTest() {
     private val proxyRepository by lazy { InstanceFactory.getInstance(ProxyRepository::class.java) }
 
     @Test
+    fun testQueryEmployee(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val notExists = ProxyEmployee.queryEmployee(authCodeId = 0L,userId = randomString()).await()
+                testContext.verify {
+                    Assertions.assertNull(notExists)
+                }
+
+                val createdAuthCode = randomISVAuthCode().createTemporaryAuth().await()
+                testContext.verify {
+                    Assertions.assertNotNull(createdAuthCode)
+                }
+
+                val employee = randomEmployee(createdAuthCode)
+                val organization = proxyRepository.save(randomOrganization(createdAuthCode)).await()
+                employee.relations = arrayListOf(ProxyEmpOrgRelation.createInstance(employee = employee,organization = organization))
+
+                val created = employee.createEmployee().await()
+                testContext.verify {
+                    Assertions.assertNotNull(created)
+                }
+
+                val queryEmployee = ProxyEmployee.queryEmployee(authCodeId = createdAuthCode.id,userId = employee.userId).await()
+                testContext.verify {
+                    Assertions.assertNotNull(queryEmployee)
+                }
+
+            }catch (t:Throwable){
+                testContext.completeNow()
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testQueryOrganizationEmployee(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {

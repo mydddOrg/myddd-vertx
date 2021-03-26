@@ -15,6 +15,7 @@ class AppRouteTest: AbstractISVRouteTest() {
 
     private val logger by lazy { LoggerFactory.getLogger(AppRouteTest::class.java) }
 
+
     @Test
     fun testAppAdmins(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {

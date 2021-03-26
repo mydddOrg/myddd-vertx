@@ -1,7 +1,6 @@
 package org.myddd.vertx.oauth2.domain
 
 import io.vertx.core.Future
-import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import java.util.*
@@ -13,10 +12,11 @@ class OAuth2ClientService {
     private lateinit var repository:OAuth2ClientRepository
 
     suspend fun queryUserToken(clientId:String):Future<OAuth2Token?> {
-        val future = PromiseImpl<OAuth2Token>()
-        var token = queryClientToken(clientId)
-        future.onSuccess(token)
-        return future
+        return try {
+            queryClientToken(clientId = clientId)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
     suspend fun queryClientByClientId(clientId:String):Future<OAuth2Client?> {
@@ -24,42 +24,56 @@ class OAuth2ClientService {
     }
 
     suspend fun generateClientToken(client:OAuth2Client):Future<OAuth2Token>{
-        val future = PromiseImpl<OAuth2Token>()
-        var token = queryClientToken(client.clientId)
-        if(Objects.isNull(token)) token = OAuth2Token.createTokenFromClient(client).await()
-        future.onSuccess(token)
-        return future
+        return try {
+            var token = queryClientToken(client.clientId).await()
+
+            if(Objects.isNull(token)) {
+                token = OAuth2Token.createTokenFromClient(client).await()
+            }
+            Future.succeededFuture(token)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+
     }
 
     suspend fun refreshUserToken(client: OAuth2Client,refreshToken:String):Future<OAuth2Token>{
-        val future = PromiseImpl<OAuth2Token>()
-        var token = queryClientToken(client.clientId)
+        return try {
+            val token = queryClientToken(client.clientId).await()
 
-        if(Objects.isNull(token)) throw BusinessLogicException(OAuth2ErrorCode.ACCESS_TOKEN_NOT_EXISTS)
+            if(Objects.isNull(token)) throw BusinessLogicException(OAuth2ErrorCode.ACCESS_TOKEN_NOT_EXISTS)
 
-        if(token?.refreshToken != refreshToken) throw  BusinessLogicException(OAuth2ErrorCode.REFRESH_TOKEN_NOT_MATCH)
+            if(token?.refreshToken != refreshToken) throw  BusinessLogicException(OAuth2ErrorCode.REFRESH_TOKEN_NOT_MATCH)
 
-        token.refreshToken().await()
+            val refreshToken = token.refreshToken().await()
 
-        future.onSuccess(token)
-        return future
+            Future.succeededFuture(refreshToken)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
     suspend fun revokeUserToken(client: OAuth2Client):Future<Boolean>{
-        val future = PromiseImpl<Boolean>()
-        var token = queryClientToken(client.clientId)
-        if(Objects.nonNull(token)){
-            repository.delete(OAuth2Token::class.java,token!!.id).await()
+        return try {
+            val token = queryClientToken(client.clientId).await()
+            if(Objects.nonNull(token)){
+                repository.delete(OAuth2Token::class.java,token!!.id).await()
+            }
+            Future.succeededFuture(true)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
-        future.onSuccess(true)
-        return future
     }
 
-    private suspend fun queryClientToken(clientId: String): OAuth2Token? {
-        return repository.singleQuery(
-            OAuth2Token::class.java,
-            "from OAuth2Token where clientId = :clientId",
-            mapOf("clientId" to clientId)
-        ).await()
+    private suspend fun queryClientToken(clientId: String): Future<OAuth2Token?> {
+        return try {
+            repository.singleQuery(
+                clazz = OAuth2Token::class.java,
+                sql = "from OAuth2Token where clientId = :clientId",
+                params = mapOf("clientId" to clientId)
+            )
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 }

@@ -43,18 +43,9 @@ class OrganizationApplicationWorkWeiXin: AbstractApplication(),OrganizationAppli
 
     override suspend fun queryChildrenOrganizations(orgPageQueryDTO: OrgPageQueryDTO): Future<List<OrganizationDTO>> {
         return try {
-            val isvClientToken = getRemoteAccessToken(orgPageQueryDTO.accessToken).await()
-            val clientExtra = isvClientToken.client.extra as ISVClientExtraForWorkWeiXin
-
             val queryOrgId = if(Objects.isNull(orgPageQueryDTO.orgId)) WEI_XIN_ROOT_ORG_ID else orgPageQueryDTO.orgId!!
 
-            val isvAuthCode = ISVAuthCode.queryPermanentAuthCode(suiteId = clientExtra.suiteId,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = isvClientToken.orgCode,
-                ISVClientType.WorkWeiXin).await()
-
-            if(Objects.isNull(isvAuthCode)){
-                throw BusinessLogicException(ISVErrorCode.PERMANENT_CODE_NOT_FOUND)
-            }
-
+            val isvAuthCode = getAuthCode(isvAccessToken = orgPageQueryDTO.accessToken,orgCode = orgPageQueryDTO.orgCode).await()
 
             val pageQueryDTO = queryChannel.pageQuery(
                 queryParam = QueryParam(
@@ -97,18 +88,10 @@ class OrganizationApplicationWorkWeiXin: AbstractApplication(),OrganizationAppli
 
     private suspend fun getOrganization(isvAccessToken: String, orgCode: String, orgId: String?):Future<ProxyOrganization>{
         return try {
-            val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
-            val clientExtra = isvClientToken.client.extra as ISVClientExtraForWorkWeiXin
-
             val queryOrgId = if(Objects.isNull(orgId)) WEI_XIN_ROOT_ORG_ID else orgId!!
+            val isvAuthCode = getAuthCode(isvAccessToken = isvAccessToken,orgCode = orgCode).await()
 
-            val isvAuthCode = ISVAuthCode.queryPermanentAuthCode(suiteId = clientExtra.suiteId,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = isvClientToken.orgCode,
-                ISVClientType.WorkWeiXin).await()
-            if(Objects.isNull(isvAuthCode)){
-                throw BusinessLogicException(ISVErrorCode.PERMANENT_CODE_NOT_FOUND)
-            }
-
-            val organization = ProxyOrganization.queryOrganization(authCodeId = isvAuthCode!!.id,orgCode = isvAuthCode.orgCode,orgId = queryOrgId).await()
+            val organization = ProxyOrganization.queryOrganization(authCodeId = isvAuthCode.id,orgCode = isvAuthCode.orgCode,orgId = queryOrgId).await()
             requireNotNull(organization){
                 "未找到对应的organization"
             }
