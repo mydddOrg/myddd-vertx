@@ -3,9 +3,7 @@ package com.foreverht.isvgateway
 import com.foreverht.isvgateway.api.*
 import com.foreverht.isvgateway.application.*
 import com.foreverht.isvgateway.application.isv.W6SBossApplicationImpl
-import com.foreverht.isvgateway.application.weixin.AppApplicationWorkWeiXin
-import com.foreverht.isvgateway.application.weixin.WeiXinSyncDataApplication
-import com.foreverht.isvgateway.application.weixin.WorkWeiXinApplicationImpl
+import com.foreverht.isvgateway.application.weixin.*
 import com.foreverht.isvgateway.application.workplus.*
 import com.foreverht.isvgateway.domain.ISVClientRepository
 import com.foreverht.isvgateway.domain.ProxyRepository
@@ -74,6 +72,7 @@ abstract class AbstractTest {
 
 
                     bind(AppApplication::class.java).annotatedWith(Names.named("WorkWeiXin")).to(AppApplicationWorkWeiXin::class.java)
+                    bind(OrganizationApplication::class.java).annotatedWith(Names.named("WorkWeiXin")).to(OrganizationApplicationWorkWeiXin::class.java)
 
                     bind(ProxyRepository::class.java).to(ProxyRepositoryHibernate::class.java)
                     bind(SyncDataApplication::class.java).to(SyncDataApplicationImpl::class.java)

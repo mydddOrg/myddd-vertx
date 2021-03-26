@@ -1,3 +1,3 @@
 package org.myddd.vertx.querychannel.api
 
-data class PageParam(val page:Int = 0, val pageSize:Int = 20)
+data class PageParam(val skip:Int = 0, val limit:Int = 20)

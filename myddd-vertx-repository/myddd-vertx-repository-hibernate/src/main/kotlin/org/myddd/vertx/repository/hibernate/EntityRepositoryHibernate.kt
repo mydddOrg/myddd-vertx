@@ -21,6 +21,7 @@ open class EntityRepositoryHibernate : EntityRepository {
         sessionFactory.withTransaction { session, _ ->
             session.find(entity::class.java,entity.getId())
                 .chain { t -> if(Objects.isNull(t)) session.persist(entity) else session.merge(entity) }
+                .chain { _ -> session.flush() }
         }.subscribe().with({
             promise.onSuccess(entity)
         },{
