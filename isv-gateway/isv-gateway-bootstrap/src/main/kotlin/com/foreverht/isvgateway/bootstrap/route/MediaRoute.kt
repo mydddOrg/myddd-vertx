@@ -1,5 +1,6 @@
 package com.foreverht.isvgateway.bootstrap.route
 
+import com.foreverht.isvgateway.bootstrap.ext.jsonFormatEnd
 import com.foreverht.isvgateway.bootstrap.handler.ISVAccessTokenAuthorizationHandler
 import com.foreverht.isvgateway.bootstrap.validation.MediaValidationHandler
 import io.vertx.core.Vertx
@@ -36,7 +37,7 @@ class MediaRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,ro
                         val firstFile = uploads.first()
                         val mediaApplication = getMediaApplication(accessToken = accessToken).await()
                         val mediaId = mediaApplication.uploadFile(isvAccessToken = accessToken,path = firstFile.uploadedFileName()).await()
-                        it.end(JsonObject().put("mediaId",mediaId).toBuffer())
+                        it.jsonFormatEnd(JsonObject().put("mediaId",mediaId).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }

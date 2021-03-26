@@ -2,6 +2,7 @@ package com.foreverht.isvgateway.bootstrap.route
 
 import com.foreverht.isvgateway.api.ISVAuthCodeApplication
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
+import com.foreverht.isvgateway.bootstrap.ext.jsonFormatEnd
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
@@ -39,7 +40,7 @@ class MockRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,rou
                         val suiteId = it.pathParam("suiteId")
                         val isvSuiteTicketDTO = isvSuiteTicketApplication.querySuiteTicket(suiteId = suiteId,clientType = CLIENT_TYPE_WORKPLUS_ISV).await()
 
-                        it.end(JsonObject.mapFrom(isvSuiteTicketDTO).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(isvSuiteTicketDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -60,7 +61,7 @@ class MockRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,rou
                         val suiteId = it.pathParam("suiteId")
                         val orgId = it.pathParam("orgId")
                         val authCodeDTO = isvAuthCodeApplication.queryTemporaryAuthCode(suiteId = suiteId,domainId = "workplus",orgCode = orgId,clientType = CLIENT_TYPE_WORKPLUS_ISV).await()
-                        it.end(JsonObject.mapFrom(authCodeDTO).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(authCodeDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -81,7 +82,7 @@ class MockRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,rou
                         val suiteId = it.pathParam("suiteId")
                         val orgId = it.pathParam("orgId")
                         val authCodeDTO = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = suiteId,domainId = "workplus",orgCode = orgId,clientType = CLIENT_TYPE_WORKPLUS_ISV).await()
-                        it.end(JsonObject.mapFrom(authCodeDTO).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(authCodeDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -105,7 +106,7 @@ class MockRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,rou
                         val suiteId = it.pathParam("suiteId")
                         val isvSuiteTicketDTO = isvSuiteTicketApplication.querySuiteTicket(suiteId = suiteId,clientType = CLIENT_TYPE_WORK_WEI_XIN).await()
 
-                        it.end(JsonObject.mapFrom(isvSuiteTicketDTO).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(isvSuiteTicketDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -126,7 +127,7 @@ class MockRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,rou
                         val suiteId = it.pathParam("suiteId")
                         val orgId = it.pathParam("orgId")
                         val authCodeDTO = isvAuthCodeApplication.queryPermanentAuthCode(suiteId = suiteId,domainId = "WorkWeiXin",orgCode = orgId,clientType = "WorkWeiXin").await()
-                        it.end(JsonObject.mapFrom(authCodeDTO).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(authCodeDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }

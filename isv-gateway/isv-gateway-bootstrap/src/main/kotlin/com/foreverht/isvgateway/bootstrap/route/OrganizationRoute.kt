@@ -4,6 +4,7 @@ package com.foreverht.isvgateway.bootstrap.route
 import com.foreverht.isvgateway.api.OrganizationApplication
 import com.foreverht.isvgateway.api.dto.OrgPageQueryDTO
 import com.foreverht.isvgateway.api.dto.OrganizationDTO
+import com.foreverht.isvgateway.bootstrap.ext.jsonFormatEnd
 import com.foreverht.isvgateway.bootstrap.handler.ISVAccessTokenAuthorizationHandler
 import com.foreverht.isvgateway.bootstrap.validation.OrganizationValidationHandler
 import io.vertx.core.Future
@@ -40,7 +41,7 @@ class OrganizationRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = v
                     try {
                         val (orgPageQueryDTO,organizationApplication) = parsePageQueryParam(it).await()
                         val employeeList = organizationApplication.queryOrganizationEmployees(orgPageQueryDTO).await()
-                        it.end(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
+                        it.jsonFormatEnd(JsonArray(employeeList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -63,7 +64,7 @@ class OrganizationRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = v
                     try {
                         val (orgPageQueryDTO,organizationApplication) = parsePageQueryParam(it).await()
                         val organizationList: List<OrganizationDTO> =  organizationApplication.queryChildrenOrganizations(orgPageQueryDTO).await()
-                        it.end(JsonArray(organizationList.map(JsonObject::mapFrom)).toBuffer())
+                        it.jsonFormatEnd(JsonArray(organizationList.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -92,7 +93,7 @@ class OrganizationRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = v
                         val organizationApplication = getOrganizationApplication(accessToken = accessToken).await()
 
                         val organizationDTO = organizationApplication.queryOrganizationById(isvAccessToken = accessToken,orgCode = orgCode,orgId = orgId).await()
-                        it.end(JsonObject.mapFrom(organizationDTO).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(organizationDTO).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }

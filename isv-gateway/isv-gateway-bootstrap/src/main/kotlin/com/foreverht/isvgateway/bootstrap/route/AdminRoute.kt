@@ -3,8 +3,8 @@ package com.foreverht.isvgateway.bootstrap.route
 import com.foreverht.isvgateway.api.ISVClientApplication
 import com.foreverht.isvgateway.api.SyncDataApplication
 import com.foreverht.isvgateway.api.dto.ISVClientDTO
+import com.foreverht.isvgateway.bootstrap.ext.jsonFormatEnd
 import com.foreverht.isvgateway.bootstrap.validation.ISVClientValidationHandler
-import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
@@ -35,7 +35,7 @@ class AdminRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,ro
                 GlobalScope.launch(vertx.dispatcher()) {
                     try {
                         val clients = isvClientApplication.listAllClients().await()
-                        it.end(JsonArray(clients.map(JsonObject::mapFrom)).toBuffer())
+                        it.jsonFormatEnd(JsonArray(clients.map(JsonObject::mapFrom)).toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -58,8 +58,8 @@ class AdminRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,ro
                             "orgCode不能为空"
                         }
 
-                        syncDataApplication.syncOrganization(clientId = clientId,domainId = domainId!!,orgCode = orgCode!!).await()
-                        it.end(JsonObject().put("result","SUCCESS").toBuffer())
+                        syncDataApplication.syncOrganization(clientId = clientId,domainId = domainId!!,orgCode = orgCode).await()
+                        it.jsonFormatEnd(JsonObject().put("result","SUCCESS").toBuffer())
                     }catch (t:Throwable){
                         it.fail(t)
                     }
@@ -80,7 +80,7 @@ class AdminRoute(vertx: Vertx, router: Router):AbstractISVRoute(vertx = vertx,ro
                         val bodyString = it.bodyAsString
                         val isvClientDTO = AsyncJsonMapper.mapFrom(vertx,bodyString, ISVClientDTO::class.java).await()
                         val created = isvClientApplication.createISVClient(isvClientDTO).await()
-                        it.end(JsonObject.mapFrom(created).toBuffer())
+                        it.jsonFormatEnd(JsonObject.mapFrom(created).toBuffer())
                     }catch (t:Throwable){
                         it.fail(HTTP_400_RESPONSE, t)
                     }
