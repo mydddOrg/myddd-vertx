@@ -25,6 +25,8 @@ class ProxyOrganization: BaseEntity() {
     @Column(name = "org_id")
     lateinit var orgId:String
 
+    lateinit var name:String
+
     @Column(name = "parent_org_id")
     lateinit var parentOrgId:String
 

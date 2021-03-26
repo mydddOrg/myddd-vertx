@@ -54,6 +54,7 @@ class ProxyAssemblerTest {
         organization.orgCode = randomString()
         organization.parentOrgId = randomString()
         organization.path = randomString()
+        organization.name = randomString()
         return organization
     }
 

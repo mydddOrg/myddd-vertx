@@ -12,6 +12,7 @@ fun JsonObject.toProxyOrganization(authCode: ISVAuthCode):ProxyOrganization {
     organization.orgCode = authCode.orgCode
     organization.orgId = this.getString("id")
     organization.parentOrgId = this.getString("parentid")
+    organization.name = this.getString("name")
     return organization
 }
 

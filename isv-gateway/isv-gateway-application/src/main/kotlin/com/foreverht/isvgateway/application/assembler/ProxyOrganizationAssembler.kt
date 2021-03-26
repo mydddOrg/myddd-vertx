@@ -9,6 +9,6 @@ fun toOrganizationDTO(proxyOrganization: ProxyOrganization):OrganizationDTO{
         orgCode = proxyOrganization.orgCode,
         domainId = proxyOrganization.authCode.domainId,
         path = proxyOrganization.path,
-        name = proxyOrganization.orgId
+        name = proxyOrganization.name
     )
 }
