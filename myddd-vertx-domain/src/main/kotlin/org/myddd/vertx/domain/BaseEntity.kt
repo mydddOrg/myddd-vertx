@@ -38,9 +38,9 @@ abstract class BaseEntity : Entity {
     @Version
     var version:Long = 0
 
-    var created:Long = 0
+    override var created:Long = 0
 
-    var updated:Long = 0
+    override var updated:Long = 0
 
     init {
         this.id = idGenerator.nextId()

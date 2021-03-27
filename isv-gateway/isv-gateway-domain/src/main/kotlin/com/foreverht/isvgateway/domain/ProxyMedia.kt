@@ -71,6 +71,7 @@ class ProxyMedia: BaseEntity() {
     suspend fun createProxyMedia():Future<ProxyMedia>{
         return try {
             this.mediaId = randomIDString.randomUUID()
+            this.created = System.currentTimeMillis()
             repository.save(this)
         }catch (t:Throwable){
             Future.failedFuture(t)
