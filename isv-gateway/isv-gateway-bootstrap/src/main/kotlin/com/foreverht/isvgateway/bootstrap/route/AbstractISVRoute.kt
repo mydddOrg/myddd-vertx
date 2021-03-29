@@ -8,7 +8,6 @@ import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.web.router.AbstractRouter
 import java.util.*
 
@@ -18,27 +17,39 @@ abstract class AbstractISVRoute(vertx: Vertx, router: Router): AbstractRouter(ve
     private val accessTokenApplication by lazy { InstanceFactory.getInstance(AccessTokenApplication::class.java) }
 
     private val organizationApplicationMap:Map<String,OrganizationApplication> = mapOf(
-        WorkPlusApp to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkPlusApp)
+        WorkPlusApp to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkPlusApp),
+        WorkPlusISV to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkPlusApp),
+        WorkWeiXin to InstanceFactory.getInstance(OrganizationApplication::class.java,WorkWeiXin)
     )
 
     private val employeeApplicationMap:Map<String,EmployeeApplication> = mapOf(
-        WorkPlusApp to InstanceFactory.getInstance(EmployeeApplication::class.java,WorkPlusApp)
+        WorkPlusApp to InstanceFactory.getInstance(EmployeeApplication::class.java,WorkPlusApp),
+        WorkPlusISV to InstanceFactory.getInstance(EmployeeApplication::class.java,WorkPlusApp),
+        WorkWeiXin to InstanceFactory.getInstance(EmployeeApplication::class.java,WorkWeiXin)
     )
 
     private val mediaApplicationMap:Map<String,MediaApplication> = mapOf(
-        WorkPlusApp to InstanceFactory.getInstance(MediaApplication::class.java,WorkPlusApp)
+        WorkPlusApp to InstanceFactory.getInstance(MediaApplication::class.java,WorkPlusApp),
+        WorkPlusISV to InstanceFactory.getInstance(MediaApplication::class.java,WorkPlusApp),
+        WorkWeiXin to InstanceFactory.getInstance(MediaApplication::class.java,WorkWeiXin)
     )
 
     private val appApplicationMap:Map<String,AppApplication> = mapOf(
-        WorkPlusApp to InstanceFactory.getInstance(AppApplication::class.java,WorkPlusApp)
+        WorkPlusApp to InstanceFactory.getInstance(AppApplication::class.java,WorkPlusApp),
+        WorkPlusISV to InstanceFactory.getInstance(AppApplication::class.java,WorkPlusApp),
+        WorkWeiXin to InstanceFactory.getInstance(AppApplication::class.java,WorkWeiXin)
     )
 
     private val messageApplicationMap:Map<String,MessageApplication> = mapOf(
-        WorkPlusApp to InstanceFactory.getInstance(MessageApplication::class.java,WorkPlusApp)
+        WorkPlusApp to InstanceFactory.getInstance(MessageApplication::class.java,WorkPlusApp),
+        WorkPlusISV to InstanceFactory.getInstance(MessageApplication::class.java,WorkPlusApp),
+        WorkWeiXin to InstanceFactory.getInstance(MessageApplication::class.java,WorkWeiXin)
     )
 
     companion object {
         const val WorkPlusApp = "WorkPlusApp"
+        const val WorkPlusISV = "WorkPlusISV"
+        const val WorkWeiXin = "WorkWeiXin"
     }
 
 
