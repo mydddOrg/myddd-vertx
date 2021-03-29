@@ -18,6 +18,13 @@ include("myddd-vertx-querychannel:myddd-vertx-querychannel-hibernate")
 include("myddd-vertx-i18n:myddd-vertx-i18n-api")
 include("myddd-vertx-i18n:myddd-vertx-i18n-provider")
 
+include("myddd-vertx-media:myddd-vertx-media-api")
+include("myddd-vertx-media:myddd-vertx-media-domain")
+include("myddd-vertx-media:myddd-vertx-media-infra")
+include("myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-local")
+
+
+
 include("myddd-vertx-web")
 
 

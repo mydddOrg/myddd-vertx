@@ -23,9 +23,11 @@ dependencies {
     api("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${rootProject.extra["jackson_version"]}")
+    implementation("commons-codec:commons-codec:1.15")
 
 
     api(project(":myddd-vertx-base:myddd-vertx-base-api"))
+    api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
 
     implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
     //the 3rd lib
@@ -34,4 +36,6 @@ dependencies {
     //test
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
+    testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
+
 }

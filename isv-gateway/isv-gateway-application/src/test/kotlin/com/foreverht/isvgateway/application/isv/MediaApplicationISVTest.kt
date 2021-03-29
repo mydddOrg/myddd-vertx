@@ -57,7 +57,7 @@ class MediaApplicationISVTest : AbstractWorkPlusISVTest() {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val path = "META-INF/my_avatar.png"
-                var absolutePath = MediaApplicationISVTest::class.java.classLoader.getResource(path)!!.path
+                val absolutePath = MediaApplicationISVTest::class.java.classLoader.getResource(path)!!.path
                 val mediaId = mediaApplication.uploadFile(isvAccessToken = isvAccessToken,path = absolutePath).await()
                 logger.debug("mediaId:$mediaId")
                 testContext.verify {

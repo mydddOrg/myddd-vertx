@@ -80,6 +80,7 @@ class MediaApplicationWorkPlus: AbstractApplication(),MediaApplication {
             detFile = vertx.fileSystem().open(destFilePath, OpenOptions()).await()
 
 
+
             val isvClientToken = getRemoteAccessToken(isvAccessToken).await()
             val requestUrl = "${isvClientToken.api()}/medias/$mediaId?access_token=${isvClientToken.accessToken()}&type=id"
             val response = webClient.getAbs(requestUrl)

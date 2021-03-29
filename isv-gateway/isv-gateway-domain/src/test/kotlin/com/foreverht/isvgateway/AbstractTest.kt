@@ -2,7 +2,6 @@ package com.foreverht.isvgateway
 
 import com.foreverht.isvgateway.domain.*
 import com.foreverht.isvgateway.domain.infra.ISVClientRepositoryHibernate
-import com.foreverht.isvgateway.domain.infra.ProxyMediaRepositoryHibernate
 import com.foreverht.isvgateway.domain.infra.ProxyRepositoryHibernate
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
@@ -50,7 +49,6 @@ abstract class AbstractTest {
                     bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
 
                     bind(ProxyRepository::class.java).to(ProxyRepositoryHibernate::class.java)
-                    bind(ProxyMediaRepository::class.java).to(ProxyMediaRepositoryHibernate::class.java)
                 }
             })))
             testContext.completeNow()
