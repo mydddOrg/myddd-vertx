@@ -6,10 +6,13 @@ compileKotlin.kotlinOptions.useIR = true
 
 plugins {
     java
+    `maven-publish`
     kotlin("jvm") version "1.4.31"
     id("jacoco")
     id("org.sonarqube") version "3.0"
 }
+
+extra["extra_myddd_version"] = "1.0.0-SNAPSHOT"
 
 extra["version"] = "1.0.0-SNAPSHOT"
 extra["vertx_version"] = "4.0.3"
@@ -28,8 +31,40 @@ group = "org.myddd.vertx"
 version = project.extra["version"]!!
 
 subprojects {
+    apply(plugin = "java")
     apply(plugin = "jacoco")
     apply(plugin = "org.sonarqube")
+    apply(plugin = "maven-publish")
+
+    publishing {
+
+        publications {
+
+            create<MavenPublication>("mavenJava"){
+                groupId = "org.myddd.vertx"
+                afterEvaluate {
+                    artifactId = tasks.jar.get().archiveBaseName.get()
+                }
+                from(components["java"])
+            }
+
+            repositories {
+                maven {
+
+                    val releasesRepoUrl = "sftp://ssh.myddd.org:10010/repository/releases"
+                    val snapshotsRepoUrl = "sftp://ssh.myddd.org:10010/repository/snapshots"
+                    url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
+
+                    credentials {
+                        username = System.getProperty("user")
+                        password = System.getProperty("password")
+                    }
+
+                }
+            }
+        }
+
+    }
 }
 
 
@@ -44,6 +79,13 @@ sonarqube {
 
 allprojects {
     repositories {
+        maven {
+            setUrl("https://maven.myddd.org/releases/")
+        }
+        maven {
+            setUrl("https://maven.myddd.org/snapshots/")
+        }
+
         maven {
             setUrl("https://maven.aliyun.com/repository/public/")
         }
@@ -61,6 +103,13 @@ allprojects {
 
 repositories {
     maven {
+        setUrl("https://maven.myddd.org/releases/")
+    }
+    maven {
+        setUrl("https://maven.myddd.org/snapshots/")
+    }
+
+    maven {
         setUrl("https://maven.aliyun.com/repository/public/")
     }
     maven {
@@ -70,6 +119,10 @@ repositories {
     mavenCentral()
 }
 
+
+tasks.jar {
+    enabled = true
+}
 
 dependencies {
     implementation(kotlin("stdlib"))
