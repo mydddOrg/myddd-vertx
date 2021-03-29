@@ -12,9 +12,12 @@ plugins {
     id("org.sonarqube") version "3.0"
 }
 
+val projectVersion = "1.0.0-SNAPSHOT"
+
 extra["extra_myddd_version"] = "1.0.0-SNAPSHOT"
 
-extra["version"] = "1.0.0-SNAPSHOT"
+extra["version"] = projectVersion
+
 extra["vertx_version"] = "4.0.3"
 
 extra["log4j_version"] = "2.14.0"
@@ -53,11 +56,12 @@ subprojects {
 
                     val releasesRepoUrl = "sftp://ssh.myddd.org:10010/repository/releases"
                     val snapshotsRepoUrl = "sftp://ssh.myddd.org:10010/repository/snapshots"
+                    version = projectVersion
                     url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
 
                     credentials {
-                        username = System.getProperty("user")
-                        password = System.getProperty("password")
+                        username = project.property("username") as String?
+                        password = project.property("password") as String?
                     }
 
                 }
