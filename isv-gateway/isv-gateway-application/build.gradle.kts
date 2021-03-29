@@ -27,6 +27,9 @@ dependencies {
     api(project(":isv-gateway:isv-gateway-api"))
     implementation(project(":isv-gateway:isv-gateway-domain"))
 
+    implementation(project(":myddd-vertx-media:myddd-vertx-media-domain"))
+
+
     //查询通道
     api(project(":myddd-vertx-querychannel:myddd-vertx-querychannel-api"))
     //查询通道实现
@@ -42,4 +45,8 @@ dependencies {
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:${rootProject.extra["jackson_version"]}")
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation(project(":isv-gateway:isv-gateway-infra"))
+
+    testImplementation(project(":myddd-vertx-media:myddd-vertx-media-infra"))
+    testImplementation(project(":myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-local"))
+
 }

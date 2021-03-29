@@ -19,6 +19,10 @@ import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.media.domain.MediaRepository
+import org.myddd.vertx.media.domain.MediaStorage
+import org.myddd.vertx.media.infra.repository.MediaRepositoryHibernate
+import org.myddd.vertx.media.storeage.LocalMediaStorage
 import org.myddd.vertx.oauth2.domain.OAuth2ClientRepository
 import org.myddd.vertx.oauth2.domain.OAuth2ClientService
 import org.myddd.vertx.oauth2.domain.OAuth2TokenRepository
@@ -74,15 +78,18 @@ abstract class AbstractTest {
                     bind(AppApplication::class.java).annotatedWith(Names.named(WORKPLUS_APP)).to(AppApplicationWorkPlus::class.java)
                     bind(MessageApplication::class.java).annotatedWith(Names.named(WORKPLUS_APP)).to(MessageApplicationWorkPlus::class.java)
 
-
                     bind(AppApplication::class.java).annotatedWith(Names.named(WORK_WEI_XIN)).to(AppApplicationWorkWeiXin::class.java)
                     bind(OrganizationApplication::class.java).annotatedWith(Names.named(WORK_WEI_XIN)).to(OrganizationApplicationWorkWeiXin::class.java)
                     bind(EmployeeApplication::class.java).annotatedWith(Names.named(WORK_WEI_XIN)).to(EmployeeApplicationWorkWeiXin::class.java)
                     bind(MessageApplication::class.java).annotatedWith(Names.named(WORK_WEI_XIN)).to(MessageApplicationWorkWeiXin::class.java)
+                    bind(MediaApplication::class.java).annotatedWith(Names.named(WORK_WEI_XIN)).to(MediaApplicationWorkWeiXin::class.java)
 
                     bind(ProxyRepository::class.java).to(ProxyRepositoryHibernate::class.java)
                     bind(SyncDataApplication::class.java).to(SyncDataApplicationImpl::class.java)
                     bind(WeiXinSyncDataApplication::class.java)
+
+                    bind(MediaStorage::class.java).to(LocalMediaStorage::class.java)
+                    bind(MediaRepository::class.java).to(MediaRepositoryHibernate::class.java)
 
                 }
             })))

@@ -16,7 +16,8 @@
         <class>com.foreverht.isvgateway.domain.ProxyEmpOrgRelation</class>
         <class>com.foreverht.isvgateway.domain.ProxyOrganization</class>
         <class>com.foreverht.isvgateway.domain.ProxyEmployee</class>
-        <class>com.foreverht.isvgateway.domain.ProxyMedia</class>
+
+        <class>org.myddd.vertx.media.domain.Media</class>
 
         <properties>
 

@@ -47,7 +47,9 @@ dependencies {
     implementation(project(":isv-gateway:isv-gateway-application"))
     implementation(project(":isv-gateway:isv-gateway-infra"))
 
-
+    implementation(project(":myddd-vertx-media:myddd-vertx-media-domain"))
+    implementation(project(":myddd-vertx-media:myddd-vertx-media-infra"))
+    implementation(project(":myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-local"))
 
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     api(project(":myddd-vertx-i18n:myddd-vertx-i18n-api"))
@@ -58,6 +60,8 @@ dependencies {
     implementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-application"))
     implementation(project(":myddd-vertx-i18n:myddd-vertx-i18n-provider"))
     implementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
+
+
 
     implementation("io.vertx:vertx-json-schema:${rootProject.extra["vertx_version"]}")
     implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")

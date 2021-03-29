@@ -13,7 +13,7 @@ import java.io.File
 import javax.persistence.*
 
 @Entity
-@Table(name="proxy_media",
+@Table(name="media",
     indexes = [
         Index(name = "index_media_id",columnList = "media_id"),
         Index(name = "index_digest",columnList = "digest")
@@ -80,22 +80,31 @@ class Media: BaseEntity() {
 
         suspend fun createByLocalFile(path:String):Future<Media>{
             return try {
+                val media = mediaFromFile(path).await()
+                val extra = mediaStorage.uploadToStorage(path).await()
+
+                media.mediaId = randomIDString.randomUUID()
+                media.extra = extra
+                repository.save(media)
+            }catch (t:Throwable){
+                Future.failedFuture(t)
+            }
+        }
+
+        private suspend fun mediaFromFile(path: String):Future<Media>{
+            return try{
                 val fs = vertx.fileSystem()
                 val exists = fs.exists(path).await()
                 if(!exists){
                     throw BusinessLogicException(MediaErrorCode.SOURCE_FILE_NOT_EXISTS)
                 }
                 val fileSystemProps = fs.lprops(path).await()
-                val extra = mediaStorage.uploadToStorage(path).await()
-
                 val media = Media()
-                media.mediaId = randomIDString.randomUUID()
                 media.name = path.substring(path.lastIndexOf(File.separator) + 1)
                 media.digest = fileDigest.digest(path).await()
                 media.size = fileSystemProps.size()
-                media.extra = extra
 
-                repository.save(media)
+                Future.succeededFuture(media)
             }catch (t:Throwable){
                 Future.failedFuture(t)
             }

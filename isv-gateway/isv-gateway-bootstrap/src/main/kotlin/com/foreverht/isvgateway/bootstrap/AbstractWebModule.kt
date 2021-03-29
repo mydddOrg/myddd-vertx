@@ -4,6 +4,8 @@ import com.google.inject.AbstractModule
 import io.vertx.core.Vertx
 import io.vertx.ext.web.client.WebClient
 import org.hibernate.reactive.mutiny.Mutiny
+import org.myddd.vertx.file.FileDigest
+import org.myddd.vertx.file.FileDigestProvider
 import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.i18n.provider.I18NVertxProvider
 import org.myddd.vertx.oauth2.api.OAuth2Application
@@ -41,6 +43,7 @@ abstract class AbstractWebModule(private val vertx: Vertx) : AbstractModule() {
         bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
 
         bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+        bind(FileDigest::class.java).to(FileDigestProvider::class.java)
 
         bind(OAuth2Application::class.java).to(OAuth2ApplicationJPA::class.java)
         bind(OAuth2ClientApplication::class.java).to(OAuth2ClientApplicationJPA::class.java)

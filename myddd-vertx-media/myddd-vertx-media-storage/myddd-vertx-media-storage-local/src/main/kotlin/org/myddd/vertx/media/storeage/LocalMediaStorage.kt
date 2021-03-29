@@ -12,10 +12,9 @@ import org.myddd.vertx.media.domain.MediaStorage
 import org.myddd.vertx.string.RandomIDString
 import java.time.LocalDateTime
 
-class LocalMediaStorage:MediaStorage {
+class LocalMediaStorage(private var storagePath: String = System.getProperty("java.io.tmpdir") + "STORAGE") :MediaStorage {
 
     companion object {
-        private var STORAGE_DIR:String = System.getProperty("java.io.tmpdir") + "STORAGE"
         private val randomIdString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
         private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
         private val fs = vertx.fileSystem()
@@ -48,7 +47,7 @@ class LocalMediaStorage:MediaStorage {
         }
     }
 
-    override fun convertToEntityAttribute(dbData: String): MediaExtra {
+    override fun loadMediaExtra(dbData: String): MediaExtra {
         val jsonObject = JsonObject(dbData)
         return jsonObject.mapTo(LocalMediaExtra::class.java)
     }
@@ -56,7 +55,7 @@ class LocalMediaStorage:MediaStorage {
     internal suspend fun randomFilePath():Future<String>{
         return try {
             val now = LocalDateTime.now()
-            val dir = "$STORAGE_DIR/${now.year}/${now.monthValue}/${now.dayOfMonth}/${now.hour}"
+            val dir = "$storagePath/${now.year}/${now.monthValue}/${now.dayOfMonth}/${now.hour}"
             fs.mkdirs(dir).await()
 
             Future.succeededFuture("$dir/${randomIdString.randomUUID()}")

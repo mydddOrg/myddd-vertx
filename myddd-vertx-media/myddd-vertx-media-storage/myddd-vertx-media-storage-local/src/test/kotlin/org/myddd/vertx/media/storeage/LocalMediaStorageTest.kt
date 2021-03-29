@@ -27,7 +27,7 @@ class LocalMediaStorageTest:AbstractTest() {
                     Assertions.assertNotNull(extra)
                 }
 
-                val entity = mediaStorage.convertToEntityAttribute(JsonObject.mapFrom(extra).toString())
+                val entity = mediaStorage.loadMediaExtra(JsonObject.mapFrom(extra).toString())
                 testContext.verify {
                     Assertions.assertNotNull(entity)
                 }
@@ -60,6 +60,32 @@ class LocalMediaStorageTest:AbstractTest() {
                 testContext.verify {
                     Assertions.assertNotNull(downloadPath)
                 }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testUploadFileByCustomStoragePath(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val customMediaStorage = LocalMediaStorage(storagePath = "/Users/lingen/Downloads")
+                try {
+                    customMediaStorage.uploadToStorage(randomIDString.randomString()).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
+                val absolutePath = LocalMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
+                val extra = customMediaStorage.uploadToStorage(absolutePath).await()
+                testContext.verify {
+                    logger.debug((extra as LocalMediaExtra).path)
+                    Assertions.assertNotNull(extra)
+                }
+
             }catch (t:Throwable){
                 testContext.failNow(t)
             }

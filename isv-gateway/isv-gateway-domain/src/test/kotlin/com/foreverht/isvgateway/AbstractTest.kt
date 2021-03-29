@@ -49,6 +49,7 @@ abstract class AbstractTest {
                     bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
 
                     bind(ProxyRepository::class.java).to(ProxyRepositoryHibernate::class.java)
+
                 }
             })))
             testContext.completeNow()

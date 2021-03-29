@@ -8,5 +8,5 @@ interface MediaStorage {
 
     suspend fun downloadFromStorage(extra: MediaExtra):Future<String>
 
-    fun convertToEntityAttribute(dbData: String): MediaExtra
+    fun loadMediaExtra(dbData: String): MediaExtra
 }

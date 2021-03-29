@@ -15,7 +15,7 @@ class MediaExtraConverter: AttributeConverter<MediaExtra, String> {
     }
 
     override fun convertToEntityAttribute(dbData: String): MediaExtra {
-        return mediaStorage.convertToEntityAttribute(dbData)
+        return mediaStorage.loadMediaExtra(dbData)
     }
 
 }

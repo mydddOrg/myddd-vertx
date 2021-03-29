@@ -13,7 +13,7 @@ import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.file.FileDigestProvider
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
-import org.myddd.vertx.media.infra.repository.MediaApplicationRepositoryHibernate
+import org.myddd.vertx.media.infra.repository.MediaRepositoryHibernate
 import org.myddd.vertx.media.storeage.LocalMediaStorage
 import org.myddd.vertx.string.RandomIDString
 import org.myddd.vertx.string.RandomIDStringProvider
@@ -41,7 +41,7 @@ abstract class AbstractTest {
 
                     bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
                     bind(FileDigest::class.java).to(FileDigestProvider::class.java)
-                    bind(MediaRepository::class.java).to(MediaApplicationRepositoryHibernate::class.java)
+                    bind(MediaRepository::class.java).to(MediaRepositoryHibernate::class.java)
                     bind(MediaStorage::class.java).to(LocalMediaStorage::class.java)
                 }
             })))
