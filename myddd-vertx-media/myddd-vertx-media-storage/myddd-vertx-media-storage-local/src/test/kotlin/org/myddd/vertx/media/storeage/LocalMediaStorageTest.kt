@@ -71,7 +71,7 @@ class LocalMediaStorageTest:AbstractTest() {
     fun testUploadFileByCustomStoragePath(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val customMediaStorage = LocalMediaStorage(storagePath = "/Users/lingen/Downloads")
+                val customMediaStorage = LocalMediaStorage(storagePath = "${System.getProperty("user.home")}/Downloads")
                 try {
                     customMediaStorage.uploadToStorage(randomIDString.randomString()).await()
                     testContext.failNow("不可能到这")

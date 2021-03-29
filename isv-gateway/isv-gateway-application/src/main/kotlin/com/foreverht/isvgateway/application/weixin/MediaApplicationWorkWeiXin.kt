@@ -6,18 +6,29 @@ import com.foreverht.isvgateway.application.AbstractApplication
 import io.vertx.core.Future
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
+import org.myddd.vertx.file.FileDigest
+import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.domain.Media
 import org.myddd.vertx.media.domain.MediaErrorCode
 import java.util.*
 
 class MediaApplicationWorkWeiXin: AbstractApplication(),MediaApplication {
 
+    private val fileDigest by lazy { InstanceFactory.getInstance(FileDigest::class.java) }
+
     override suspend fun uploadFile(isvAccessToken: String, path: String): Future<String> {
         return try {
             val (isvAuthCode,isvClientToken) = getAuthCode(isvAccessToken = isvAccessToken).await()
 
-            val media = Media.createByLocalFile(path = path).await()
-            Future.succeededFuture(media.mediaId)
+            val digest = fileDigest.digest(path).await()
+            val existsMedia = Media.queryMediaByDigest(digest = digest).await()
+            return if(Objects.nonNull(existsMedia)){
+                Future.succeededFuture(existsMedia!!.mediaId)
+            }else{
+                val media = Media.createByLocalFile(path = path).await()
+                Future.succeededFuture(media.mediaId)
+            }
+
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
