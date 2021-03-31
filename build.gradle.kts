@@ -7,7 +7,7 @@ compileKotlin.kotlinOptions.useIR = true
 plugins {
     java
     `maven-publish`
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
     id("jacoco")
     id("org.sonarqube") version "3.0"
 }
