@@ -25,12 +25,16 @@ class WeiXinSyncDataApplication {
     }
 
     suspend fun syncAllData(clientId:String, isvAuthCode: ISVAuthCode): Future<Unit> {
+        val begin = System.currentTimeMillis()
         return try {
+            logger.info("【同步微信企业数据】:开始同步")
             val isvClientToken = requestCorpAccessToken(clientId = clientId,corpId = isvAuthCode.orgCode).await()
             syncOrganizationData(corpAccessToken = isvClientToken.accessToken(),isvAuthCode = isvAuthCode).await()
             syncEmployeeData(corpAccessToken = isvClientToken.accessToken(),isvAuthCode = isvAuthCode).await()
+            logger.info("【同步微信企业数据】:$clientId - ${System.currentTimeMillis() - begin}")
             Future.succeededFuture()
         }catch (t:Throwable){
+            logger.error("【同步微信企业数据】:${t.message} - $clientId - ${System.currentTimeMillis() - begin}")
             Future.failedFuture(t)
         }
     }
@@ -38,7 +42,7 @@ class WeiXinSyncDataApplication {
     private suspend fun requestCorpAccessToken(clientId: String,corpId:String):Future<ISVClientToken>{
         return try {
             var isvClientToken = ISVClientToken.queryClientToken(clientId = clientId,domainId = ISVAuthCode.WORK_WEI_XIN,orgCode = corpId).await()
-            if(Objects.isNull(isvClientToken)){
+            if(Objects.isNull(isvClientToken) || !isvClientToken!!.extra.accessTokenValid()){
                 isvClientToken = weiXinApplication.requestCorpAccessToken(clientId = clientId,corpId = corpId).await()
             }
 

@@ -1,6 +1,7 @@
 package com.foreverht.isvgateway.application.weixin
 
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
+import com.foreverht.isvgateway.api.SyncDataApplication
 import com.foreverht.isvgateway.application.WorkWeiXinApplication
 import com.foreverht.isvgateway.application.extention.resultSuccessForWorkWeiXin
 import com.foreverht.isvgateway.application.extention.type
@@ -26,6 +27,7 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
     private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
     private val isvSuiteTicketApplication by lazy { InstanceFactory.getInstance(ISVSuiteTicketApplication::class.java) }
     private val logger by lazy { LoggerFactory.getLogger(WorkWeiXinApplication::class.java) }
+    private val syncDataApplication by lazy { InstanceFactory.getInstance(SyncDataApplication::class.java) }
 
     companion object {
         private const val WORK_WEI_XIN_SERVICE_API = "https://qyapi.weixin.qq.com/cgi-bin/service"
@@ -110,6 +112,10 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
             setSessionInfo(clientId = clientId,productionMode = false).await()
             val (permanentCode,corpId) = requestPermanentAuthCode(isvClient = isvClient,authCode = authCode).await()
             val isvAuthCode = ISVAuthCode.saveWorkWeiXinAuth(suiteId = extra.suiteId,orgCode = corpId,authCode = authCode,permanentCode = permanentCode).await()
+
+            //同步数据
+            syncDataApplication.syncOrganization(clientId = clientId,domainId = CLIENT_TYPE_WORK_WEI_XIN,orgCode = suiteId) //异步同步
+
             Future.succeededFuture(isvAuthCode)
         }catch (t:Throwable){
             Future.failedFuture(t)

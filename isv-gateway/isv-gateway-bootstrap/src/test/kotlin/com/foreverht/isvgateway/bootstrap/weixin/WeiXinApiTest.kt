@@ -46,6 +46,7 @@ class WeiXinApiTest {
 
         val sMsg = wxcpt.DecryptMsg(sReqMsgSig, sReqTimeStamp, sReqNonce, sReqData)
 
+        println(sMsg)
         Assertions.assertNotNull(sMsg)
     }
 

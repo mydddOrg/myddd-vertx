@@ -1,9 +1,6 @@
 package com.foreverht.isvgateway.bootstrap.weixin
 
-import com.foreverht.isvgateway.api.dto.ISVSuiteTicketDTO
 import com.foreverht.isvgateway.bootstrap.AbstractRouteTest
-import com.foreverht.isvgateway.domain.ISVClientType
-import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.json.JsonObject
