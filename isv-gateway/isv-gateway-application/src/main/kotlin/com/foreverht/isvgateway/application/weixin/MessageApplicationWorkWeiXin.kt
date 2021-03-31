@@ -34,6 +34,8 @@ class MessageApplicationWorkWeiXin: AbstractApplication(),MessageApplication {
 
     override suspend fun sendMessage(isvAccessToken: String, message: MessageDTO): Future<Boolean> {
         return try {
+            if(!message.body.supportWeiXin()) throw BusinessLogicException(ISVErrorCode.MESSAGE_TYPE_NOT_SUPPORT)
+
             val (_,isvClientToken) = getAuthCode(isvAccessToken = isvAccessToken).await()
 
             val agentId = workWeiXinApplication.queryAgentId(corpAccessToken = isvClientToken.accessToken()).await()
@@ -65,7 +67,6 @@ class MessageApplicationWorkWeiXin: AbstractApplication(),MessageApplication {
     private suspend fun bodyValue(message: MessageDTO,corpAccessToken:String):Future<JsonObject>{
         return try {
             val value = when (message.body.msgType){
-                AbstractMessageBody.TEXT_MSG_TYPE -> message.body.weiXinBodyValue()
                 AbstractMessageBody.IMAGE_MSG_TYPE -> {
                     val body = message.body as ImageMessageBody
                     val weiXinMediaIdd = workWeiXinApplication.uploadResourceToWeiXinTmpMedia(mediaId = body.mediaId,corpAccessToken = corpAccessToken).await()
@@ -76,7 +77,7 @@ class MessageApplicationWorkWeiXin: AbstractApplication(),MessageApplication {
                     val weiXinMediaIdd = workWeiXinApplication.uploadResourceToWeiXinTmpMedia(mediaId = body.mediaId,corpAccessToken = corpAccessToken).await()
                     body.weiXinBodyValue(mediaId = weiXinMediaIdd)
                 }
-                else -> throw BusinessLogicException(ISVErrorCode.MESSAGE_TYPE_NOT_SUPPORT)
+                else -> message.body.weiXinBodyValue()
             }
             Future.succeededFuture(value)
         }catch (t:Throwable){
