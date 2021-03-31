@@ -69,11 +69,9 @@ class MessageApplicationWorkWeiXin: AbstractApplication(),MessageApplication {
 
     private suspend fun bodyValue(message: MessageDTO,corpAccessToken:String):Future<JsonObject>{
         return try {
-            val value = when (message.body.msgType){
-                IMAGE_MSG_TYPE,
-                FILE_MSG_TYPE -> {
-                    val mediaContent = message.body as MediaContent
-                    val weiXinMediaIdd = workWeiXinApplication.uploadResourceToWeiXinTmpMedia(mediaId = mediaContent.mediaId(),corpAccessToken = corpAccessToken).await()
+            val value = when (val body = message.body){
+                is MediaContent -> {
+                    val weiXinMediaIdd = workWeiXinApplication.uploadResourceToWeiXinTmpMedia(mediaId = body.mediaId(),corpAccessToken = corpAccessToken).await()
                     message.body.weiXinBodyValue(mediaId = weiXinMediaIdd)
                 }
                 else -> message.body.weiXinBodyValue()
