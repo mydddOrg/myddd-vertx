@@ -3,6 +3,7 @@ package com.foreverht.isvgateway.application.weixin
 import com.foreverht.isvgateway.api.ISVSuiteTicketApplication
 import com.foreverht.isvgateway.application.WorkWeiXinApplication
 import com.foreverht.isvgateway.application.extention.resultSuccessForWorkWeiXin
+import com.foreverht.isvgateway.application.extention.type
 import com.foreverht.isvgateway.domain.*
 import com.foreverht.isvgateway.domain.extra.ISVClientAuthExtraForWorkWeiXin
 import com.foreverht.isvgateway.domain.extra.ISVClientExtraForWorkWeiXin
@@ -10,11 +11,14 @@ import com.foreverht.isvgateway.domain.extra.ISVClientTokenExtraForWorkWeiXin
 import io.vertx.core.Future
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.client.WebClient
+import io.vertx.ext.web.multipart.MultipartForm
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.media.domain.Media
+import org.myddd.vertx.media.domain.MediaErrorCode
 import java.util.*
 
 class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
@@ -26,6 +30,7 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
     companion object {
         private const val WORK_WEI_XIN_SERVICE_API = "https://qyapi.weixin.qq.com/cgi-bin/service"
         private const val WORK_WEI_XIN_AGENT_API = "https://qyapi.weixin.qq.com/cgi-bin/agent"
+        private const val WORK_WEI_XIN_MEDIA_API = "https://qyapi.weixin.qq.com/cgi-bin/media"
         private const val CLIENT_TYPE_WORK_WEI_XIN = "WorkWeiXin"
     }
 
@@ -168,6 +173,35 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
             }else{
                 Future.failedFuture(response.bodyAsString())
             }
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
+    override suspend fun uploadResourceToWeiXinTmpMedia(mediaId: String,corpAccessToken:String): Future<String> {
+        return try {
+            val media = Media.queryMediaById(mediaId =  mediaId).await()
+            if(Objects.isNull(media)){
+                throw BusinessLogicException(MediaErrorCode.MEDIA_NOT_FOUND)
+            }
+
+            val form = MultipartForm.create()
+                .attribute("filelength",media!!.size.toString())
+                .attribute("filename",media.name)
+                .binaryFileUpload("media",media.name,media.extra.destPath(), "application/octet-stream ")
+
+            val response = webClient.postAbs("$WORK_WEI_XIN_MEDIA_API/upload?access_token=$corpAccessToken&type=${media.type()}")
+                .putHeader("content-type", "multipart/form-data")
+                .sendMultipartForm(form)
+                .await()
+
+            if(response.resultSuccessForWorkWeiXin()){
+                val body = response.bodyAsJsonObject()
+                Future.succeededFuture(body.getString("media_id"))
+            }else{
+                Future.failedFuture(response.bodyAsString())
+            }
+
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

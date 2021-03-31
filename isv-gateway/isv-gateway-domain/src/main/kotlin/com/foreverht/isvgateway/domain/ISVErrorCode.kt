@@ -24,6 +24,8 @@ enum class ISVErrorCode : ErrorCode {
 
     ACCESS_TOKEN_INVALID,
 
-    USER_ID_NOT_FOUND
+    USER_ID_NOT_FOUND,
+
+    MESSAGE_TYPE_NOT_SUPPORT
 
 }

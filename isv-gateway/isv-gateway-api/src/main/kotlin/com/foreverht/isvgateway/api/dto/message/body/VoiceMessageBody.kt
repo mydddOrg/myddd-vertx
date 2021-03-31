@@ -11,7 +11,7 @@ data class VoiceMessageBody(
         TODO("Not yet implemented")
     }
 
-    override fun weiXinBodyValue(): JsonObject {
+    override fun weiXinBodyValue(mediaId:String?): JsonObject {
         TODO("Not yet implemented")
     }
 }

@@ -19,4 +19,6 @@ interface WorkWeiXinApplication {
 
     suspend fun queryAgentId(corpAccessToken:String):Future<String>
 
+    suspend fun uploadResourceToWeiXinTmpMedia(mediaId:String,corpAccessToken:String):Future<String>
+
 }

@@ -1,6 +1,8 @@
 package com.foreverht.isvgateway.application.weixin
 
+import com.foreverht.isvgateway.api.MediaApplication
 import com.foreverht.isvgateway.application.WorkWeiXinApplication
+import com.foreverht.isvgateway.domain.ISVClientToken
 import io.vertx.core.Vertx
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
@@ -10,14 +12,16 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.*
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.media.domain.Media
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class WorkWeiXinApplicationTest:AbstractWorkWeiXinTest() {
 
     private val workWeiXinApplication by lazy { InstanceFactory.getInstance(WorkWeiXinApplication::class.java) }
+    private val mediaApplication by lazy { InstanceFactory.getInstance(MediaApplication::class.java, WORK_WEI_XIN) }
 
     @Test
-    @Order(6)
+    @Order(7)
     fun testQueryAgentId(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -46,8 +50,9 @@ class WorkWeiXinApplicationTest:AbstractWorkWeiXinTest() {
         }
     }
 
+
     @Test
-    @Order(5)
+    @Order(6)
     fun testRequestCorpAccessToken(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -65,6 +70,38 @@ class WorkWeiXinApplicationTest:AbstractWorkWeiXinTest() {
             testContext.completeNow()
         }
     }
+
+    @Test
+    @Order(5)
+    fun testUploadResourceToWeiXinMedia(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try{
+
+                val path = MediaApplicationWorkWeiXinTest::class.java.classLoader.getResource("META-INF/my_avatar.png")!!.path
+                val mediaId = mediaApplication.uploadFile(isvAccessToken = isvAccessToken,path = path).await()
+                testContext.verify {
+                    Assertions.assertNotNull(mediaId)
+                }
+
+                val media = Media.queryMediaById(mediaId = mediaId).await()
+                requireNotNull(media)
+
+                val isvClientToken = ISVClientToken.queryByToken(token = isvAccessToken).await()
+                requireNotNull(isvClientToken)
+
+                val weiXinMediaId = workWeiXinApplication.uploadResourceToWeiXinTmpMedia(mediaId = media.mediaId,corpAccessToken = isvClientToken.extra.accessToken()).await()
+                testContext.verify {
+                    logger.debug(weiXinMediaId)
+                    Assertions.assertNotNull(weiXinMediaId)
+                }
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
 
     @Test
     @Order(4)

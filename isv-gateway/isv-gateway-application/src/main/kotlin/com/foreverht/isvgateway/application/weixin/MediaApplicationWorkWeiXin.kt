@@ -39,7 +39,7 @@ class MediaApplicationWorkWeiXin: AbstractApplication(),MediaApplication {
             val (isvAuthCode,isvClientToken) = getAuthCode(isvAccessToken = isvAccessToken).await()
 
             val media = Media.queryMediaById(mediaId = mediaId).await()
-            if(Objects.nonNull(media)){
+            if(Objects.isNull(media)){
                 throw BusinessLogicException(MediaErrorCode.MEDIA_NOT_FOUND)
             }
 

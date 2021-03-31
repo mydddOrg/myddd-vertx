@@ -13,7 +13,7 @@ data class TextMessageBody(
         return "text"
     }
 
-    override fun weiXinBodyValue(): JsonObject {
+    override fun weiXinBodyValue(mediaId:String?): JsonObject {
         return json {
             obj(
                 "content" to content

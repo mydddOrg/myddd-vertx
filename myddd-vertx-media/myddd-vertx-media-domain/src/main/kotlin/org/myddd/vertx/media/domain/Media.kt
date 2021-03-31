@@ -10,6 +10,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.domain.converter.MediaExtraConverter
 import org.myddd.vertx.string.RandomIDString
 import java.io.File
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -81,11 +82,17 @@ class Media: BaseEntity() {
         suspend fun createByLocalFile(path:String):Future<Media>{
             return try {
                 val media = mediaFromFile(path).await()
-                val extra = mediaStorage.uploadToStorage(path).await()
+                val exists = queryMediaByDigest(digest = media.digest).await()
+                return if(Objects.nonNull(exists)){
+                    Future.succeededFuture(exists)
+                }else{
+                    val extra = mediaStorage.uploadToStorage(path).await()
 
-                media.mediaId = randomIDString.randomUUID()
-                media.extra = extra
-                repository.save(media)
+                    media.mediaId = randomIDString.randomUUID()
+                    media.extra = extra
+                    repository.save(media)
+                }
+
             }catch (t:Throwable){
                 Future.failedFuture(t)
             }

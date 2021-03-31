@@ -17,6 +17,8 @@ import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.file.FileDigest
+import org.myddd.vertx.file.FileDigestProvider
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.media.domain.MediaRepository
@@ -61,6 +63,7 @@ abstract class AbstractTest {
                     bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
 
                     bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+                    bind(FileDigest::class.java).to(FileDigestProvider::class.java)
 
 
                     bind(ISVClientRepository::class.java).to(ISVClientRepositoryHibernate::class.java)

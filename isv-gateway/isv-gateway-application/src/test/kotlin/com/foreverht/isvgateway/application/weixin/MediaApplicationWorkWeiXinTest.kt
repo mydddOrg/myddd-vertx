@@ -16,6 +16,29 @@ class MediaApplicationWorkWeiXinTest:AbstractWorkWeiXinTest() {
     private val mediaApplication by lazy { InstanceFactory.getInstance(MediaApplication::class.java, WORK_WEI_XIN) }
 
     @Test
+    fun testDownloadMedia(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val path = MediaApplicationWorkWeiXinTest::class.java.classLoader.getResource("META-INF/my_avatar.png")!!.path
+                val mediaId = mediaApplication.uploadFile(isvAccessToken = isvAccessToken,path = path).await()
+                testContext.verify {
+                    Assertions.assertNotNull(mediaId)
+                }
+
+                val mediaDTO = mediaApplication.downloadFile(isvAccessToken,mediaId).await()
+                testContext.verify {
+                    Assertions.assertNotNull(mediaDTO)
+                    Assertions.assertNotNull(mediaDTO.destPath)
+                    logger.debug(mediaDTO.destPath)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testUploadMedia(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
