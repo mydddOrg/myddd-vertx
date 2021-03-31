@@ -36,7 +36,7 @@ abstract class AbstractMessageBody(val msgType:String) {
 
     abstract fun weiXinBodyKey():String
 
-    abstract fun weiXinBodyValue(media:String? = ""):JsonObject
+    abstract fun weiXinBodyValue(mediaId:String? = ""):JsonObject
 
     open fun supportWorkPlus() = true
 

@@ -2,6 +2,9 @@ package com.foreverht.isvgateway.application.weixin
 
 import com.foreverht.isvgateway.api.MessageApplication
 import com.foreverht.isvgateway.api.dto.message.AbstractMessageBody
+import com.foreverht.isvgateway.api.dto.message.AbstractMessageBody.Companion.FILE_MSG_TYPE
+import com.foreverht.isvgateway.api.dto.message.AbstractMessageBody.Companion.IMAGE_MSG_TYPE
+import com.foreverht.isvgateway.api.dto.message.MediaContent
 import com.foreverht.isvgateway.api.dto.message.MessageDTO
 import com.foreverht.isvgateway.api.dto.message.body.FileMessageBody
 import com.foreverht.isvgateway.api.dto.message.body.ImageMessageBody
@@ -67,15 +70,11 @@ class MessageApplicationWorkWeiXin: AbstractApplication(),MessageApplication {
     private suspend fun bodyValue(message: MessageDTO,corpAccessToken:String):Future<JsonObject>{
         return try {
             val value = when (message.body.msgType){
-                AbstractMessageBody.IMAGE_MSG_TYPE -> {
-                    val body = message.body as ImageMessageBody
-                    val weiXinMediaIdd = workWeiXinApplication.uploadResourceToWeiXinTmpMedia(mediaId = body.mediaId,corpAccessToken = corpAccessToken).await()
-                    body.weiXinBodyValue(mediaId = weiXinMediaIdd)
-                }
-                AbstractMessageBody.FILE_MSG_TYPE -> {
-                    val body = message.body as FileMessageBody
-                    val weiXinMediaIdd = workWeiXinApplication.uploadResourceToWeiXinTmpMedia(mediaId = body.mediaId,corpAccessToken = corpAccessToken).await()
-                    body.weiXinBodyValue(mediaId = weiXinMediaIdd)
+                IMAGE_MSG_TYPE,
+                FILE_MSG_TYPE -> {
+                    val mediaContent = message.body as MediaContent
+                    val weiXinMediaIdd = workWeiXinApplication.uploadResourceToWeiXinTmpMedia(mediaId = mediaContent.mediaId(),corpAccessToken = corpAccessToken).await()
+                    message.body.weiXinBodyValue(mediaId = weiXinMediaIdd)
                 }
                 else -> message.body.weiXinBodyValue()
             }

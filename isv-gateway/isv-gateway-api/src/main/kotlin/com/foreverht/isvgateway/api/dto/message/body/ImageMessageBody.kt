@@ -1,6 +1,7 @@
 package com.foreverht.isvgateway.api.dto.message.body
 
 import com.foreverht.isvgateway.api.dto.message.AbstractMessageBody
+import com.foreverht.isvgateway.api.dto.message.MediaContent
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
@@ -11,7 +12,7 @@ data class ImageMessageBody(
     var height:Double = 100.0,
     var width:Double = 100.0,
     var isGif:Boolean = false
-): AbstractMessageBody(msgType = IMAGE_MSG_TYPE) {
+): AbstractMessageBody(msgType = IMAGE_MSG_TYPE), MediaContent {
     override fun weiXinBodyKey(): String {
         return "image"
     }
@@ -23,5 +24,9 @@ data class ImageMessageBody(
             )
         }
 
+    }
+
+    override fun mediaId(): String {
+        return mediaId
     }
 }
