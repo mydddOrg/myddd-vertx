@@ -6,14 +6,21 @@ plugins {
 group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
 
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+    testLogging {
+        events = setOf(
+            org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
+        )
+    }
+}
+
 tasks.jacocoTestReport {
     reports {
         xml.isEnabled = true
     }
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
 }
 
 dependencies {
@@ -23,20 +30,17 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
-    api(project(":myddd-vertx-domain"))
+    implementation("com.qcloud:cos_api:5.6.38")
+
+    implementation(project(":myddd-vertx-media:myddd-vertx-media-domain"))
+    implementation("com.fasterxml.jackson.core:jackson-annotations:${rootProject.extra["jackson_version"]}")
+
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     api(project(":myddd-vertx-base:myddd-vertx-base-api"))
-    api(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
 
-
+    testImplementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    api("org.eclipse.persistence:javax.persistence:${rootProject.extra["javax_persistence_version"]}")
-
     testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
-    testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    testImplementation(project(":myddd-vertx-media:myddd-vertx-media-infra"))
-    testImplementation(project(":myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-qcloud"))
     testImplementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
-    testImplementation(project(":myddd-vertx-repository:myddd-vertx-repository-hibernate"))
 
 }

@@ -14,7 +14,8 @@ import io.vertx.core.Vertx
 import org.myddd.vertx.media.domain.MediaRepository
 import org.myddd.vertx.media.domain.MediaStorage
 import org.myddd.vertx.media.infra.repository.MediaRepositoryHibernate
-import org.myddd.vertx.media.storeage.LocalMediaStorage
+import org.myddd.vertx.media.qcloud.QCloudMediaStorage
+import org.myddd.vertx.web.router.config.GlobalConfig
 
 class ISVClientGuice(vertx: Vertx) : AbstractWebModule(vertx = vertx) {
 
@@ -41,7 +42,14 @@ class ISVClientGuice(vertx: Vertx) : AbstractWebModule(vertx = vertx) {
         bindWorkPlus()
         bindWorkWeiXin()
 
-        bind(MediaStorage::class.java).to(LocalMediaStorage::class.java)
+        bind(MediaStorage::class.java).toInstance(
+            QCloudMediaStorage(
+                secretId = GlobalConfig.getString("qcloud.secretId"),
+                secretKey = GlobalConfig.getString("qcloud.secretKey"),
+                bucketName = GlobalConfig.getString("qcloud.bucketName"),
+                region = GlobalConfig.getString("qcloud.region")
+            )
+        )
     }
 
     private fun bindWorkPlus(){

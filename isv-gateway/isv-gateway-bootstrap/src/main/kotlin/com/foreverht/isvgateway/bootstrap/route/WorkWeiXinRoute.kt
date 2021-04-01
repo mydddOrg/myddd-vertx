@@ -117,7 +117,6 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
                             "change_auth" -> reSyncContractData(clientId,document).await()
                             "change_contact" -> reSyncContractData(clientId,document).await()
                             else -> {
-
                                 logger.info(it.request().absoluteURI())
                                 throw BusinessLogicException(ISVClientErrorCode.EVENT_TYPE_NOT_SUPPORT)
                             }

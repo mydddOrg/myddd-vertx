@@ -20,6 +20,7 @@ import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.domain.Media
 import org.myddd.vertx.media.domain.MediaErrorCode
+import org.myddd.vertx.media.domain.MediaStorage
 import java.util.*
 
 class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
@@ -28,6 +29,7 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
     private val isvSuiteTicketApplication by lazy { InstanceFactory.getInstance(ISVSuiteTicketApplication::class.java) }
     private val logger by lazy { LoggerFactory.getLogger(WorkWeiXinApplication::class.java) }
     private val syncDataApplication by lazy { InstanceFactory.getInstance(SyncDataApplication::class.java) }
+    private val mediaStorage by lazy { InstanceFactory.getInstance(MediaStorage::class.java) }
 
     companion object {
         private const val WORK_WEI_XIN_SERVICE_API = "https://qyapi.weixin.qq.com/cgi-bin/service"
@@ -191,8 +193,10 @@ class WorkWeiXinApplicationImpl:WorkWeiXinApplication {
                 throw BusinessLogicException(MediaErrorCode.MEDIA_NOT_FOUND)
             }
 
+            mediaStorage.downloadFromStorage(media!!.extra).await()
+
             val form = MultipartForm.create()
-                .attribute("filelength",media!!.size.toString())
+                .attribute("filelength", media.size.toString())
                 .attribute("filename",media.name)
                 .binaryFileUpload("media",media.name,media.extra.destPath(), "application/octet-stream ")
 

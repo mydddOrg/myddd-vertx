@@ -24,7 +24,7 @@ import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.media.domain.MediaRepository
 import org.myddd.vertx.media.domain.MediaStorage
 import org.myddd.vertx.media.infra.repository.MediaRepositoryHibernate
-import org.myddd.vertx.media.storeage.LocalMediaStorage
+import org.myddd.vertx.media.qcloud.QCloudMediaStorage
 import org.myddd.vertx.oauth2.domain.OAuth2ClientRepository
 import org.myddd.vertx.oauth2.domain.OAuth2ClientService
 import org.myddd.vertx.oauth2.domain.OAuth2TokenRepository
@@ -91,8 +91,15 @@ abstract class AbstractTest {
                     bind(SyncDataApplication::class.java).to(SyncDataApplicationImpl::class.java)
                     bind(WeiXinSyncDataApplication::class.java)
 
-                    bind(MediaStorage::class.java).to(LocalMediaStorage::class.java)
                     bind(MediaRepository::class.java).to(MediaRepositoryHibernate::class.java)
+
+                    bind(MediaStorage::class.java).toInstance(
+                        QCloudMediaStorage(
+                            secretId = "AKIDXopZ5LR2pa5JHEJ4fz2EAuOcaHgrhkH3",
+                            secretKey = "aNtFPKxIONPAez5uTlxTklZtymIOFrBD",
+                            bucketName = "isv-gateway-test-1258930758"
+                        )
+                    )
 
                 }
             })))

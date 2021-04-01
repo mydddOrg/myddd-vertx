@@ -47,6 +47,6 @@ dependencies {
     testImplementation(project(":isv-gateway:isv-gateway-infra"))
 
     testImplementation(project(":myddd-vertx-media:myddd-vertx-media-infra"))
-    testImplementation(project(":myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-local"))
+    testImplementation(project(":myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-qcloud"))
 
 }

@@ -8,6 +8,8 @@ import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.file.FileDigest
+import org.myddd.vertx.file.FileDigestProvider
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.media.domain.MediaStorage
@@ -28,7 +30,7 @@ abstract class AbstractTest {
             InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
                 override fun configure() {
                     bind(Vertx::class.java).toInstance(vertx)
-                    bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+                    bind(FileDigest::class.java).to(FileDigestProvider::class.java)
                     bind(MediaStorage::class.java).to(LocalMediaStorage::class.java)
                 }
             })))

@@ -49,7 +49,7 @@ dependencies {
 
     implementation(project(":myddd-vertx-media:myddd-vertx-media-domain"))
     implementation(project(":myddd-vertx-media:myddd-vertx-media-infra"))
-    implementation(project(":myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-local"))
+    implementation(project(":myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-qcloud"))
 
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     api(project(":myddd-vertx-i18n:myddd-vertx-i18n-api"))
