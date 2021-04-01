@@ -114,7 +114,8 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
                             "suite_ticket" -> processSuiteEvent(document).await()
                             "create_auth" -> processCreateAuth(clientId,document).await()
                             "cancel_auth" -> processCancelAuth(clientId,document).await()
-                            "change_auth" -> processChangeAuth(clientId,document).await()
+                            "change_auth" -> reSyncContractData(clientId,document).await()
+                            "change_contact" -> reSyncContractData(clientId,document).await()
                             else -> {
 
                                 logger.info(it.request().absoluteURI())
@@ -144,7 +145,7 @@ class WorkWeiXinRoute(vertx: Vertx, router: Router) : AbstractRouter(vertx = ver
         }
     }
 
-    private suspend fun processChangeAuth(clientId:String,document: Document):Future<Unit> {
+    private suspend fun reSyncContractData(clientId:String, document: Document):Future<Unit> {
         return try {
             val authCorpId =  AsyncXPathParse.queryStringValue(vertx = vertx,document = document,expression = "/xml/AuthCorpId").await()
             syncDataApplication.syncOrganization(clientId = clientId,domainId = CLIENT_TYPE_WORK_WEI_XIN,orgCode = authCorpId)
