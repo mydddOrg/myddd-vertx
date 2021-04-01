@@ -23,7 +23,6 @@ import java.time.LocalDateTime
 
 class QCloudMediaStorage(private val secretId:String,private val secretKey:String,private val bucketName:String,private val region:String = "ap-guangzhou"): MediaStorage {
 
-    private val randomIdString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
     private val fileDigest by lazy { InstanceFactory.getInstance(FileDigest::class.java) }
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 
