@@ -30,7 +30,8 @@ paths:
                   description: 需要申请token的clientSecret
                 domainId:
                   type: string
-                  description: 域ID
+                  default: "WorkWeiXin"
+                  description: 仅WorkPlus需要，微信接入传固定值 "WorkWeiXin"
                 orgCode:
                   type: string
                   description: 组织CODE
@@ -43,6 +44,7 @@ paths:
               required:
                 - "clientId"
                 - "clientSecret"
+                - "orgCode"
                 - "grantType"
 
       responses:
