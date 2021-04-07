@@ -1,0 +1,40 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+    <persistence-unit name="default">
+        <provider>org.hibernate.reactive.provider.ReactivePersistenceProvider</provider>
+
+        <class>cc.lingenliu.example.document.domain.Document</class>
+
+        <properties>
+
+            <!-- MySQL -->
+            <property name="javax.persistence.jdbc.url"
+                      value="jdbc:mysql://127.0.0.1:3306/document"/>
+
+            <!-- Credentials -->
+            <property name="javax.persistence.jdbc.user"
+                      value="root"/>
+            <property name="javax.persistence.jdbc.password"
+                      value="admin1234"/>
+
+            <!-- The Vert.x SQL Client connection pool size -->
+            <property name="hibernate.connection.pool_size"
+                      value="10"/>
+
+            <!-- Automatic schema export -->
+            <property name="javax.persistence.schema-generation.database.action"
+                      value="drop-and-create"/>
+
+            <!-- SQL statement logging -->
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="false"/>
+            <property name="hibernate.highlight_sql" value="true"/>
+
+        </properties>
+
+    </persistence-unit>
+
+</persistence>

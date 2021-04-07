@@ -44,3 +44,12 @@ include("isv-gateway:isv-gateway-application")
 include("isv-gateway:isv-gateway-infra")
 include("isv-gateway:isv-gateway-bootstrap")
 //include("isv-gateway:isv-gateway-weixin-api")
+
+
+//example
+include("example:document-domain")
+include("example:document-api")
+include("example:document-application")
+include("example:document-infra")
+include("example:document-bootstrap")
+
