@@ -3,8 +3,8 @@ plugins {
     kotlin("jvm")
 }
 
-group = "com.foreverht.isvgateway"
-version = rootProject.extra["isv_gateway_version"]!!
+group = "org.myddd.vertx.example"
+version = rootProject.extra["version"]!!
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()

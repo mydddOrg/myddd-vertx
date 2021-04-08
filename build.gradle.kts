@@ -14,7 +14,7 @@ plugins {
 
 val projectVersion = "1.0.0-SNAPSHOT"
 
-extra["extra_myddd_version"] = "1.0.0-SNAPSHOT"
+extra["myddd_vertx_version"] = "1.0.0-SNAPSHOT"
 
 extra["version"] = projectVersion
 

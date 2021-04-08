@@ -3,7 +3,6 @@ package cc.lingenliu.example.document.bootstrap.route
 import cc.lingenliu.example.document.api.DocumentApplication
 import cc.lingenliu.example.document.api.DocumentDTO
 import cc.lingenliu.example.document.bootstrap.DocumentErrorCode
-import cc.lingenliu.example.document.bootstrap.ext.jsonFormatEnd
 import cc.lingenliu.example.document.bootstrap.validation.DocumentValidationHandler
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
@@ -14,8 +13,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.json.AsyncJsonMapper
 import org.myddd.vertx.web.router.AbstractRouter
+import org.myddd.vertx.web.router.ext.jsonFormatEnd
 import java.util.*
 
 class DocumentRoute(vertx: Vertx, router: Router): AbstractRouter(vertx = vertx,router = router)  {

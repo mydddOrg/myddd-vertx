@@ -12,7 +12,7 @@
 
             <!-- MySQL -->
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://127.0.0.1:3306/document"/>
+                      value="jdbc:mysql://127.0.0.1:3306/backend"/>
 
             <!-- Credentials -->
             <property name="javax.persistence.jdbc.user"

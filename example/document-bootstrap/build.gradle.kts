@@ -5,8 +5,8 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
-group = "com.foreverht.isvgateway"
-version = rootProject.extra["isv_gateway_version"]!!
+group = "org.myddd.vertx.example"
+version = rootProject.extra["version"]!!
 
 
 tasks.withType<Test>().configureEach {

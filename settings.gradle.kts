@@ -28,7 +28,6 @@ include("myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-q
 
 include("myddd-vertx-web")
 
-
 //oauth2.0的实现
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-domain")
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-infra")
@@ -36,15 +35,6 @@ include("myddd-vertx-oauth2:myddd-vertx-oauth2-provider")
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-api")
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-application")
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-bootstrap")
-
-//isv-gateway项目
-include("isv-gateway:isv-gateway-domain")
-include("isv-gateway:isv-gateway-api")
-include("isv-gateway:isv-gateway-application")
-include("isv-gateway:isv-gateway-infra")
-include("isv-gateway:isv-gateway-bootstrap")
-//include("isv-gateway:isv-gateway-weixin-api")
-
 
 //example
 include("example:document-domain")
