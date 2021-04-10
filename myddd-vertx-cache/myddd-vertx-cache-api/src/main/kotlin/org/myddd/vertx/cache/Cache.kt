@@ -2,8 +2,9 @@ package org.myddd.vertx.cache
 
 import io.vertx.core.Future
 import io.vertx.core.shareddata.Shareable
+import java.io.Serializable
 
-interface Cache<T:Shareable> {
+interface Cache<T> where T:Shareable,T:Serializable {
 
     suspend fun set(key:String,value:T):Future<Unit>
 

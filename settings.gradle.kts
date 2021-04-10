@@ -25,7 +25,7 @@ include("myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-q
 
 
 include("myddd-vertx-cache:myddd-vertx-cache-api")
-include("myddd-vertx-cache:myddd-vertx-cache-vertx")
+include("myddd-vertx-cache:myddd-vertx-cache-sharedata")
 
 include("myddd-vertx-web")
 

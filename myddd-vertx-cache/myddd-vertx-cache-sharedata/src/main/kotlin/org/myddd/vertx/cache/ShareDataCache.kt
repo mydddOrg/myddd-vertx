@@ -6,9 +6,10 @@ import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Shareable
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.ioc.InstanceFactory
+import java.io.Serializable
 import java.util.*
 
-class ShareDataCache<T:Shareable>(private val name:String,private val localCache:Boolean = true,private val ttl:Long = 1000 * 60 * 5):Cache<T> {
+class ShareDataCache<T>(private val name:String,private val localCache:Boolean = true,private val ttl:Long = 1000 * 60 * 5):Cache<T> where T:Shareable,T: Serializable {
 
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 
