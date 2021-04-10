@@ -24,7 +24,8 @@ include("myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-l
 include("myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-qcloud")
 
 
-
+include("myddd-vertx-cache:myddd-vertx-cache-api")
+include("myddd-vertx-cache:myddd-vertx-cache-vertx")
 
 include("myddd-vertx-web")
 
