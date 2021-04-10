@@ -33,6 +33,30 @@ class ShareDataCacheTest:AbstractTest() {
     }
 
     @Test
+    fun testContainsKey(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val key = UUID.randomUUID().toString()
+                val entity = randomEntity()
+                cache.set(key,entity).await()
+
+                val contains = cache.containsKey(key).await()
+                testContext.verify {
+                    Assertions.assertTrue(contains)
+                }
+
+                val notContains = cache.containsKey(UUID.randomUUID().toString()).await()
+                testContext.verify {
+                    Assertions.assertFalse(notContains)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
     fun testSetCache(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {

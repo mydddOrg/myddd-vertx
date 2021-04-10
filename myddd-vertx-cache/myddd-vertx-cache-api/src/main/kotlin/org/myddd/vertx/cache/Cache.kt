@@ -9,6 +9,8 @@ interface Cache<T:Shareable> {
 
     suspend fun get(key: String):Future<T?>
 
+    suspend fun containsKey(key: String):Future<Boolean>
+
     suspend fun remove(key: String):Future<T?>
 
     suspend fun clear():Future<Unit>

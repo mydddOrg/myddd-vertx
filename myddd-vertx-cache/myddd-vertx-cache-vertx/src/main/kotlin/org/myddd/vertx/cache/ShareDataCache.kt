@@ -6,15 +6,16 @@ import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Shareable
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.ioc.InstanceFactory
+import java.util.*
 
-class ShareDataCache<T:Shareable>(private val name:String,private val localCache:Boolean = true):Cache<T> {
+class ShareDataCache<T:Shareable>(private val name:String,private val localCache:Boolean = true,private val ttl:Long = 1000 * 60 * 5):Cache<T> {
 
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 
     override suspend fun set(key: String, value: T): Future<Unit> {
         return try {
             val cache = getAsyncMap().await()
-            cache.put(key,value)
+            cache.put(key,value,ttl)
             Future.succeededFuture()
         }catch (t:Throwable){
             Future.failedFuture(t)
@@ -25,6 +26,16 @@ class ShareDataCache<T:Shareable>(private val name:String,private val localCache
         return try {
             val cache = getAsyncMap().await()
             cache.get(key)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
+    override suspend fun containsKey(key: String): Future<Boolean> {
+        return try {
+            val cache = getAsyncMap().await()
+            val entity = cache.get(key).await()
+            if(Objects.isNull(entity))Future.succeededFuture(false) else Future.succeededFuture(true)
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
@@ -60,6 +71,8 @@ class ShareDataCache<T:Shareable>(private val name:String,private val localCache
             Future.failedFuture(t)
         }
     }
+
+
 
 
 }
