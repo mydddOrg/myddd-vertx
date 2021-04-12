@@ -4,7 +4,7 @@ import org.myddd.vertx.domain.BaseEntity
 import javax.persistence.*
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"User\"")
 class User(): BaseEntity() {
 
     lateinit var userName:String

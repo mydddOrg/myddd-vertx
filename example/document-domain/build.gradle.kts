@@ -35,4 +35,7 @@ dependencies {
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation(project(":example:document-infra"))
 
+    testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
+
+
 }

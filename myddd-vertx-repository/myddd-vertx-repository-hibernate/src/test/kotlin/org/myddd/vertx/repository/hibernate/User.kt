@@ -4,7 +4,7 @@ import org.myddd.vertx.domain.BaseEntity
 import javax.persistence.*
 
 @Entity
-@Table(name = "user",
+@Table(name = "user_table",
     indexes = [
         Index(name = "index_username",columnList = "username")
     ],

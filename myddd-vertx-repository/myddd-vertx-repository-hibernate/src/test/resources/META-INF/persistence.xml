@@ -36,4 +36,38 @@
 
     </persistence-unit>
 
+    <persistence-unit name="pg">
+        <provider>org.hibernate.reactive.provider.ReactivePersistenceProvider</provider>
+
+        <class>org.myddd.vertx.repository.hibernate.User</class>
+
+        <properties>
+
+            <!-- MySQL -->
+            <property name="javax.persistence.jdbc.url"
+                      value="jdbc:postgresql://localhost/postgres"/>
+
+            <!-- Credentials -->
+            <property name="javax.persistence.jdbc.user"
+                      value="lingen"/>
+            <property name="javax.persistence.jdbc.password"
+                      value=""/>
+
+            <!-- The Vert.x SQL Client connection pool size -->
+            <property name="hibernate.connection.pool_size"
+                      value="10"/>
+
+            <!-- Automatic schema export -->
+            <property name="javax.persistence.schema-generation.database.action"
+                      value="drop-and-create"/>
+
+            <!-- SQL statement logging -->
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="false"/>
+            <property name="hibernate.highlight_sql" value="true"/>
+
+        </properties>
+
+    </persistence-unit>
+
 </persistence>
