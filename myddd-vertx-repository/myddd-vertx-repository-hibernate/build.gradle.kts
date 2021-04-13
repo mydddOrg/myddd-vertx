@@ -21,6 +21,7 @@ dependencies {
 
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
+    implementation(project(":myddd-vertx-base:myddd-vertx-base-api"))
 
     api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("org.hibernate:hibernate-core:${rootProject.extra["hibernate_core_version"]}")
@@ -33,7 +34,7 @@ dependencies {
     testImplementation("org.eclipse.persistence:javax.persistence:${rootProject.extra["javax_persistence_version"]}")
     testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-
+    testImplementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
     testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
     testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
 

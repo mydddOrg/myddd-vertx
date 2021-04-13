@@ -8,6 +8,8 @@ import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.file.FileDigestProvider
 import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.i18n.provider.I18NVertxProvider
+import org.myddd.vertx.id.IDGenerator
+import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.oauth2.domain.OAuth2ClientRepository
 import org.myddd.vertx.oauth2.domain.OAuth2ClientService
 import org.myddd.vertx.oauth2.domain.OAuth2TokenRepository
@@ -40,6 +42,7 @@ abstract class AbstractWebModule(private val vertx: Vertx) : AbstractModule() {
 
         bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
         bind(FileDigest::class.java).to(FileDigestProvider::class.java)
+        bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
 
         bind(I18N::class.java).to(I18NVertxProvider::class.java)
     }

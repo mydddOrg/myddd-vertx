@@ -31,8 +31,10 @@ dependencies {
 
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     api(project(":myddd-vertx-base:myddd-vertx-base-api"))
+    api("org.eclipse.persistence:javax.persistence:${rootProject.extra["javax_persistence_version"]}")
 
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    api("org.eclipse.persistence:javax.persistence:${rootProject.extra["javax_persistence_version"]}")
+    testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
+    testImplementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
 }

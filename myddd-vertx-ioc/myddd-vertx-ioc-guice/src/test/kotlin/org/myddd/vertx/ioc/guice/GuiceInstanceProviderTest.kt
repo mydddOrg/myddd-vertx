@@ -12,20 +12,19 @@ import org.myddd.vertx.ioc.InstanceFactory
 class GuiceInstanceProviderTest {
 
   companion object {
-    private var injector:Injector? = null
 
     @BeforeAll
     @JvmStatic
     fun beforeAll(){
 
-      injector = Guice.createInjector(object : AbstractModule(){
+      InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
         override fun configure() {
           bind(InterfaceA::class.java).to(ObjectA::class.java)
           bind(InterfaceB::class.java).to(ObjectB::class.java)
           bind(InterfaceA::class.java).annotatedWith(Names.named("AnotherA")).to(ObjectA::class.java)
         }
-      })
-      InstanceFactory.setInstanceProvider(GuiceInstanceProvider(injector))
+      })))
+
     }
 
   }

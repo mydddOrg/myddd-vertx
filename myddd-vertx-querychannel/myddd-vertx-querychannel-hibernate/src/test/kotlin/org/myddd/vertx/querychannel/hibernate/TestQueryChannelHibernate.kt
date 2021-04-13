@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.myddd.vertx.id.IDGenerator
+import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.querychannel.api.PageParam
@@ -33,6 +35,8 @@ class TestQueryChannelHibernate {
     init {
         InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
             override fun configure() {
+                bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
+
                 bind(Mutiny.SessionFactory::class.java).toInstance(Persistence.createEntityManagerFactory("default")
                     .unwrap(Mutiny.SessionFactory::class.java))
 

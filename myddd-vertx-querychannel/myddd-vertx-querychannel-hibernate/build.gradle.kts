@@ -24,7 +24,7 @@ dependencies {
     testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
 
 
-
+    implementation(project(":myddd-vertx-base:myddd-vertx-base-api"))
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
@@ -45,4 +45,7 @@ dependencies {
     testImplementation(project(":myddd-vertx-repository:myddd-vertx-repository-hibernate"))
     testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
     testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
+    testImplementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
+
+
 }

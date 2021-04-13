@@ -9,6 +9,8 @@ import io.vertx.junit5.VertxTestContext
 import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.id.IDGenerator
+import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.oauth2.api.OAuth2Application
@@ -48,6 +50,7 @@ abstract class AbstractTest {
 
                     bind(OAuth2Auth::class.java).to(MydddVertXOAuth2Provider::class.java)
                     bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+                    bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
 
                 }
             })))

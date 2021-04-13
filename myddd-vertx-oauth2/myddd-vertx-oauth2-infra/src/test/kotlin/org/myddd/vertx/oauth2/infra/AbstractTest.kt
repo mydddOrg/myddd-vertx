@@ -5,6 +5,8 @@ import com.google.inject.Guice
 import io.vertx.junit5.VertxExtension
 import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.id.IDGenerator
+import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.oauth2.domain.OAuth2ClientRepository
@@ -28,6 +30,7 @@ abstract class AbstractTest {
                 bind(OAuth2ClientRepository::class.java).to(OAuth2ClientRepositoryHibernate::class.java)
                 bind(OAuth2TokenRepository::class.java).to((OAuth2TokenRepositoryHibernate::class.java))
                 bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+                bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
 
             }
         })))

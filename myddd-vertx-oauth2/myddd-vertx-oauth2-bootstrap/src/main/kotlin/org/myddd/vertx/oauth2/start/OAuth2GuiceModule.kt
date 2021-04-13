@@ -5,6 +5,8 @@ import io.vertx.core.Vertx
 import org.hibernate.reactive.mutiny.Mutiny
 import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.i18n.provider.I18NVertxProvider
+import org.myddd.vertx.id.IDGenerator
+import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
 import org.myddd.vertx.oauth2.application.OAuth2ApplicationJPA
@@ -46,5 +48,6 @@ class OAuth2GuiceModule(vertx: Vertx) : AbstractModule() {
         bind(I18N::class.java).to(I18NVertxProvider::class.java)
 
         bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+        bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
     }
 }

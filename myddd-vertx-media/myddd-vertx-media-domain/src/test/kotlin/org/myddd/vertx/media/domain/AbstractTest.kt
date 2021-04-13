@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.file.FileDigestProvider
+import org.myddd.vertx.id.IDGenerator
+import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.media.infra.repository.MediaRepositoryHibernate
@@ -42,6 +44,7 @@ abstract class AbstractTest {
                     bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
                     bind(FileDigest::class.java).to(FileDigestProvider::class.java)
                     bind(MediaRepository::class.java).to(MediaRepositoryHibernate::class.java)
+                    bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
 
                     bind(MediaStorage::class.java).toInstance(
                         QCloudMediaStorage(

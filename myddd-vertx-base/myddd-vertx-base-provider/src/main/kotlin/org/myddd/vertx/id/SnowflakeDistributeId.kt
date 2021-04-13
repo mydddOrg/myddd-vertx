@@ -1,4 +1,4 @@
-package org.myddd.vertx.domain
+package org.myddd.vertx.id
 
 import java.lang.RuntimeException
 import java.lang.IllegalArgumentException
@@ -16,7 +16,7 @@ import java.lang.IllegalArgumentException
  * SnowFlake的优点是，整体上按照时间自增排序，并且整个分布式系统内不会产生ID碰撞(由数据中心ID和机器ID作区分)，并且效率较高，经测试，SnowFlake每秒能够产生26万ID左右。
  *
  */
-class SnowflakeDistributeId(workerId: Long, datacenterId: Long) {
+open class SnowflakeDistributeId(workerId: Long = 0, datacenterId: Long = 0):IDGenerator{
     // ==============================Fields===========================================
     /**
      * 开始时间截 (2020-01-01)
@@ -94,7 +94,7 @@ class SnowflakeDistributeId(workerId: Long, datacenterId: Long) {
      * @return SnowflakeId
      */
     @Synchronized
-    fun nextId(): Long {
+    override fun nextId(): Long {
         var timestamp = timeGen()
 
         //如果当前时间小于上一次ID生成的时间戳，说明系统时钟回退过这个时候应当抛出异常
@@ -135,7 +135,7 @@ class SnowflakeDistributeId(workerId: Long, datacenterId: Long) {
      * @param lastTimestamp 上次生成ID的时间截
      * @return 当前时间戳
      */
-    protected fun tilNextMillis(lastTimestamp: Long): Long {
+    private fun tilNextMillis(lastTimestamp: Long): Long {
         var timestamp = timeGen()
         while (timestamp <= lastTimestamp) {
             timestamp = timeGen()
@@ -148,7 +148,7 @@ class SnowflakeDistributeId(workerId: Long, datacenterId: Long) {
      *
      * @return 当前时间(毫秒)
      */
-    protected fun timeGen(): Long {
+    private fun timeGen(): Long {
         return System.currentTimeMillis()
     }
     //==============================Constructors=====================================

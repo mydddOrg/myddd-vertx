@@ -1,6 +1,8 @@
 package org.myddd.vertx.domain
 
 
+import org.myddd.vertx.id.IDGenerator
+import org.myddd.vertx.ioc.InstanceFactory
 import javax.persistence.*
 
 /**
@@ -10,26 +12,7 @@ import javax.persistence.*
 abstract class BaseEntity : Entity {
 
     companion object {
-
-        private var idGenerator:SnowflakeDistributeId
-
-        init {
-
-            val workerId = try {
-                System.getenv("workerId").toLong()
-            }catch (e:Exception){
-                0L
-            }
-
-            val datacenterId = try {
-                System.getenv("datacenterId").toLong()
-            }catch (e:Exception){
-                0L
-            }
-
-            idGenerator = SnowflakeDistributeId(workerId = workerId ,datacenterId = datacenterId)
-
-        }
+        private val idGenerator by lazy { InstanceFactory.getInstance(IDGenerator::class.java) }
     }
 
     @Id
