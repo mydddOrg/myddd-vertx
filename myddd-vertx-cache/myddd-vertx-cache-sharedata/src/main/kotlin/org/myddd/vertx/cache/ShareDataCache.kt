@@ -61,7 +61,7 @@ class ShareDataCache<T>(private val name:String,private val localCache:Boolean =
         }
     }
 
-    private fun getAsyncMap():Future<AsyncMap<String,T>>{
+    internal fun getAsyncMap():Future<AsyncMap<String,T>>{
         return try {
             if(localCache){
                 vertx.sharedData().getAsyncMap(name)

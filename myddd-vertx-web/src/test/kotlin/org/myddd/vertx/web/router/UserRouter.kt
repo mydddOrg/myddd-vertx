@@ -4,6 +4,8 @@ import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import org.myddd.vertx.base.BusinessLogicException
+import org.myddd.vertx.web.router.ext.jsonFormatEnd
+import org.myddd.vertx.web.router.ext.singleQueryParam
 import org.myddd.vertx.web.router.handler.AccessTokenAuthorizationHandler
 
 class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,router = router) {
@@ -56,7 +58,7 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
                     throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR_WITH_PARAM, arrayOf(userId))
                 }
 
-                it.end(JsonObject().put("userId",userId).toBuffer())
+                it.jsonFormatEnd(JsonObject().put("userId",userId).toBuffer())
             }
         }
     }
@@ -72,7 +74,7 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
                     throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR_WITH_PARAM, arrayOf(userId))
                 }
 
-                it.end(JsonObject().put("userId",userId).put("name",name).toBuffer())
+                it.jsonFormatEnd(JsonObject().put("userId",userId).put("name",name).toBuffer())
             }
         }
     }
@@ -83,11 +85,11 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
                 val userId = it.pathParam("userId")
                 val name = it.bodyAsJson.getString("name")
 
-                val error = it.queryParam("error")
-                if(error.isNotEmpty()){
+                val error = it.singleQueryParam("error")
+                if(!error.isNullOrEmpty()){
                     throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR_WITH_PARAM, arrayOf(userId))
                 }
-                it.end(JsonObject().put("userId",userId).put("name",name.reversed()).toBuffer())
+                it.jsonFormatEnd(JsonObject().put("userId",userId).put("name",name.reversed()).toBuffer())
             }
         }
     }
@@ -96,8 +98,8 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
         createDeleteRoute("/$version/users/:userId"){ route ->
             route.handler {
                 val userId = it.pathParam("userId")
-                val error = it.queryParam("error")
-                if(error.isNotEmpty()){
+                val error = it.singleQueryParam("error")
+                if(!error.isNullOrEmpty()){
                     throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR_WITH_PARAM, arrayOf(userId))
                 }
 

@@ -21,6 +21,16 @@ class DocumentTest:AbstractTest() {
                 testContext.verify {
                     Assertions.assertNotNull(created)
                 }
+
+                try {
+
+                    val errorDocument = errorDocument()
+                    errorDocument.createDocument().await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
             }catch (t:Throwable){
                 testContext.failNow(t)
             }
@@ -53,6 +63,16 @@ class DocumentTest:AbstractTest() {
 
 
 
+    private fun errorDocument():Document{
+        val document = Document()
+        document.mediaId = randomString()
+        document.name = randomIDString.randomString(64)
+        document.documentType = DocumentType.File
+        document.md5 = randomString()
+        document.suffix = randomString()
+
+        return document
+    }
 
     private suspend fun randomCreateDocument():Future<Document>{
         return try {
