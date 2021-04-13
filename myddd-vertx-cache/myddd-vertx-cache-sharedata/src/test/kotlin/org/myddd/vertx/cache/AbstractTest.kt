@@ -28,6 +28,8 @@ abstract class AbstractTest {
                         override fun configure() {
                             bind(Vertx::class.java).toInstance(vertx)
                             bind(Cache::class.java).annotatedWith(Names.named("Cache")).toInstance(ShareDataCache<Entity>(name = "Cache"))
+                            bind(Cache::class.java).annotatedWith(Names.named("AsyncCache")).toInstance(ShareDataCache<Entity>(name = "AsyncCache",localCache = false))
+
                             bind(Cache::class.java).annotatedWith(Names.named("AnotherCache")).toInstance(ShareDataCache<Entity>(name = "AnotherCache"))
                         }
                     })))

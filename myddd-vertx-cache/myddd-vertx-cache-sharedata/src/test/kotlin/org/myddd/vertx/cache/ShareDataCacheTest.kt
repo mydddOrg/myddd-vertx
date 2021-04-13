@@ -8,18 +8,32 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
+import java.util.stream.Stream
 import kotlin.random.Random
 
 class ShareDataCacheTest:AbstractTest() {
 
-    private val cache:Cache<Entity> by lazy { InstanceFactory.getInstance(Cache::class.java,"Cache") as Cache<Entity> }
 
-    private val anotherCache:Cache<Entity> by lazy { InstanceFactory.getInstance(Cache::class.java,"AnotherCache") as Cache<Entity> }
 
-    @Test
-    fun testNotSomeCache(vertx: Vertx,testContext: VertxTestContext){
+    companion object {
+
+        private val cache:Cache<Entity> = ShareDataCache(name = "Cache")
+        private val asyncCache:Cache<Entity> = ShareDataCache(name = "AsyncCache",localCache = false)
+        private val anotherCache:Cache<Entity> = ShareDataCache<Entity>(name = "AnotherCache")
+
+        @JvmStatic
+        fun parameterCache():Stream<Cache<Entity>>{
+            return Stream.of(cache,asyncCache)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("parameterCache")
+    fun testNotSomeCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 testContext.verify {
@@ -32,8 +46,9 @@ class ShareDataCacheTest:AbstractTest() {
         }
     }
 
-    @Test
-    fun testContainsKey(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parameterCache")
+    fun testContainsKey(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val key = UUID.randomUUID().toString()
@@ -56,8 +71,9 @@ class ShareDataCacheTest:AbstractTest() {
         }
     }
 
-    @Test
-    fun testSetCache(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parameterCache")
+    fun testSetCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val key = UUID.randomUUID().toString()
@@ -75,8 +91,9 @@ class ShareDataCacheTest:AbstractTest() {
         }
     }
 
-    @Test
-    fun testGetCache(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parameterCache")
+    fun testGetCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val key = UUID.randomUUID().toString()
@@ -102,8 +119,9 @@ class ShareDataCacheTest:AbstractTest() {
     }
 
 
-    @Test
-    fun testClearCache(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parameterCache")
+    fun testClearCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val key = UUID.randomUUID().toString()
@@ -130,8 +148,9 @@ class ShareDataCacheTest:AbstractTest() {
         }
     }
 
-    @Test
-    fun testRemoveCache(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parameterCache")
+    fun testRemoveCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val key = UUID.randomUUID().toString()
@@ -161,6 +180,7 @@ class ShareDataCacheTest:AbstractTest() {
             testContext.completeNow()
         }
     }
+
     private fun randomEntity():Entity{
         val entity = Entity()
         entity.name = UUID.randomUUID().toString()
