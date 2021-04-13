@@ -21,6 +21,8 @@ import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.repository.api.EntityRepository
+import org.myddd.vertx.string.RandomIDString
+import org.myddd.vertx.string.RandomIDStringProvider
 import java.util.*
 import java.util.stream.Stream
 import javax.persistence.Persistence
@@ -29,6 +31,10 @@ import kotlin.collections.ArrayList
 
 @ExtendWith(VertxExtension::class)
 class TestEntityRepositoryHibernate {
+
+
+
+    private val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
 
     init {
         InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
@@ -40,6 +46,8 @@ class TestEntityRepositoryHibernate {
 
                 bind(Mutiny.SessionFactory::class.java).annotatedWith(Names.named("pg")).toInstance(Persistence.createEntityManagerFactory("pg")
                     .unwrap(Mutiny.SessionFactory::class.java))
+
+                bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
 
             }
         })))
@@ -68,12 +76,26 @@ class TestEntityRepositoryHibernate {
                     Assertions.assertTrue(created.id > 0)
                 }
 
+                created.age = 36
+                repository.save(created).await()
+
                 val anotherUser = User(username = "lingen",age = 35)
                 try {
                     repository.save(anotherUser).await()
+                    testContext.failNow("不可能到这")
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
+
+
+                val errorUser =  User(username = randomIDString.randomString(64),age = 35)
+                try {
+                    repository.save(errorUser).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -128,7 +150,16 @@ class TestEntityRepositoryHibernate {
                 testContext.verify {
                     Assertions.assertFalse(notExistsUser != null)
                 }
+
+                try {
+                    repository.get(NotExistsEntity::class.java,0).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
                 testContext.completeNow()
+
+
             }catch (e:Exception){
                 testContext.failNow(e)
             }
@@ -147,6 +178,14 @@ class TestEntityRepositoryHibernate {
                 testContext.verify {
                     Assertions.assertTrue(exists)
                 }
+
+                try {
+                    repository.exists(NotExistsEntity::class.java,0).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -170,6 +209,15 @@ class TestEntityRepositoryHibernate {
                 testContext.verify {
                     Assertions.assertTrue(success)
                 }
+
+                try {
+                    val errorEntities = arrayOf(NotExistsEntity())
+                    repository.batchSave(errorEntities).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -196,6 +244,14 @@ class TestEntityRepositoryHibernate {
                 testContext.verify {
                     Assertions.assertFalse(exists)
                 }
+
+                try {
+                    repository.delete(NotExistsEntity::class.java,0).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -224,6 +280,13 @@ class TestEntityRepositoryHibernate {
                 list = repository.listQuery(User::class.java,"from User where username = :username", mapOf("username" to UUID.randomUUID().toString())).await()
                 testContext.verify {
                     Assertions.assertTrue(list.isEmpty())
+                }
+
+                try {
+                    repository.listQuery(NotExistsEntity::class.java,"from NotExistsEntity where username = :username",).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
                 }
 
                 testContext.completeNow()
@@ -258,6 +321,13 @@ class TestEntityRepositoryHibernate {
                     Assertions.assertNull(query)
                 }
 
+                try {
+                    repository.singleQuery(NotExistsEntity::class.java,"from NotExistsEntity where username = :username",).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
+                }
+
                 testContext.completeNow()
             }catch (e:Exception){
                 testContext.failNow(e)
@@ -283,6 +353,13 @@ class TestEntityRepositoryHibernate {
                 testContext.verify {
                     Assertions.assertNotNull(queryUser)
                     Assertions.assertEquals(queryUser!!.age,40)
+                }
+
+                try {
+                    repository.executeUpdate("update NotExistsEntity set age = :age", mapOf("age" to 40)).await()
+                    testContext.failNow("不可能到这")
+                }catch (t:Throwable){
+                    testContext.verify { Assertions.assertNotNull(t) }
                 }
 
                 testContext.completeNow()

@@ -11,6 +11,7 @@ import javax.persistence.*
     uniqueConstraints = [UniqueConstraint(columnNames = ["username"])])
 class User(): BaseEntity() {
 
+    @Column(name = "username",length = 32)
     lateinit var username:String
 
     var age:Int = 0
