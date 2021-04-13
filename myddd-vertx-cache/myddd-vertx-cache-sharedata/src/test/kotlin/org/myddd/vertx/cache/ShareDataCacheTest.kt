@@ -7,10 +7,8 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 import java.util.stream.Stream
 import kotlin.random.Random
@@ -21,28 +19,13 @@ class ShareDataCacheTest:AbstractTest() {
 
     companion object {
 
-        private val cache:Cache<Entity> = ShareDataCache(name = "Cache")
-        private val asyncCache:Cache<Entity> = ShareDataCache(name = "AsyncCache",localCache = false)
+        private val localCache:Cache<Entity> = ShareDataCache(name = "Cache")
+        private val disturbedCache:Cache<Entity> = ShareDataCache(name = "AsyncCache",localCache = false)
         private val anotherCache:Cache<Entity> = ShareDataCache<Entity>(name = "AnotherCache")
 
         @JvmStatic
         fun parameterCache():Stream<Cache<Entity>>{
-            return Stream.of(cache,asyncCache)
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("parameterCache")
-    fun testNotSomeCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                testContext.verify {
-                    Assertions.assertNotEquals(cache,anotherCache)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
-            }
-            testContext.completeNow()
+            return Stream.of(localCache,disturbedCache)
         }
     }
 
@@ -173,6 +156,21 @@ class ShareDataCacheTest:AbstractTest() {
                 testContext.verify {
                     Assertions.assertNull(getValue)
                     Assertions.assertNotNull(exist)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("parameterCache")
+    fun testNotSomeCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                testContext.verify {
+                    Assertions.assertNotEquals(cache,anotherCache)
                 }
             }catch (t:Throwable){
                 testContext.failNow(t)

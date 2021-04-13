@@ -2,6 +2,7 @@ package org.myddd.vertx.repository.hibernate
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
+import com.google.inject.name.Names
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -13,10 +14,13 @@ import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.repository.api.EntityRepository
 import java.util.*
+import java.util.stream.Stream
 import javax.persistence.Persistence
 import kotlin.Exception
 import kotlin.collections.ArrayList
@@ -24,20 +28,34 @@ import kotlin.collections.ArrayList
 @ExtendWith(VertxExtension::class)
 class TestEntityRepositoryHibernate {
 
-    private val repository:EntityRepository by lazy { InstanceFactory.getInstance(EntityRepository::class.java) }
-
     init {
         InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
             override fun configure() {
                 bind(Mutiny.SessionFactory::class.java).toInstance(Persistence.createEntityManagerFactory("default")
                     .unwrap(Mutiny.SessionFactory::class.java))
-                bind(EntityRepository::class.java).to(EntityRepositoryHibernate::class.java)
+
+                bind(Mutiny.SessionFactory::class.java).annotatedWith(Names.named("pg")).toInstance(Persistence.createEntityManagerFactory("pg")
+                    .unwrap(Mutiny.SessionFactory::class.java))
+
             }
         })))
     }
 
-    @Test
-    fun testAdd(vertx: Vertx, testContext: VertxTestContext){
+    companion object {
+
+        @JvmStatic
+        private fun parametersRepository():Stream<EntityRepository>{
+            return Stream.of(
+                EntityRepositoryHibernate(),
+                EntityRepositoryHibernate(dataSource = "pg")
+            )
+        }
+
+    }
+
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testAdd(repository:EntityRepository,vertx: Vertx, testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
@@ -60,8 +78,9 @@ class TestEntityRepositoryHibernate {
 
     }
 
-    @Test
-    fun testUpdate(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testUpdate(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
@@ -89,8 +108,9 @@ class TestEntityRepositoryHibernate {
         }
     }
 
-    @Test
-    fun testFind(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testFind(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
 
         GlobalScope.launch(vertx.dispatcher()) {
             try {
@@ -112,8 +132,9 @@ class TestEntityRepositoryHibernate {
         }
     }
 
-    @Test
-    fun testExists(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testExists(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
@@ -130,8 +151,9 @@ class TestEntityRepositoryHibernate {
         }
     }
 
-    @Test
-    fun testBatchAdd(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testBatchAdd(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val users = ArrayList<User>()
@@ -153,8 +175,9 @@ class TestEntityRepositoryHibernate {
 
     }
 
-    @Test
-    fun testDelete(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testDelete(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 repository.delete(User::class.java,Long.MAX_VALUE).await()
@@ -176,8 +199,9 @@ class TestEntityRepositoryHibernate {
         }
     }
 
-    @Test
-    fun testQueryList(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testQueryList(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)
@@ -206,8 +230,9 @@ class TestEntityRepositoryHibernate {
         }
     }
 
-    @Test
-    fun testSingleQuery(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testSingleQuery(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
 
@@ -237,8 +262,9 @@ class TestEntityRepositoryHibernate {
     }
 
 
-    @Test
-    fun testExecuteUpdate(vertx: Vertx,testContext: VertxTestContext){
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testExecuteUpdate(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val user =  User(username = "lingen",age = 35)

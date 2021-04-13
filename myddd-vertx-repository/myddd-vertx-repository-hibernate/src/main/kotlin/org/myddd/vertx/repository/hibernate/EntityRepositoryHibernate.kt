@@ -9,11 +9,15 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.EntityRepository
 import java.io.Serializable
 import java.util.*
+import javax.sql.CommonDataSource
 
 
-open class EntityRepositoryHibernate : EntityRepository {
+open class EntityRepositoryHibernate(private val dataSource: String? = null) : EntityRepository {
 
-    protected val sessionFactory: Mutiny.SessionFactory by lazy { InstanceFactory.getInstance(Mutiny.SessionFactory::class.java) }
+    protected val sessionFactory: Mutiny.SessionFactory by lazy {
+        if(Objects.isNull(dataSource))InstanceFactory.getInstance(Mutiny.SessionFactory::class.java)
+        else InstanceFactory.getInstance(Mutiny.SessionFactory::class.java,dataSource)
+    }
 
     override suspend fun <T : Entity> save(entity: T): Future<T> {
         val promise = PromiseImpl<T>()

@@ -12,10 +12,14 @@ import org.myddd.vertx.querychannel.api.Page
 import org.myddd.vertx.querychannel.api.PageParam
 import org.myddd.vertx.querychannel.api.QueryChannel
 import org.myddd.vertx.querychannel.api.QueryParam
+import java.util.*
 
-class QueryChannelHibernate : QueryChannel {
+class QueryChannelHibernate(private val dataSource:String? = null) : QueryChannel {
 
-    private val sessionFactory: Mutiny.SessionFactory by lazy { InstanceFactory.getInstance(Mutiny.SessionFactory::class.java) }
+    private val sessionFactory: Mutiny.SessionFactory by lazy {
+        if(Objects.isNull(dataSource)) InstanceFactory.getInstance(Mutiny.SessionFactory::class.java)
+        else InstanceFactory.getInstance(Mutiny.SessionFactory::class.java,dataSource)
+    }
 
     override suspend fun  <T> pageQuery(queryParam: QueryParam<T>, pageParam: PageParam):Future<Page<T>> {
 
