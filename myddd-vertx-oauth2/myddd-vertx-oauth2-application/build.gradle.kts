@@ -40,9 +40,9 @@ dependencies {
     implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     //依赖注入实现（仅测试下）
     testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
-
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-
     testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-infra"))
 
+    testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
+    testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
 }

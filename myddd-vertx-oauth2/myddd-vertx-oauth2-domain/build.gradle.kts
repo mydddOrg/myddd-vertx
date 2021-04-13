@@ -29,4 +29,6 @@ dependencies {
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation(project(":myddd-vertx-oauth2:myddd-vertx-oauth2-infra"))
 
+    testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
+    testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
 }

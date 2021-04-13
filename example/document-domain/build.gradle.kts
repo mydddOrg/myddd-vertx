@@ -36,6 +36,6 @@ dependencies {
     testImplementation(project(":example:document-infra"))
 
     testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
-
+    testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
 
 }

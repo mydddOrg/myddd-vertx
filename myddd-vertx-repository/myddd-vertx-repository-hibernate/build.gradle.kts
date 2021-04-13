@@ -18,11 +18,9 @@ dependencies {
     implementation(project(":myddd-vertx-domain"))
     api(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
     implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
-    testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
 
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
-    testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
 
     api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("org.hibernate:hibernate-core:${rootProject.extra["hibernate_core_version"]}")
@@ -33,9 +31,12 @@ dependencies {
 
     testImplementation("javax.inject:javax.inject:1")
     testImplementation("org.eclipse.persistence:javax.persistence:${rootProject.extra["javax_persistence_version"]}")
+    testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
+    testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
 
     testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
     testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
+
 }
 
 tasks.withType<Test>().configureEach {

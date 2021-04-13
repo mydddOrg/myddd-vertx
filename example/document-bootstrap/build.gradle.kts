@@ -41,6 +41,9 @@ dependencies {
     api("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
 
+    implementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
+    implementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
+
     implementation(project(":myddd-vertx-web"))
     implementation(project(":example:document-domain"))
     implementation(project(":example:document-api"))

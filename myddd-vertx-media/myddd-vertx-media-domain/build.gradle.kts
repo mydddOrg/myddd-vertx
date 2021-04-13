@@ -39,4 +39,7 @@ dependencies {
     testImplementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
     testImplementation(project(":myddd-vertx-repository:myddd-vertx-repository-hibernate"))
 
+    testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
+    testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
+
 }

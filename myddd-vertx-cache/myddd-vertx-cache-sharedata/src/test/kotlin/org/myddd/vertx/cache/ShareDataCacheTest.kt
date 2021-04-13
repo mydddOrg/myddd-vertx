@@ -21,7 +21,7 @@ class ShareDataCacheTest:AbstractTest() {
 
         private val localCache:Cache<Entity> = ShareDataCache(name = "Cache")
         private val disturbedCache:Cache<Entity> = ShareDataCache(name = "AsyncCache",localCache = false)
-        private val anotherCache:Cache<Entity> = ShareDataCache<Entity>(name = "AnotherCache")
+        private val anotherCache:Cache<Entity> = ShareDataCache(name = "AnotherCache")
 
         @JvmStatic
         fun parameterCache():Stream<Cache<Entity>>{

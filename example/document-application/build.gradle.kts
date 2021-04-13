@@ -47,5 +47,6 @@ dependencies {
 
     testImplementation(project(":myddd-vertx-media:myddd-vertx-media-infra"))
     testImplementation(project(":myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-qcloud"))
-
+    testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
+    testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
 }
