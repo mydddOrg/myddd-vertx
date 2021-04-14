@@ -1,8 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 //使用新的kotlin compile
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions.useIR = true
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        useIR = true
+    }
+}
 
 plugins {
     java
@@ -103,6 +106,13 @@ allprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "11"
     }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            useIR = true
+        }
+    }
+
 }
 
 repositories {

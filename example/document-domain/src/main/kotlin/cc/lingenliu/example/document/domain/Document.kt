@@ -3,7 +3,6 @@ package cc.lingenliu.example.document.domain
 import io.vertx.core.Future
 import org.myddd.vertx.domain.BaseEntity
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.string.RandomIDString
 import javax.persistence.*
 
 @Entity
