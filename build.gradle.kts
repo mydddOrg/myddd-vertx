@@ -1,26 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-//使用新的kotlin compile
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        useIR = true
-    }
-}
-
 plugins {
     java
     `maven-publish`
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
     id("jacoco")
     id("org.sonarqube") version "3.0"
 }
 
-val projectVersion = "1.0.0-SNAPSHOT"
-
-extra["myddd_vertx_version"] = "1.0.0-SNAPSHOT"
+val projectVersion = "1.0.1-SNAPSHOT"
 
 extra["version"] = projectVersion
-
 extra["vertx_version"] = "4.0.3"
 
 extra["log4j_version"] = "2.14.0"
@@ -30,8 +20,6 @@ extra["mockito_version"] = "3.7.7"
 extra["hibernate_core_version"] = "5.4.28.Final"
 extra["commons_lang3_version"] = "3.12.0"
 extra["junit5_version"] = "5.7.1"
-
-extra["isv_gateway_version"] = "1.0.0-SNAPSHOT"
 
 group = "org.myddd.vertx"
 version = project.extra["version"]!!
@@ -106,13 +94,6 @@ allprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "11"
     }
-
-    tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            useIR = true
-        }
-    }
-
 }
 
 repositories {
