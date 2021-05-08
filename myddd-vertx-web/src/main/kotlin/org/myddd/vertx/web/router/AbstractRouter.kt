@@ -29,6 +29,7 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
 
         const val ERROR_CODE = "errorCode"
         const val ERROR_MSG = "errorMsg"
+        const val ERROR_STATUS = "errorStatus"
         const val OTHER_ERROR = "OTHER_ERROR"
         const val BAD_REQUEST = "BAD_REQUEST"
         const val BAD_AUTHORIZATION = "BAD_AUTHORIZATION"
@@ -104,6 +105,10 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,protected v
                         val responseJson = JsonObject()
                             .put(ERROR_CODE, failure.errorCode)
                             .put(ERROR_MSG, errorMsgI18n)
+
+                        if(failure.errorCode.errorStatus() > 0){
+                            responseJson.put(ERROR_STATUS,failure.errorCode.errorStatus())
+                        }
 
                         Pair(HTTP_400_RESPONSE,responseJson)
                     }

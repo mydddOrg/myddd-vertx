@@ -54,6 +54,7 @@ class DocumentRouteTest:AbstractRouteTest() {
                     .await()
                 testContext.verify {
                     Assertions.assertEquals(400,errorResponse.statusCode())
+                    logger.debug(errorResponse.bodyAsString())
                 }
 
                 val requestJson = json {
