@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -32,20 +33,6 @@ class TestQueryChannelHibernate {
 
     private val repositories:Array<EntityRepository> = arrayOf(EntityRepositoryHibernate(),EntityRepositoryHibernate(dataSource = "pg"))
 
-    init {
-        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
-            override fun configure() {
-                bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
-
-                bind(Mutiny.SessionFactory::class.java).toInstance(Persistence.createEntityManagerFactory("default")
-                    .unwrap(Mutiny.SessionFactory::class.java))
-
-                bind(Mutiny.SessionFactory::class.java).annotatedWith(Names.named("pg")).toInstance(Persistence.createEntityManagerFactory("pg")
-                    .unwrap(Mutiny.SessionFactory::class.java))
-            }
-        })))
-    }
-
     companion object {
         @JvmStatic
         fun parametersQueryChannel():Stream<QueryChannel>{
@@ -53,6 +40,29 @@ class TestQueryChannelHibernate {
                 QueryChannelHibernate(),
                 QueryChannelHibernate(dataSource = "pg")
             )
+        }
+
+        @BeforeAll
+        @JvmStatic
+        fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
+            GlobalScope.launch(vertx.dispatcher()) {
+                try {
+                    InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
+                        override fun configure() {
+                            bind(Vertx::class.java).toInstance(vertx)
+
+                            bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
+                            bind(Mutiny.SessionFactory::class.java).toInstance(Persistence.createEntityManagerFactory("default")
+                                .unwrap(Mutiny.SessionFactory::class.java))
+                            bind(Mutiny.SessionFactory::class.java).annotatedWith(Names.named("pg")).toInstance(Persistence.createEntityManagerFactory("pg")
+                                .unwrap(Mutiny.SessionFactory::class.java))
+                        }
+                    })))
+                }catch (t:Throwable){
+                    testContext.failNow(t)
+                }
+                testContext.completeNow()
+            }
         }
     }
 
@@ -90,6 +100,26 @@ class TestQueryChannelHibernate {
             val list = queryChannel.queryList(QueryParam(clazz = User::class.java,sql ="from User")).await()
             testContext.verify {
                 Assertions.assertTrue(list.isNotEmpty())
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("parametersQueryChannel")
+    fun testLimitQueryList(queryChannel: QueryChannel,vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                prepareData(testContext)
+
+                val limitQuery = queryChannel.limitQueryList(QueryParam(clazz = User::class.java,sql ="from User"),5).await()
+                testContext.verify {
+                    Assertions.assertTrue(limitQuery.isNotEmpty())
+                    Assertions.assertEquals(5,limitQuery.size)
+                }
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
             }
             testContext.completeNow()
         }

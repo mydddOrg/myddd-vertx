@@ -15,4 +15,6 @@ interface QueryChannel {
     suspend fun <T> queryList(queryParam: QueryParam<T>):Future<List<T>>
 
 
+    suspend fun <T> limitQueryList(queryParam: QueryParam<T>,limit:Int = 50):Future<List<T>>
+
 }

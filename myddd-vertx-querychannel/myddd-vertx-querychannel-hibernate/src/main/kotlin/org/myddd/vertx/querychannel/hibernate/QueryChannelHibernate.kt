@@ -1,8 +1,10 @@
 package org.myddd.vertx.querychannel.hibernate
 
 import io.vertx.core.Future
+import io.vertx.core.Vertx
 import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
@@ -16,6 +18,9 @@ import java.util.*
 
 class QueryChannelHibernate(private val dataSource:String? = null) : QueryChannel {
 
+
+    private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
+
     private val sessionFactory: Mutiny.SessionFactory by lazy {
         if(Objects.isNull(dataSource)) InstanceFactory.getInstance(Mutiny.SessionFactory::class.java)
         else InstanceFactory.getInstance(Mutiny.SessionFactory::class.java,dataSource)
@@ -26,10 +31,10 @@ class QueryChannelHibernate(private val dataSource:String? = null) : QueryChanne
         val future = PromiseImpl<Page<T>>()
 
         coroutineScope {
-            val queryResult = withContext(Dispatchers.Default) {
+            val queryResult = withContext(vertx.dispatcher()) {
                 pageQueryResult(queryParam, pageParam)
             }
-            val queryCount = withContext(Dispatchers.Default) {
+            val queryCount = withContext(vertx.dispatcher()) {
                 pageQueryCount(queryParam)
             }
             future.onSuccess(Page(dataList = queryResult.await(),totalCount = queryCount.await(),skip = pageParam.skip,limit = pageParam.limit))
@@ -71,6 +76,21 @@ class QueryChannelHibernate(private val dataSource:String? = null) : QueryChanne
         sessionFactory.withSession { session ->
             val query = session.createQuery(queryParam.sql,queryParam.clazz)
             queryParam.params.forEach { (key, value) -> query.setParameter(key,value)  }
+            query.resultList
+        }.subscribe().with({
+            future.onSuccess(it)
+        },{
+            future.onFailure(it)
+        })
+        return future
+    }
+
+    override suspend fun <T> limitQueryList(queryParam: QueryParam<T>, limit: Int): Future<List<T>> {
+        val future = PromiseImpl<List<T>>()
+        sessionFactory.withSession { session ->
+            val query = session.createQuery(queryParam.sql,queryParam.clazz)
+            queryParam.params.forEach { (key, value) -> query.setParameter(key,value)  }
+            query.maxResults = limit
             query.resultList
         }.subscribe().with({
             future.onSuccess(it)
