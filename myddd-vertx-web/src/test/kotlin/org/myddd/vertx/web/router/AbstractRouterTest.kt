@@ -21,7 +21,7 @@ import org.mockito.Mockito
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.oauth2.api.OAuth2Application
-import org.myddd.vertx.web.router.config.GlobalConfig
+import org.myddd.vertx.config.Config
 import org.myddd.vertx.web.router.handler.IPFilterHandler
 import java.util.*
 import kotlin.Exception
@@ -89,7 +89,7 @@ class AbstractRouterTest {
     fun disableIpFilter(vertx: Vertx,testContext: VertxTestContext){
         Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE)).thenReturn(false)
         Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.BLACK_LIST_ENABLE)).thenReturn(false)
-        GlobalConfig.configObject = jsonConfig
+        Config.configObject = jsonConfig
         IPFilterHandler.reloadCache()
 
         testContext.completeNow()
@@ -380,12 +380,12 @@ class AbstractRouterTest {
 
             try {
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE)).thenReturn(false)
-                GlobalConfig.configObject = jsonConfig
+                Config.configObject = jsonConfig
 
                 testContext.verify {
                     Assertions.assertEquals(false,jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE))
                     Assertions.assertEquals(false,
-                        GlobalConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE))
+                        Config.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE))
                 }
 
                 IPFilterHandler.reloadCache()
@@ -409,7 +409,7 @@ class AbstractRouterTest {
                 //启用IP白名单,包括自己
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE)).thenReturn(true)
                 Mockito.`when`(jsonConfig.getString(IPFilterHandler.WHITE_LIST_VALUES)).thenReturn("127.0.0.1")
-                GlobalConfig.configObject = jsonConfig
+                Config.configObject = jsonConfig
 
                 IPFilterHandler.reloadCache()
 
@@ -432,7 +432,7 @@ class AbstractRouterTest {
                 //启用IP白名单,包括自己
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.WHITE_LIST_ENABLE,false)).thenReturn(true)
                 Mockito.`when`(jsonConfig.getString(IPFilterHandler.WHITE_LIST_VALUES,"")).thenReturn("127.0.0.2")
-                GlobalConfig.configObject = jsonConfig
+                Config.configObject = jsonConfig
                 IPFilterHandler.reloadCache()
 
 
@@ -458,7 +458,7 @@ class AbstractRouterTest {
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.BLACK_LIST_ENABLE,false)).thenReturn(true)
 
                 Mockito.`when`(jsonConfig.getString(IPFilterHandler.BLACK_LIST_VALUES,"")).thenReturn("127.0.0.1")
-                GlobalConfig.configObject = jsonConfig
+                Config.configObject = jsonConfig
                 IPFilterHandler.reloadCache()
 
                 var response = webClient.get(port, host,"/v1/users").send().await()
@@ -482,7 +482,7 @@ class AbstractRouterTest {
                 Mockito.`when`(jsonConfig.getBoolean(IPFilterHandler.BLACK_LIST_ENABLE)).thenReturn(true)
 
                 Mockito.`when`(jsonConfig.getString(IPFilterHandler.BLACK_LIST_VALUES)).thenReturn("127.0.0.2")
-                GlobalConfig.configObject = jsonConfig
+                Config.configObject = jsonConfig
                 IPFilterHandler.reloadCache()
 
                 var response = webClient.get(port, host,"/v1/users").send().await()

@@ -12,14 +12,14 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
-import org.myddd.vertx.web.router.config.GlobalConfig
+import org.myddd.vertx.config.Config
 
 abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticle() {
 
     private val logger by lazy { LoggerFactory.getLogger(BootstrapVerticle::class.java) }
 
     private val startedPort:Int by lazy {
-        GlobalConfig.getInteger("port",port)
+        Config.getInteger("port",port)
     }
     override suspend fun start() {
         super.start()
@@ -49,7 +49,7 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
     }
 
     private suspend fun initGlobalConfig(): Future<Unit> {
-        return GlobalConfig.loadGlobalConfig(vertx)
+        return Config.loadGlobalConfig(vertx)
     }
 
     abstract fun abstractModules(vertx: Vertx):AbstractModule
