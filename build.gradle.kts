@@ -9,7 +9,7 @@ plugins {
     id("org.sonarqube") version "3.0"
 }
 
-val projectVersion = "1.0.0-SNAPSHOT"
+val projectVersion = "1.1.0-SNAPSHOT"
 
 extra["version"] = projectVersion
 extra["vertx_version"] = "4.1.0"
