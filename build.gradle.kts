@@ -17,10 +17,7 @@ plugins {
 
 val projectVersion = "1.0.0-SNAPSHOT"
 
-extra["myddd_vertx_version"] = "1.0.0-SNAPSHOT"
-
 extra["version"] = projectVersion
-
 extra["vertx_version"] = "4.0.3"
 
 extra["log4j_version"] = "2.14.0"
@@ -34,7 +31,7 @@ extra["junit5_version"] = "5.7.1"
 extra["isv_gateway_version"] = "1.0.0-SNAPSHOT"
 
 group = "org.myddd.vertx"
-version = project.extra["version"]!!
+version = projectVersion
 
 subprojects {
     apply(plugin = "java")
