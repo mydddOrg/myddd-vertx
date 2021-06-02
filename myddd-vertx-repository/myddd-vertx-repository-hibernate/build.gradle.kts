@@ -23,8 +23,8 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
     implementation(project(":myddd-vertx-base:myddd-vertx-base-api"))
 
-    api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("org.hibernate:hibernate-core:${rootProject.extra["hibernate_core_version"]}")
+    api("org.hibernate.reactive:hibernate-reactive-core:${rootProject.extra["hibernate_reactive_version"]}")
 
     api("io.smallrye.reactive:mutiny:0.14.0")
     api("com.ibm.async:asyncutil:0.1.0")
