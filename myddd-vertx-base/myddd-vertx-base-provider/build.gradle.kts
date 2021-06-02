@@ -22,8 +22,10 @@ dependencies {
     api("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     api("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${rootProject.extra["jackson_version"]}")
     implementation("commons-codec:commons-codec:1.15")
+    api("io.vertx:vertx-config:${rootProject.extra["vertx_version"]}")
 
 
     api(project(":myddd-vertx-base:myddd-vertx-base-api"))

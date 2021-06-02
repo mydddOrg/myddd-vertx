@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.config.Config
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.web.router.WebGuice
@@ -20,7 +21,6 @@ import org.myddd.vertx.web.router.WebGuice
 class GlobalConfigTest {
 
     companion object {
-
 
         @BeforeAll
         @JvmStatic
@@ -39,7 +39,7 @@ class GlobalConfigTest {
 
                 System.setProperty("config","/a.config")
                 try {
-                    GlobalConfig.loadGlobalConfig(vertx).await()
+                    Config.loadGlobalConfig(vertx).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -56,9 +56,9 @@ class GlobalConfigTest {
             try {
                 System.setProperty("config","META-INF/config.properties")
 
-                GlobalConfig.loadGlobalConfig(vertx).await()
+                Config.loadGlobalConfig(vertx).await()
 
-                val enableWhiteIPFilter = GlobalConfig.getBoolean("ipFilter.whitelist.enable")
+                val enableWhiteIPFilter = Config.getBoolean("ipFilter.whitelist.enable")
 
                 testContext.verify {
                     Assertions.assertEquals(false,enableWhiteIPFilter)

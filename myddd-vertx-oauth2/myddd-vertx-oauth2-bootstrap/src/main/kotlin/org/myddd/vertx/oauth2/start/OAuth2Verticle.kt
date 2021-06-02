@@ -2,7 +2,6 @@ package org.myddd.vertx.oauth2.start
 
 import com.google.inject.Guice
 import io.vertx.core.Future
-import io.vertx.core.Promise
 import io.vertx.core.http.HttpServer
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
@@ -12,7 +11,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.oauth2.start.router.OAuth2ClientRouter
 import org.myddd.vertx.oauth2.start.router.OAuth2TokenRouter
-import org.myddd.vertx.web.router.config.GlobalConfig
+import org.myddd.vertx.config.Config
 
 class OAuth2Verticle(private val port:Int = 8080) : CoroutineVerticle() {
 
@@ -51,6 +50,6 @@ class OAuth2Verticle(private val port:Int = 8080) : CoroutineVerticle() {
     }
 
     private suspend fun initGlobalConfig(): Future<Unit> {
-        return GlobalConfig.loadGlobalConfig(vertx)
+        return Config.loadGlobalConfig(vertx)
     }
 }

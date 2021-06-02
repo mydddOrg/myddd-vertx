@@ -9,7 +9,7 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.web.router.config.GlobalConfig
+import org.myddd.vertx.config.Config
 import java.util.*
 
 
@@ -41,10 +41,10 @@ class IPFilterHandler : Handler<RoutingContext> {
         private var blackList:List<String>? = emptyList()
 
         fun reloadCache(){
-            enableWhiteList = GlobalConfig.getBoolean(WHITE_LIST_ENABLE) == true
-            enableBlackList = GlobalConfig.getBoolean(BLACK_LIST_ENABLE) == true
-            whiteList = GlobalConfig.getString(WHITE_LIST_VALUES).split(",")
-            blackList = GlobalConfig.getString(BLACK_LIST_VALUES).split(",")
+            enableWhiteList = Config.getBoolean(WHITE_LIST_ENABLE) == true
+            enableBlackList = Config.getBoolean(BLACK_LIST_ENABLE) == true
+            whiteList = Config.getString(WHITE_LIST_VALUES).split(",")
+            blackList = Config.getString(BLACK_LIST_VALUES).split(",")
         }
 
     }
