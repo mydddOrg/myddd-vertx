@@ -25,11 +25,17 @@ extra["hibernate_reactive_version"] = "1.0.0.CR6"
 group = "org.myddd.vertx"
 version = projectVersion
 
+
+
 subprojects {
     apply(plugin = "java")
     apply(plugin = "jacoco")
     apply(plugin = "org.sonarqube")
     apply(plugin = "maven-publish")
+
+    jacoco {
+        toolVersion = "0.8.7"
+    }
 
     publishing {
 
