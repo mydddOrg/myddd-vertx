@@ -28,6 +28,9 @@ object Config {
         return configObject!!.getInteger(key,def)
     }
 
+    fun getLong(key:String,default:Long = 0L):Long{
+        return configObject!!.getLong(key,default)
+    }
 
     suspend fun loadGlobalConfig(vertx: Vertx):Future<Unit>{
         Config.vertx = vertx
