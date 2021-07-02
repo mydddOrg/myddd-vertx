@@ -6,6 +6,8 @@ plugins {
 group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
 
+extra["publishJar"] = true
+
 dependencies {
     //base
     implementation(kotlin("stdlib"))

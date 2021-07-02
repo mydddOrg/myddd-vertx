@@ -30,42 +30,51 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "jacoco")
     apply(plugin = "org.sonarqube")
-    apply(plugin = "maven-publish")
 
     jacoco {
         toolVersion = "0.8.7"
     }
 
-    publishing {
+    afterEvaluate {
+        val publishJar = this.extra.has("publishJar")
+        if(publishJar){
+            apply(plugin = "maven-publish")
 
-        publications {
+            publishing {
 
-            create<MavenPublication>("mavenJava"){
-                groupId = "org.myddd.vertx"
-                afterEvaluate {
-                    artifactId = tasks.jar.get().archiveBaseName.get()
-                }
-                from(components["java"])
-            }
+                publications {
 
-            repositories {
-                maven {
-
-                    val releasesRepoUrl = "sftp://ssh.myddd.org:10010/repository/releases"
-                    val snapshotsRepoUrl = "sftp://ssh.myddd.org:10010/repository/snapshots"
-                    version = projectVersion
-                    url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
-
-                    credentials {
-                        username = if(project.hasProperty("username")) project.property("username") as String? else ""
-                        password = if(project.hasProperty("password")) project.property("password") as String? else ""
+                    create<MavenPublication>("mavenJava"){
+                        groupId = "org.myddd.vertx"
+                        afterEvaluate {
+                            artifactId = tasks.jar.get().archiveBaseName.get()
+                        }
+                        from(components["java"])
                     }
 
+                    repositories {
+                        maven {
+
+                            val releasesRepoUrl = "sftp://ssh.myddd.org:10010/repository/releases"
+                            val snapshotsRepoUrl = "sftp://ssh.myddd.org:10010/repository/snapshots"
+                            version = projectVersion
+                            url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
+
+                            credentials {
+                                username = if(project.hasProperty("username")) project.property("username") as String? else ""
+                                password = if(project.hasProperty("password")) project.property("password") as String? else ""
+                            }
+
+                        }
+                    }
                 }
+
             }
         }
-
     }
+
+
+
 }
 
 

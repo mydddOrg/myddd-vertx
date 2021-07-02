@@ -6,6 +6,9 @@ plugins {
 group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
 
+extra["publishJar"] = true
+
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     testLogging {

@@ -5,6 +5,7 @@ plugins {
 
 group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
+extra["publishJar"] = true
 
 tasks.jacocoTestReport {
     reports {
