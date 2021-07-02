@@ -29,7 +29,6 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
     implementation("org.hibernate.reactive:hibernate-reactive-core:${rootProject.extra["hibernate_reactive_version"]}")
-    api("org.hibernate:hibernate-core:${rootProject.extra["hibernate_core_version"]}")
 
     testImplementation("javax.inject:javax.inject:1")
     testImplementation("org.eclipse.persistence:javax.persistence:${rootProject.extra["javax_persistence_version"]}")

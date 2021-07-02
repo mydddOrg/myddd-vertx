@@ -23,7 +23,6 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
     implementation(project(":myddd-vertx-base:myddd-vertx-base-api"))
 
-    implementation("org.hibernate:hibernate-core:${rootProject.extra["hibernate_core_version"]}")
     api("org.hibernate.reactive:hibernate-reactive-core:${rootProject.extra["hibernate_reactive_version"]}")
 
     api("io.smallrye.reactive:mutiny:0.14.0")

@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     java
     `maven-publish`
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.20"
     id("jacoco")
     id("org.sonarqube") version "3.0"
 }
@@ -17,10 +17,9 @@ extra["log4j_version"] = "2.14.0"
 extra["jackson_version"] = "2.12.1"
 extra["javax_persistence_version"] = "2.2.1"
 extra["mockito_version"] = "3.7.7"
-extra["hibernate_core_version"] = "5.5.0.Final"
 extra["commons_lang3_version"] = "3.12.0"
 extra["junit5_version"] = "5.7.1"
-extra["hibernate_reactive_version"] = "1.0.0.CR6"
+extra["hibernate_reactive_version"] = "1.0.0.CR7"
 
 group = "org.myddd.vertx"
 version = projectVersion
