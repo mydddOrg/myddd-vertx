@@ -37,6 +37,12 @@ include("myddd-vertx-oauth2:myddd-vertx-oauth2-api")
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-application")
 include("myddd-vertx-oauth2:myddd-vertx-oauth2-bootstrap")
 
+//grpc
+include("myddd-vertx-grpc:myddd-vertx-grpc-api")
+include("myddd-vertx-grpc:myddd-vertx-grpc-local")
+include("myddd-vertx-grpc:myddd-vertx-grpc-cluster")
+
+
 //example
 include("example:document-domain")
 include("example:document-api")

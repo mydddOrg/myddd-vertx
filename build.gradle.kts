@@ -1,4 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+buildscript {
+    extra["kotlinVersion"] = "1.5.21"
+    val kotlinVersion: String by extra
+
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.17")
+    }
+}
 
 
 plugins {
@@ -131,7 +142,6 @@ repositories {
 
     mavenCentral()
 }
-
 
 tasks.jar {
     enabled = true
