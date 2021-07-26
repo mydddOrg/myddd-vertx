@@ -33,6 +33,7 @@ extra["javax_persistence_version"] = "2.2.1"
 extra["mockito_version"] = "3.7.7"
 extra["commons_lang3_version"] = "3.12.0"
 extra["junit5_version"] = "5.7.1"
+extra["protobuf"] = "3.17.3"
 
 group = "org.myddd.vertx"
 version = projectVersion

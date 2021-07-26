@@ -1,5 +1,4 @@
 import com.google.protobuf.gradle.*
-import org.gradle.kotlin.dsl.provider.gradleKotlinDslOf
 
 plugins {
     java
@@ -23,7 +22,7 @@ dependencies {
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
-    implementation("com.google.protobuf:protobuf-java:3.17.3")
+    implementation("com.google.protobuf:protobuf-java:${rootProject.extra["protobuf"]}")
     implementation("io.vertx:vertx-grpc:${rootProject.extra["vertx_version"]}")
     implementation("javax.annotation:javax.annotation-api:1.3.2")
 
@@ -36,13 +35,9 @@ sourceSets.main {
     proto.srcDir("src/main/protobuf")
 }
 
-sourceSets.test {
-    proto.srcDir("src/test/protobuf")
-}
-
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.17.3"
+        artifact = "com.google.protobuf:protoc:${rootProject.extra["protobuf"]}"
     }
     plugins {
         id("grpc") {
