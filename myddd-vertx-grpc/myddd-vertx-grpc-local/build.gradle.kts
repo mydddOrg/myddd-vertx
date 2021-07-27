@@ -1,5 +1,4 @@
 import com.google.protobuf.gradle.*
-import org.gradle.kotlin.dsl.provider.gradleKotlinDslOf
 
 plugins {
     java
@@ -20,16 +19,23 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(project(":myddd-vertx-domain"))
 
+    implementation(project(":myddd-vertx-grpc:myddd-vertx-grpc-api"))
+
+
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
-    implementation("com.google.protobuf:protobuf-java:3.17.3")
+    implementation("com.google.protobuf:protobuf-java:${rootProject.extra["protobuf-java"]}")
     implementation("io.vertx:vertx-grpc:${rootProject.extra["vertx_version"]}")
-    implementation("javax.annotation:javax.annotation-api:1.3.2")
+    implementation("javax.annotation:javax.annotation-api:${rootProject.extra["annotation-api"]}")
+
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
     testImplementation("org.mockito:mockito-core:3.7.7")
+    testImplementation("io.vertx:vertx-service-discovery:${rootProject.extra["vertx_version"]}")
+
+
 }
 
 sourceSets.main {

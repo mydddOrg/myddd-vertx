@@ -34,6 +34,9 @@ extra["mockito_version"] = "3.7.7"
 extra["commons_lang3_version"] = "3.12.0"
 extra["junit5_version"] = "5.7.1"
 
+extra["protobuf-java"] = "3.17.3"
+extra["annotation-api"] = "1.3.2"
+
 group = "org.myddd.vertx"
 version = projectVersion
 
@@ -122,6 +125,8 @@ allprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "11"
     }
+
+
 
 }
 

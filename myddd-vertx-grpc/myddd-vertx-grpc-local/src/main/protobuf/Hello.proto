@@ -5,6 +5,7 @@ option java_package = "examples";
 option java_outer_classname = "HelloWorldProto";
 package helloworld;
 
+
 // The greeting service definition.
 service Greeter {
  // Sends a greeting
