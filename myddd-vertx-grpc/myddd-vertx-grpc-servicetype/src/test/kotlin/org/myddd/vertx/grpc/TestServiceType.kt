@@ -1,6 +1,7 @@
 package org.myddd.vertx.grpc
 
 import io.vertx.core.Vertx
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class TestServiceType {
 
     companion object {
+
         private lateinit var discovery:ServiceDiscovery
 
         @JvmStatic

@@ -5,15 +5,14 @@ import io.vertx.core.json.JsonObject
 import io.vertx.servicediscovery.Record
 import io.vertx.servicediscovery.ServiceDiscovery
 import io.vertx.servicediscovery.ServiceReference
-import io.vertx.servicediscovery.spi.ServiceType
 
-class GrpcServiceType:ServiceType {
+class GrpcServiceType:GrpcEndpoint {
 
     override fun name(): String {
-        TODO("Not yet implemented")
+        return GrpcEndpoint.TYPE
     }
 
     override fun get(vertx: Vertx?, discovery: ServiceDiscovery?, record: Record?, configuration: JsonObject?): ServiceReference {
-        TODO("Not yet implemented")
+        return GrpcServiceReference(vertx,discovery,record)
     }
 }

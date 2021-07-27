@@ -17,7 +17,6 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(project(":myddd-vertx-domain"))
 
     implementation(project(":myddd-vertx-grpc:myddd-vertx-grpc-api"))
 
