@@ -26,6 +26,7 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
     implementation("com.google.protobuf:protobuf-java:${rootProject.extra["protobuf-java"]}")
+
     implementation("io.vertx:vertx-grpc:${rootProject.extra["vertx_version"]}")
     implementation("javax.annotation:javax.annotation-api:${rootProject.extra["annotation-api"]}")
 
@@ -42,13 +43,9 @@ sourceSets.main {
     proto.srcDir("src/main/protobuf")
 }
 
-sourceSets.test {
-    proto.srcDir("src/test/protobuf")
-}
-
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.17.3"
+        artifact = "com.google.protobuf:protoc:${rootProject.extra["protobuf-java"]}"
     }
     plugins {
         id("grpc") {
