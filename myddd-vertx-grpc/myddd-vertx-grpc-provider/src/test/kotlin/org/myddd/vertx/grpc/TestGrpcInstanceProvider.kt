@@ -24,7 +24,7 @@ class TestGrpcInstanceProvider {
 
     companion object {
 
-        private val serviceProxy by lazy {
+        private val healthCheckServiceProxy by lazy {
             GrpcInstanceFactory.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(SampleGrpcService.HealthCheck)
         }
 
@@ -35,6 +35,7 @@ class TestGrpcInstanceProvider {
         fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
+
                     InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
                         override fun configure() {
                             bind(Vertx::class.java).toInstance(vertx)
@@ -73,7 +74,7 @@ class TestGrpcInstanceProvider {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 try {
-                    serviceProxy.grpcService().await().hello(Empty.getDefaultInstance()).await()
+                    healthCheckServiceProxy.grpcService().await().hello(Empty.getDefaultInstance()).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -82,10 +83,10 @@ class TestGrpcInstanceProvider {
                 startRpcService(vertx).await()
 
                 testContext.verify {
-                    Assertions.assertNotNull(serviceProxy)
+                    Assertions.assertNotNull(healthCheckServiceProxy)
                 }
 
-                val sayHello = serviceProxy.grpcService().await().hello(Empty.getDefaultInstance()).await()
+                val sayHello = healthCheckServiceProxy.grpcService().await().hello(Empty.getDefaultInstance()).await()
 
                 testContext.verify {
                     Assertions.assertTrue(sayHello.value)
