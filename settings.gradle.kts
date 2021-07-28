@@ -39,8 +39,7 @@ include("myddd-vertx-oauth2:myddd-vertx-oauth2-bootstrap")
 
 //grpc
 include("myddd-vertx-grpc:myddd-vertx-grpc-api")
-include("myddd-vertx-grpc:myddd-vertx-grpc-local")
-include("myddd-vertx-grpc:myddd-vertx-grpc-cluster")
+include("myddd-vertx-grpc:myddd-vertx-grpc-provider")
 include("myddd-vertx-grpc:myddd-vertx-grpc-servicetype")
 
 

@@ -49,6 +49,7 @@ class TestGrpcServiceType {
                     testContext.verify {
                         Assertions.assertNotNull(discovery)
                     }
+                    logger.debug(VertxHealthCheckGrpc::class.java.name)
 
                     rpcServer = VertxServerBuilder
                         .forAddress(vertx, "localhost", randomPort)
@@ -77,7 +78,6 @@ class TestGrpcServiceType {
                 testContext.verify {
                     Assertions.assertNotNull(record)
                 }
-                logger.debug(record)
             }catch (t:Throwable){
                 testContext.failNow(t)
             }

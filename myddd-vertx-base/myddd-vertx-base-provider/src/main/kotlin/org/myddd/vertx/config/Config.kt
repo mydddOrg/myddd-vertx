@@ -17,19 +17,19 @@ object Config {
     var configObject : JsonObject? = null
 
     fun getString(key:String,def:String = ""):String {
-        return configObject!!.getString(key,def)
+        return if(Objects.isNull(configObject)) def else configObject!!.getString(key,def)
     }
 
     fun getBoolean(key:String,def:Boolean = false):Boolean {
-        return configObject!!.getBoolean(key,def)
+        return if(Objects.isNull(configObject)) def else configObject!!.getBoolean(key,def)
     }
 
     fun getInteger(key:String,def:Int = 0):Int {
-        return configObject!!.getInteger(key,def)
+        return if(Objects.isNull(configObject)) def else configObject!!.getInteger(key,def)
     }
 
     fun getLong(key:String,default:Long = 0L):Long{
-        return configObject!!.getLong(key,default)
+        return if(Objects.isNull(configObject)) default else configObject!!.getLong(key,default)
     }
 
     suspend fun loadGlobalConfig(vertx: Vertx):Future<Unit>{

@@ -19,7 +19,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation(project(":myddd-vertx-grpc:myddd-vertx-grpc-api"))
-
+    implementation(project(":myddd-vertx-grpc:myddd-vertx-grpc-servicetype"))
 
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
@@ -29,11 +29,17 @@ dependencies {
     implementation("io.vertx:vertx-grpc:${rootProject.extra["vertx_version"]}")
     implementation("javax.annotation:javax.annotation-api:${rootProject.extra["annotation-api"]}")
 
+    implementation("io.vertx:vertx-service-discovery:${rootProject.extra["vertx_version"]}")
+
+    api(project(":myddd-vertx-base:myddd-vertx-base-api"))
+    implementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
+
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
     testImplementation("org.mockito:mockito-core:3.7.7")
     testImplementation("io.vertx:vertx-service-discovery:${rootProject.extra["vertx_version"]}")
+    testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
 
 
 }
