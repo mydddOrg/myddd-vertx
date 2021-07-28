@@ -7,15 +7,14 @@ import io.vertx.core.Future
 
 class HealthGrpcBootstrapVerticle: GrpcBootstrapVerticle() {
 
-    private val healthCheck = object : VertxHealthCheckGrpc.HealthCheckVertxImplBase(),BindingGrpc {
+    private val healthCheck = object : VertxHealthCheckGrpc.HealthCheckVertxImplBase(),BindingGrpcService {
         override fun hello(request: Empty?): Future<BoolValue?> {
             return Future.succeededFuture(BoolValue.of(true))
         }
 
-        override fun service(): GrpcService {
+        override fun grpcService(): GrpcService {
             return SampleGrpcService.HealthCheck
         }
-
     }
 
 

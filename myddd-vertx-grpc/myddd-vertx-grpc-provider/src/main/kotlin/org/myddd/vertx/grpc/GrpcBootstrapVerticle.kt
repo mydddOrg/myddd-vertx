@@ -1,7 +1,6 @@
 package org.myddd.vertx.grpc
 
 import io.grpc.BindableService
-import io.grpc.Grpc
 import io.vertx.core.Future
 import io.vertx.core.Promise
 import io.vertx.core.impl.future.PromiseImpl
@@ -44,8 +43,8 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
         return try {
             discovery = ServiceDiscovery.create(vertx)
             services().forEach {
-                val grpcService = (it as BindingGrpc)
-                val grpcEndpoint = GrpcEndpoint.createRecord(grpcService.service().serviceName(), host(), port())
+                val grpcService = (it as BindingGrpcService)
+                val grpcEndpoint = GrpcEndpoint.createRecord(grpcService.grpcService().serviceName(), host(), port())
                 val record = discovery.publish(grpcEndpoint).await()
                 grpcRecords.add(record)
             }
