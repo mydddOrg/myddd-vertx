@@ -1,5 +1,5 @@
 package org.myddd.vertx.grpc
 
-class GrpcInstanceNotFoundException:RuntimeException() {
+class GrpcInstanceNotFoundException(message:String?):RuntimeException(message) {
 
 }

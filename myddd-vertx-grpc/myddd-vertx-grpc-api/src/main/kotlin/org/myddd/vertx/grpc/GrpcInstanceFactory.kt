@@ -11,15 +11,13 @@ object GrpcInstanceFactory {
 
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 
-    fun <T> getInstance(grpcService: GrpcService,lazyLoad:Boolean = true):GrpcServiceProxy<T> {
+    fun <T> getInstance(grpcService: GrpcService,lazyLoad:Boolean = false):GrpcServiceProxy<T> {
         val serviceProxy = GrpcServiceProxy<T>(grpcService)
-
         if(!lazyLoad){
             GlobalScope.launch(vertx.dispatcher()) {
                 serviceProxy.lazyLoad()
             }
         }
-
         return serviceProxy
     }
 }

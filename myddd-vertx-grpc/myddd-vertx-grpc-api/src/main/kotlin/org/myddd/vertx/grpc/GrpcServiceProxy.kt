@@ -11,7 +11,7 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService) {
 
     private val grpcInstanceProvider by lazy { InstanceFactory.getInstance(GrpcInstanceProvider::class.java) }
 
-    suspend fun service():Future<T>{
+    suspend fun grpcService():Future<T>{
         return try {
             if(Objects.isNull(service)){
                 retried().await()
@@ -29,8 +29,8 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService) {
     private suspend fun retried():Future<Unit>{
         return try {
             this.service = grpcInstanceProvider.getInstance<T>(grpcService).await()
-            requireNotNull(this.service()){
-                "Can not get remote rpc service:${grpcService.serviceName()}"
+            if(Objects.isNull(this.service)){
+                throw GrpcInstanceNotFoundException(grpcService.serviceName())
             }
             Future.succeededFuture()
         }catch (t:Throwable){

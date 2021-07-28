@@ -27,7 +27,7 @@ class DiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
             }.await()
 
             if(Objects.isNull(record)){
-                throw GrpcInstanceNotFoundException()
+                throw GrpcInstanceNotFoundException(grpcService.serviceName())
             }
 
             val grpcLocation = record.location.mapTo(GrpcLocation::class.java)

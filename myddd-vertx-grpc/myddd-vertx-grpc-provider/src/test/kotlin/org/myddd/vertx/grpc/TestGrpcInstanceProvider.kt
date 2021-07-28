@@ -76,7 +76,7 @@ class TestGrpcInstanceProvider {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 try {
-                    serviceProxy.service().await().hello(Empty.getDefaultInstance()).await()
+                    serviceProxy.grpcService().await().hello(Empty.getDefaultInstance()).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -84,21 +84,21 @@ class TestGrpcInstanceProvider {
                 //启动服务
                 startRpcService(vertx).await()
 
-
                 testContext.verify {
                     Assertions.assertNotNull(serviceProxy)
                 }
 
-                val sayHello = serviceProxy.service().await().hello(Empty.getDefaultInstance()).await()
+                val sayHello = serviceProxy.grpcService().await().hello(Empty.getDefaultInstance()).await()
 
                 testContext.verify {
                     Assertions.assertTrue(sayHello.value)
                 }
 
-                stopRpcService(vertx).await()
 
             }catch (t:Throwable){
                 testContext.failNow(t)
+            }finally {
+                stopRpcService(vertx).await()
             }
             testContext.completeNow()
         }
