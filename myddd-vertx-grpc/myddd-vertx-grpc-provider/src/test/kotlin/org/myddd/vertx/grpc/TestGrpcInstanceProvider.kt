@@ -24,9 +24,6 @@ class TestGrpcInstanceProvider {
 
     companion object {
 
-        private val grpcInstanceProvider by lazy { InstanceFactory.getInstance(GrpcInstanceProvider::class.java) }
-
-
         private val serviceProxy by lazy {
             GrpcInstanceFactory.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(SampleGrpcService.HealthCheck)
         }
@@ -41,7 +38,7 @@ class TestGrpcInstanceProvider {
                     InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
                         override fun configure() {
                             bind(Vertx::class.java).toInstance(vertx)
-                            bind(GrpcInstanceProvider::class.java).to(DiscoveryGrpcInstanceProvider::class.java)
+                            bind(GrpcInstanceProvider::class.java).to(ServiceDiscoveryGrpcInstanceProvider::class.java)
                         }
                     })))
 

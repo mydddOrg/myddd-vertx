@@ -9,7 +9,7 @@ import io.vertx.servicediscovery.ServiceDiscovery
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 
-class DiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
+class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
 
     companion object {
         const val TYPE = "grpc"
