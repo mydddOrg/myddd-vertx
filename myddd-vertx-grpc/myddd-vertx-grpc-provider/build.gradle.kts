@@ -21,6 +21,9 @@ dependencies {
     implementation(project(":myddd-vertx-grpc:myddd-vertx-grpc-api"))
     implementation(project(":myddd-vertx-grpc:myddd-vertx-grpc-servicetype"))
 
+    api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
+    implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
+
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 

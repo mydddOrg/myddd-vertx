@@ -76,7 +76,10 @@ class TestGrpcInstanceProvider {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 try {
-                    healthCheckServiceProxy.grpcService().await().hello(Empty.getDefaultInstance()).await()
+                    healthCheckServiceProxy.rpcRun {
+                        it.hello(Empty.getDefaultInstance())
+                    }.await()
+
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -88,7 +91,9 @@ class TestGrpcInstanceProvider {
                     Assertions.assertNotNull(healthCheckServiceProxy)
                 }
 
-                val sayHello = healthCheckServiceProxy.grpcService().await().hello(Empty.getDefaultInstance()).await()
+                val sayHello = healthCheckServiceProxy.rpcRun {
+                    it.hello(Empty.getDefaultInstance())
+                }.await()
 
                 testContext.verify {
                     Assertions.assertTrue(sayHello.value)

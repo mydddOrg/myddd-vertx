@@ -22,6 +22,16 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService) {
         }
     }
 
+    suspend fun <X> rpcRun(execute:(service:T)->Future<X>):Future<X>{
+        return try {
+            val t = grpcService().await()
+            execute(t)
+        }catch (t:Throwable){
+            service = null
+            Future.failedFuture(t)
+        }
+    }
+
     suspend fun lazyLoad():Future<Unit>{
         return retried()
     }

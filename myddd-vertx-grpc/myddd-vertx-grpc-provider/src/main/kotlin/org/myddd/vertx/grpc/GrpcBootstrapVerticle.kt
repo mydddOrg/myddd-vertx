@@ -1,8 +1,11 @@
 package org.myddd.vertx.grpc
 
+import com.google.inject.AbstractModule
+import com.google.inject.Guice
 import io.grpc.BindableService
 import io.vertx.core.Future
 import io.vertx.core.Promise
+import io.vertx.core.Vertx
 import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.grpc.VertxServer
 import io.vertx.grpc.VertxServerBuilder
@@ -11,6 +14,9 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.servicediscovery.Record
 import io.vertx.servicediscovery.ServiceDiscovery
 import org.myddd.vertx.config.Config
+import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import java.util.*
 
 abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
@@ -29,6 +35,7 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
     override suspend fun start() {
         super.start()
+        initIOC()
         startGrpcServer().await()
         startDiscovery().await()
     }
@@ -85,6 +92,22 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
         }
         return promise.future()
     }
+
+    private fun initIOC(){
+        val module = abstractModules(vertx)
+        if(Objects.nonNull(module)){
+            InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(module)))
+        }
+    }
+
+    private suspend fun initGlobalConfig(): Future<Unit> {
+        return Config.loadGlobalConfig(vertx)
+    }
+
+    open fun abstractModules(vertx: Vertx): AbstractModule?{
+        return null
+    }
+
 
 
     private fun host():String {
