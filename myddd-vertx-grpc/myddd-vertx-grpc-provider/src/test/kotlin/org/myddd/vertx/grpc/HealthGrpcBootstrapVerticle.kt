@@ -13,7 +13,7 @@ class HealthGrpcBootstrapVerticle: GrpcBootstrapVerticle() {
         }
 
         override fun service(): GrpcService {
-            return SampleGrpcService.SampleCheck
+            return SampleGrpcService.HealthCheck
         }
 
     }
