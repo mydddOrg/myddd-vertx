@@ -18,7 +18,7 @@ class DiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
         private val discovery by lazy { ServiceDiscovery.create(vertx) }
     }
 
-    override suspend fun <T> getInstance(grpcService: GrpcService):Future<GrpcServiceProxy<T>> {
+    override suspend fun <T> getInstance(grpcService: GrpcService):Future<T> {
         return try {
             val record = discovery.getRecord{
                 it.type.equals(TYPE).and(
@@ -41,7 +41,7 @@ class DiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
 
             val method = service.getMethod("newVertxStub", Channel::class.java)
             val stub = method.invoke(null,channel) as T
-            Future.succeededFuture(GrpcServiceProxy(stub))
+            Future.succeededFuture(stub)
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

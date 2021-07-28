@@ -26,6 +26,11 @@ class TestGrpcInstanceProvider {
 
         private val grpcInstanceProvider by lazy { InstanceFactory.getInstance(GrpcInstanceProvider::class.java) }
 
+
+        private val serviceProxy by lazy {
+            GrpcInstanceFactory.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(SampleGrpcService.HealthCheck)
+        }
+
         private lateinit var deployId:String
 
         @BeforeAll
@@ -71,7 +76,7 @@ class TestGrpcInstanceProvider {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 try {
-                    grpcInstanceProvider.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(SampleGrpcService.HealthCheck).await()
+                    serviceProxy.service().await().hello(Empty.getDefaultInstance()).await()
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -79,14 +84,12 @@ class TestGrpcInstanceProvider {
                 //启动服务
                 startRpcService(vertx).await()
 
-                val serviceProxy = grpcInstanceProvider.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(SampleGrpcService.HealthCheck).await()
-
 
                 testContext.verify {
                     Assertions.assertNotNull(serviceProxy)
                 }
 
-                val sayHello = serviceProxy.service().hello(Empty.getDefaultInstance()).await()
+                val sayHello = serviceProxy.service().await().hello(Empty.getDefaultInstance()).await()
 
                 testContext.verify {
                     Assertions.assertTrue(sayHello.value)
