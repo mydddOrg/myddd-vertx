@@ -1,5 +1,7 @@
 package org.myddd.vertx.grpc
 
+import com.google.inject.AbstractModule
+import com.google.inject.Guice
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.junit5.VertxExtension
@@ -14,6 +16,8 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 
 @ExtendWith(VertxExtension::class)
 class TestGrpcBootstrapVerticle {
@@ -28,6 +32,16 @@ class TestGrpcBootstrapVerticle {
         fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
+
+                    InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
+                        override fun configure() {
+                            bind(Vertx::class.java).toInstance(vertx)
+                            bind(GrpcInstanceProvider::class.java).to(ServiceDiscoveryGrpcInstanceProvider::class.java)
+
+                            bind(HealthCheckApplication::class.java)
+                        }
+                    })))
+
                     deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
                     Assertions.assertNotNull(deployId)
                 }catch (t:Throwable){
