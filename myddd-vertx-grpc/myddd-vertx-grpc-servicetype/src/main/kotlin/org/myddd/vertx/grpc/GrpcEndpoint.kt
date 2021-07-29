@@ -11,6 +11,17 @@ interface GrpcEndpoint:ServiceType {
     companion object {
         const val TYPE = "grpc"
 
+        const val GRPC_HEALTH = "grpc_health"
+
+        fun createHealthRecord(name: String, host: String, port: Int): Record {
+            return Record()
+                .setName(name)
+                .setType(GRPC_HEALTH)
+                .setLocation(
+                    JsonObject.mapFrom(GrpcLocation(host = host, port = port))
+                )
+        }
+
         fun createRecord(name: String, host: String, port: Int, metadata: JsonObject? = null): Record {
             val record: Record = Record()
                 .setName(name)
@@ -18,7 +29,9 @@ interface GrpcEndpoint:ServiceType {
                 .setLocation(
                     JsonObject.mapFrom(GrpcLocation(host = host,port = port))
                 )
-            record.metadata = JsonObject().put("randomId", UUID.randomUUID().toString())
+            if(Objects.nonNull(metadata)){
+                record.metadata = metadata
+            }
             return record
         }
     }

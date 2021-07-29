@@ -18,6 +18,7 @@ import io.vertx.servicediscovery.Record
 import io.vertx.servicediscovery.ServiceDiscovery
 import io.vertx.servicediscovery.Status
 import org.myddd.vertx.config.Config
+import org.myddd.vertx.grpc.health.HealthCheckApplication
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import java.util.*
@@ -32,9 +33,9 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
     abstract fun services():List<BindableService>
 
+
     companion object {
         private val grpcRecords:MutableList<Record> = mutableListOf()
-
 
         private const val DEFAULT_HOST = "127.0.0.1"
 
@@ -62,23 +63,22 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
     private suspend fun publishToDiscovery():Future<Unit>{
         return try {
-            services().forEach { it ->
+            publishService(services()).await()
+            publishService(arrayListOf(healthCheckService())).await()
+            Future.succeededFuture()
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
+    private suspend fun publishService(services:List<BindableService>,healthService:Boolean = false):Future<Unit>{
+        return try {
+            val type = if(healthService) GrpcEndpoint.GRPC_HEALTH else GrpcEndpoint.TYPE
+            services.forEach {
                 val grpcService = (it as BindingGrpcService)
-                val existsQuery = json {
-                    obj(
-                        "name" to grpcService.grpcService().serviceName(),
-                        "type" to "grpc",
-                        "location" to json {
-                            obj(
-                                "host" to host(),
-                                "port" to port()
-                            )
-                        }
-                    )
-                }
                 val existsRecord = discovery.getRecord{ record ->
                     record.name.equals(grpcService.grpcService().serviceName()).and(
-                        record.type.equals("grpc").and(
+                        record.type.equals(type).and(
                             record.location.getString("host").equals(host()).and(
                                 record.location.getInteger("port").equals(port())
                             )
@@ -86,7 +86,11 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
                     )
                 }.await()
                 if(Objects.isNull(existsRecord)){
-                    val grpcEndpoint = GrpcEndpoint.createRecord(grpcService.grpcService().serviceName(), host(), port())
+                    val grpcEndpoint = if(healthService)
+                        GrpcEndpoint.createHealthRecord(grpcService.grpcService().serviceName(), host(), port())
+                    else
+                        GrpcEndpoint.createRecord(grpcService.grpcService().serviceName(), host(), port())
+
                     val record = discovery.publish(grpcEndpoint).await()
                     grpcRecords.add(record)
                 }else{
@@ -109,7 +113,7 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
             }
             Future.succeededFuture()
         }catch (t:Throwable){
-            Future.failedFuture(t)
+            Future.succeededFuture()
         }
     }
 
@@ -118,7 +122,7 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
         val builder =  VertxServerBuilder
             .forAddress(vertx, host(), port())
-        services().forEach {
+        withHealthCheckService().forEach {
             builder.addService(it)
         }
         rpcServer =  builder.build()
@@ -168,5 +172,15 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
     private fun port():Int {
         return Config.getInteger("grpc.port", DEFAULT_PORT)
+    }
+
+    public fun healthCheckService():BindableService {
+        return HealthCheckApplication()
+    }
+
+    private fun withHealthCheckService():List<BindableService>{
+        val services =  services().toMutableList()
+        services.add(healthCheckService())
+        return services
     }
 }

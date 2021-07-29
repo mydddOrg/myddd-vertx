@@ -39,7 +39,7 @@ class GrpcHealthCheckVerticle: CoroutineVerticle() {
 
     private suspend fun gRPCServiceHealthCheck():Future<Unit>{
         return try{
-            val records = discovery.getRecords({ it -> it.name.equals(HealthGrpcService.HealthCheck.serviceName())},true).await()
+            val records = discovery.getRecords({ it.type.equals(GrpcEndpoint.GRPC_HEALTH)},true).await()
             records.forEach {
                 val grpcLocation = it.location.mapTo(GrpcLocation::class.java)
 

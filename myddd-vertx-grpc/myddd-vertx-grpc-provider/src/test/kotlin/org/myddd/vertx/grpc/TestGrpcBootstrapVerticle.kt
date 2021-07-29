@@ -45,13 +45,6 @@ class TestGrpcBootstrapVerticle {
                         }
                     })))
 
-                    val listener = vertx.eventBus().consumer<JsonObject>("vertx.discovery.announce")
-                    listener.handler{
-                        logger.debug(it.body())
-                        logger.debug(it.body()::class.java)
-
-                    }
-
                     deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
                     Assertions.assertNotNull(deployId)
                 }catch (t:Throwable){

@@ -100,11 +100,10 @@ class TestGrpcInstanceProvider {
                     Assertions.assertTrue(sayHello.value)
                 }
 
+                stopRpcService(vertx).await()
 
             }catch (t:Throwable){
                 testContext.failNow(t)
-            }finally {
-                stopRpcService(vertx).await()
             }
             testContext.completeNow()
         }
