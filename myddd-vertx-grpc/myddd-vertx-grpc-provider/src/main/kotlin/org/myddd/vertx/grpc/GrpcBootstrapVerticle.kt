@@ -7,12 +7,16 @@ import io.vertx.core.Future
 import io.vertx.core.Promise
 import io.vertx.core.Vertx
 import io.vertx.core.impl.future.PromiseImpl
+import io.vertx.core.json.JsonObject
 import io.vertx.grpc.VertxServer
 import io.vertx.grpc.VertxServerBuilder
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import io.vertx.servicediscovery.Record
 import io.vertx.servicediscovery.ServiceDiscovery
+import io.vertx.servicediscovery.Status
 import org.myddd.vertx.config.Config
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
@@ -20,13 +24,17 @@ import java.util.*
 
 abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
-    private lateinit var discovery: ServiceDiscovery
+    private val discovery: ServiceDiscovery by lazy {
+        ServiceDiscovery.create(vertx)
+    }
+
     private lateinit var rpcServer: VertxServer
 
     abstract fun services():List<BindableService>
 
     companion object {
         private val grpcRecords:MutableList<Record> = mutableListOf()
+
 
         private const val DEFAULT_HOST = "127.0.0.1"
 
@@ -42,29 +50,67 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
         }.await()
 
         startGrpcServer().await()
-        startDiscovery().await()
+        publishToDiscovery().await()
     }
 
     override suspend fun stop() {
         super.stop()
+        unPublishFromDiscovery().await()
         stopGrpcServer().await()
     }
 
 
-    private suspend fun startDiscovery():Future<Unit>{
+    private suspend fun publishToDiscovery():Future<Unit>{
         return try {
-            discovery = ServiceDiscovery.create(vertx)
-            services().forEach {
+            services().forEach { it ->
                 val grpcService = (it as BindingGrpcService)
-                val grpcEndpoint = GrpcEndpoint.createRecord(grpcService.grpcService().serviceName(), host(), port())
-                val record = discovery.publish(grpcEndpoint).await()
-                grpcRecords.add(record)
+                val existsQuery = json {
+                    obj(
+                        "name" to grpcService.grpcService().serviceName(),
+                        "type" to "grpc",
+                        "location" to json {
+                            obj(
+                                "host" to host(),
+                                "port" to port()
+                            )
+                        }
+                    )
+                }
+                val existsRecord = discovery.getRecord{ record ->
+                    record.name.equals(grpcService.grpcService().serviceName()).and(
+                        record.type.equals("grpc").and(
+                            record.location.getString("host").equals(host()).and(
+                                record.location.getInteger("port").equals(port())
+                            )
+                        )
+                    )
+                }.await()
+                if(Objects.isNull(existsRecord)){
+                    val grpcEndpoint = GrpcEndpoint.createRecord(grpcService.grpcService().serviceName(), host(), port())
+                    val record = discovery.publish(grpcEndpoint).await()
+                    grpcRecords.add(record)
+                }else{
+                    if(existsRecord.status != Status.UP){
+                        existsRecord.status = Status.UP
+                        discovery.update(existsRecord).await()
+                    }
+                }
             }
             Future.succeededFuture()
         }catch (t:Throwable){
             Future.failedFuture(t)
         }
+    }
 
+    private suspend fun unPublishFromDiscovery():Future<Unit>{
+        return try {
+            grpcRecords.forEach {
+                discovery.unpublish(it.registration).await()
+            }
+            Future.succeededFuture()
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
     private fun startGrpcServer():Future<Unit>{

@@ -1,6 +1,9 @@
-package org.myddd.vertx.grpc
+package org.myddd.vertx.grpc.health
 
-enum class SampleGrpcService:GrpcService {
+import org.myddd.vertx.grpc.GrpcService
+import org.myddd.vertx.grpc.VertxHealthCheckGrpc
+
+enum class HealthGrpcService: GrpcService {
 
     HealthCheck {
         override fun serviceClass(): Class<*> {

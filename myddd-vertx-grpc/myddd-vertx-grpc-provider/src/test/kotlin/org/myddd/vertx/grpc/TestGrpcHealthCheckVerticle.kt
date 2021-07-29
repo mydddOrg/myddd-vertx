@@ -4,13 +4,12 @@ import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
-import io.vertx.core.json.JsonObject
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
-import io.vertx.servicediscovery.ServiceDiscovery
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
@@ -21,18 +20,18 @@ import org.myddd.vertx.grpc.health.HealthCheckApplication
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 
-
 @ExtendWith(VertxExtension::class)
-class TestGrpcBootstrapVerticle {
+class TestGrpcHealthCheckVerticle {
 
     companion object {
 
         private val logger by lazy { LoggerFactory.getLogger(TestGrpcBootstrapVerticle::class.java) }
         private lateinit var deployId:String
+        private lateinit var healthCheckDeployId:String
 
         @BeforeAll
         @JvmStatic
-        fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
+        fun beforeAll(vertx: Vertx, testContext: VertxTestContext){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
 
@@ -45,15 +44,11 @@ class TestGrpcBootstrapVerticle {
                         }
                     })))
 
-                    val listener = vertx.eventBus().consumer<JsonObject>("vertx.discovery.announce")
-                    listener.handler{
-                        logger.debug(it.body())
-                        logger.debug(it.body()::class.java)
-
-                    }
-
                     deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
                     Assertions.assertNotNull(deployId)
+
+                    healthCheckDeployId = vertx.deployVerticle(GrpcHealthCheckVerticle()).await()
+                    Assertions.assertNotNull(healthCheckDeployId)
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }
@@ -63,7 +58,7 @@ class TestGrpcBootstrapVerticle {
 
         @AfterAll
         @JvmStatic
-        fun afterAll(vertx: Vertx,testContext: VertxTestContext){
+        fun afterAll(vertx: Vertx, testContext: VertxTestContext){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
                     vertx.undeploy(deployId).await()
@@ -75,28 +70,18 @@ class TestGrpcBootstrapVerticle {
         }
     }
 
-
-
     @Test
-    fun testGrpcBootstrapVerticle(vertx: Vertx,testContext: VertxTestContext){
+    fun testGrpcHealthCheck(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val discovery = ServiceDiscovery.create(vertx)
-
-                val records = discovery.getRecords{
-                    true
-                }.await()
-
-                testContext.verify {
-                    Assertions.assertTrue(records.isNotEmpty())
-                    Assertions.assertEquals(1,records.size)
-                }
-
+                delay(1000 * 20)
             }catch (t:Throwable){
                 testContext.failNow(t)
             }
             testContext.completeNow()
         }
     }
+
+
 
 }

@@ -9,8 +9,6 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.servicediscovery.ServiceDiscovery
 import org.myddd.vertx.ioc.InstanceFactory
 import java.net.InetSocketAddress
-import java.util.*
-
 
 class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
 
@@ -37,11 +35,11 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
             val socketList = records.map {  InetSocketAddress(it.location.getString("host"), it.location.getInteger("port"))}
             val nameResolverFactory: NameResolver.Factory = MultiAddressNameResolverFactory(socketList)
 
-            val channel = VertxChannelBuilder.forTarget("localhost")
+            val channel = VertxChannelBuilder.forTarget(grpcService.serviceName())
                 .nameResolverFactory(nameResolverFactory)
                 .defaultLoadBalancingPolicy("round_robin")
                 .usePlaintext()
-                .build();
+                .build()
 
             val service = grpcService.serviceClass()
 

@@ -89,11 +89,12 @@ class TestGrpcServiceType {
     fun testQueryGrpcService(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                val grpcEndpoint = GrpcEndpoint.createRecord("my-test", "127.0.0.1", randomPort)
+                val name = VertxHealthCheckGrpc::class.java.name
+                val grpcEndpoint = GrpcEndpoint.createRecord(name, "127.0.0.1", randomPort)
                 discovery.publish(grpcEndpoint).await()
 
                 val query = discovery.getRecord{
-                    it.name.equals("my-test")
+                    it.name.equals(name)
                 }.await()
 
                 testContext.verify {
@@ -101,8 +102,7 @@ class TestGrpcServiceType {
                 }
 
                 val grpcServiceReference: ServiceReference = discovery.getReference(query)
-                val channel = grpcServiceReference.get<ManagedChannel>()
-                val stub = VertxHealthCheckGrpc.newVertxStub(channel)
+                val stub = grpcServiceReference.get<VertxHealthCheckGrpc.HealthCheckVertxStub>()
                 var health = stub.hello(Empty.getDefaultInstance()).await()
                 testContext.verify {
                     Assertions.assertTrue(health.value)

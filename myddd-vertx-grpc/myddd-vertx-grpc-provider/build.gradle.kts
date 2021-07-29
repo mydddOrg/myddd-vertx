@@ -18,6 +18,8 @@ tasks.withType<Test>().configureEach {
 dependencies {
     implementation(kotlin("stdlib"))
 
+
+
     implementation(project(":myddd-vertx-grpc:myddd-vertx-grpc-api"))
     implementation(project(":myddd-vertx-grpc:myddd-vertx-grpc-servicetype"))
 
@@ -26,6 +28,7 @@ dependencies {
 
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
+    implementation("io.vertx:vertx-lang-kotlin:${rootProject.extra["vertx_version"]}")
 
     implementation("com.google.protobuf:protobuf-java:${rootProject.extra["protobuf-java"]}")
     implementation("io.vertx:vertx-grpc:${rootProject.extra["vertx_version"]}")

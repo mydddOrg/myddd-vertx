@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.grpc.health.HealthCheckApplication
+import org.myddd.vertx.grpc.health.HealthGrpcService
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 
@@ -25,7 +27,7 @@ class TestGrpcInstanceProvider {
     companion object {
 
         private val healthCheckServiceProxy by lazy {
-            GrpcInstanceFactory.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(SampleGrpcService.HealthCheck)
+            GrpcInstanceFactory.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(HealthGrpcService.HealthCheck)
         }
 
         private lateinit var deployId:String

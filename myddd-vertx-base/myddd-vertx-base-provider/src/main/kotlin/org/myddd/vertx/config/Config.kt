@@ -6,6 +6,7 @@ import io.vertx.config.ConfigStoreOptions
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.future.PromiseImpl
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.await
 import java.util.*
@@ -13,6 +14,8 @@ import java.util.*
 object Config {
 
     private lateinit var vertx:Vertx
+
+    private val logger by lazy { LoggerFactory.getLogger(Config::class.java) }
 
     var configObject : JsonObject? = null
 
@@ -57,6 +60,12 @@ object Config {
             var path = System.getProperty("config")
             if(path.isNullOrEmpty()){
                 path = "META-INF/config.properties"
+            }
+
+            val pathExists = vertx.fileSystem().exists(path).await()
+            if(!pathExists){
+                logger.warn("config path not exists:${path}")
+                return Future.succeededFuture()
             }
 
             val configFileStore = ConfigStoreOptions()
