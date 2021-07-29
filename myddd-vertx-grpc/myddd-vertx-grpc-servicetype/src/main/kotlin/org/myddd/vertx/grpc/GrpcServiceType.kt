@@ -6,7 +6,6 @@ import io.vertx.servicediscovery.Record
 import io.vertx.servicediscovery.ServiceDiscovery
 import io.vertx.servicediscovery.ServiceReference
 
-@Deprecated("暂时没有价值")
 class GrpcServiceType:GrpcEndpoint {
 
     override fun name(): String {

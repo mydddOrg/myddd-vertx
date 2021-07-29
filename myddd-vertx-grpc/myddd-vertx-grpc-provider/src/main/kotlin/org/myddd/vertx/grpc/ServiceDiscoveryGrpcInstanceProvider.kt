@@ -1,13 +1,16 @@
 package org.myddd.vertx.grpc
 
 import io.grpc.Channel
+import io.grpc.NameResolver
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.grpc.VertxChannelBuilder
 import io.vertx.kotlin.coroutines.await
 import io.vertx.servicediscovery.ServiceDiscovery
 import org.myddd.vertx.ioc.InstanceFactory
+import java.net.InetSocketAddress
 import java.util.*
+
 
 class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
 
@@ -20,22 +23,25 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
 
     override suspend fun <T> getInstance(grpcService: GrpcService):Future<T> {
         return try {
-            val record = discovery.getRecord{
+            val records = discovery.getRecords{
                 it.type.equals(TYPE).and(
                     it.name.equals(grpcService.serviceName())
                 )
             }.await()
 
-            if(Objects.isNull(record)){
+            if(records.isEmpty()){
                 throw GrpcInstanceNotFoundException(grpcService.serviceName())
             }
 
-            val grpcLocation = record.location.mapTo(GrpcLocation::class.java)
 
-            val channel = VertxChannelBuilder
-                .forAddress(vertx, grpcLocation.host, grpcLocation.port)
+            val socketList = records.map {  InetSocketAddress(it.location.getString("host"), it.location.getInteger("port"))}
+            val nameResolverFactory: NameResolver.Factory = MultiAddressNameResolverFactory(socketList)
+
+            val channel = VertxChannelBuilder.forTarget("localhost")
+                .nameResolverFactory(nameResolverFactory)
+                .defaultLoadBalancingPolicy("round_robin")
                 .usePlaintext()
-                .build()
+                .build();
 
             val service = grpcService.serviceClass()
 

@@ -3,6 +3,7 @@ package org.myddd.vertx.grpc
 import io.vertx.core.json.JsonObject
 import io.vertx.servicediscovery.Record
 import io.vertx.servicediscovery.spi.ServiceType
+import java.util.*
 
 
 interface GrpcEndpoint:ServiceType {
@@ -17,9 +18,7 @@ interface GrpcEndpoint:ServiceType {
                 .setLocation(
                     JsonObject.mapFrom(GrpcLocation(host = host,port = port))
                 )
-            if (metadata != null) {
-                record.metadata = metadata
-            }
+            record.metadata = JsonObject().put("randomId", UUID.randomUUID().toString())
             return record
         }
     }

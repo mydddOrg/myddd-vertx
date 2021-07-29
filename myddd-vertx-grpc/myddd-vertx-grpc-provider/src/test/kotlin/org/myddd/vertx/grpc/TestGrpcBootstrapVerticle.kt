@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 
+
 @ExtendWith(VertxExtension::class)
 class TestGrpcBootstrapVerticle {
 
@@ -76,7 +77,22 @@ class TestGrpcBootstrapVerticle {
                     true
                 }.await()
 
-                logger.debug(records)
+
+                for (i in 1..4){
+                    val record = discovery.getRecord{
+                        it.type.equals("grpc").and(
+                            it.location.getString("host").equals("127.0.0.1")
+                        )
+                    }.await()
+
+
+
+                    discovery.getReference(record)
+
+
+                    logger.debug(record)
+
+                }
                 testContext.verify {
                     Assertions.assertTrue(records.isNotEmpty())
                 }

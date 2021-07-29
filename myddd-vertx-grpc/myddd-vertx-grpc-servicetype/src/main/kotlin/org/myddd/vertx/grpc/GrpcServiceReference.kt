@@ -7,7 +7,6 @@ import io.vertx.servicediscovery.Record
 import io.vertx.servicediscovery.ServiceDiscovery
 import io.vertx.servicediscovery.types.AbstractServiceReference
 
-@Deprecated("暂时没有价值")
 class GrpcServiceReference(vertx: Vertx?,discovery: ServiceDiscovery?,record: Record?): AbstractServiceReference<ManagedChannel>(vertx,discovery,record) {
 
     override fun retrieve(): ManagedChannel {

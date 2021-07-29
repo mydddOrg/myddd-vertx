@@ -40,7 +40,6 @@ class TestGrpcInstanceProvider {
                         override fun configure() {
                             bind(Vertx::class.java).toInstance(vertx)
                             bind(GrpcInstanceProvider::class.java).to(ServiceDiscoveryGrpcInstanceProvider::class.java)
-
                             bind(HealthCheckApplication::class.java)
                         }
                     })))
