@@ -13,57 +13,78 @@ import java.util.*
 
 object Config {
 
-    private lateinit var vertx:Vertx
+    private lateinit var vertx: Vertx
 
     private val logger by lazy { LoggerFactory.getLogger(Config::class.java) }
 
-    var configObject : JsonObject? = null
-
-    fun getString(key:String,def:String = ""):String {
-        return if(Objects.isNull(configObject)) def else configObject!!.getString(key,def)
+    private val systemPropertyKeys by lazy {
+        System.getProperties().keys
     }
 
-    fun getBoolean(key:String,def:Boolean = false):Boolean {
-        return if(Objects.isNull(configObject)) def else configObject!!.getBoolean(key,def)
+    var configObject: JsonObject? = null
+
+    fun getString(key: String, def: String = ""): String {
+        return when {
+            systemPropertyKeys.contains(key) -> System.getProperty(key)
+            Objects.nonNull(configObject) -> configObject!!.getString(key, def)
+            else -> def
+        }
     }
 
-    fun getInteger(key:String,def:Int = 0):Int {
-        return if(Objects.isNull(configObject)) def else configObject!!.getInteger(key,def)
+    fun getBoolean(key: String, def: Boolean = false): Boolean {
+        return when {
+            systemPropertyKeys.contains(key) -> System.getProperty(key).toBoolean()
+            Objects.nonNull(configObject) -> configObject!!.getBoolean(key, def)
+            else -> def
+        }
     }
 
-    fun getLong(key:String,default:Long = 0L):Long{
-        return if(Objects.isNull(configObject)) default else configObject!!.getLong(key,default)
+    fun getInteger(key: String, def: Int = 0): Int {
+        return when {
+            systemPropertyKeys.contains(key) -> System.getProperty(key).toInt()
+            Objects.nonNull(configObject) -> configObject!!.getInteger(key, def)
+            else -> def
+        }
     }
 
-    suspend fun loadGlobalConfig(vertx: Vertx):Future<Unit>{
+    fun getLong(key: String, def: Long = 0L): Long {
+        return when {
+            systemPropertyKeys.contains(key) -> System.getProperty(key).toLong()
+            Objects.nonNull(configObject) -> configObject!!.getLong(key, def)
+            else -> def
+        }
+    }
+
+
+    suspend fun loadGlobalConfig(vertx: Vertx): Future<Unit> {
         Config.vertx = vertx
         val promise = PromiseImpl<Unit>()
 
-        if(Objects.isNull(configObject)){
+        if (Objects.isNull(configObject)) {
             try {
                 configObject = loadConfigFromFile().await()
                 promise.onSuccess(Unit)
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 promise.fail(e)
             }
-        }else{
+        } else {
             promise.onSuccess(Unit)
         }
         return promise.future()
     }
 
-    private suspend fun loadConfigFromFile():Future<JsonObject>{
+    private suspend fun loadConfigFromFile(): Future<JsonObject> {
         val promise = PromiseImpl<JsonObject>()
 
         try {
             //从外部读取变量
             var path = System.getProperty("config")
-            if(path.isNullOrEmpty()){
+            if (path.isNullOrEmpty()) {
                 path = "META-INF/config.properties"
             }
 
             val pathExists = vertx.fileSystem().exists(path).await()
-            if(!pathExists){
+            if (!pathExists) {
                 logger.warn("config path not exists:${path}")
                 return Future.succeededFuture()
             }
@@ -81,7 +102,7 @@ object Config {
             val config = configRetriever.config.await()
 
             promise.onSuccess(config)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             promise.fail(e)
         }
@@ -89,10 +110,6 @@ object Config {
         return promise
 
     }
-
-
-
-
 
 
 }

@@ -51,6 +51,25 @@ class GlobalConfigTest {
     }
 
     @Test
+    fun testSystemConfig(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                System.setProperty("TEST","ABC")
+
+                Config.loadGlobalConfig(vertx).await()
+                val value = Config.getString("TEST")
+
+                testContext.verify {
+                    Assertions.assertEquals("ABC",value)
+                }
+
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+    @Test
     fun testGlobalConfig(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
