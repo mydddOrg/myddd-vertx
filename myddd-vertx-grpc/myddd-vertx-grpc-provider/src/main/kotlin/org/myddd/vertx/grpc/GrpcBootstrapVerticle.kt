@@ -64,7 +64,7 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
     private suspend fun publishToDiscovery():Future<Unit>{
         return try {
             publishService(services()).await()
-            publishService(arrayListOf(healthCheckService())).await()
+            publishService(arrayListOf(healthCheckService()),true).await()
             Future.succeededFuture()
         }catch (t:Throwable){
             Future.failedFuture(t)
