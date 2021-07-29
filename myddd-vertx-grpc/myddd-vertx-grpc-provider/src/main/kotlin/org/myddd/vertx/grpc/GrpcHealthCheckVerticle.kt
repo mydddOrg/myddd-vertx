@@ -6,6 +6,7 @@ import io.vertx.core.Future
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.grpc.VertxChannelBuilder
+import io.vertx.kotlin.core.json.get
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
@@ -15,6 +16,7 @@ import io.vertx.servicediscovery.Status
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.config.Config
+import org.myddd.vertx.grpc.health.HealthGrpcService
 
 class GrpcHealthCheckVerticle: CoroutineVerticle() {
 
@@ -37,7 +39,7 @@ class GrpcHealthCheckVerticle: CoroutineVerticle() {
 
     private suspend fun gRPCServiceHealthCheck():Future<Unit>{
         return try{
-            val records = discovery.getRecords({true},true).await()
+            val records = discovery.getRecords({ it -> it.name.equals(HealthGrpcService.HealthCheck.serviceName())},true).await()
             records.forEach {
                 val grpcLocation = it.location.mapTo(GrpcLocation::class.java)
 
@@ -86,8 +88,15 @@ class GrpcHealthCheckVerticle: CoroutineVerticle() {
 
     private suspend fun changeServiceStatus(record: Record,status: Status):Future<Unit>{
         return try {
-            record.status = status
-            discovery.update(record).await()
+            val records = discovery.getRecords({
+                it.location.getString("host").equals(record.location.getString("host")).and(
+                    it.location.getInteger("port").equals(record.location.getInteger("port"))
+                ) },true).await()
+
+            records.forEach {
+                it.status = status
+                discovery.update(it).await()
+            }
             Future.succeededFuture()
         }catch (t:Throwable){
             Future.succeededFuture()
