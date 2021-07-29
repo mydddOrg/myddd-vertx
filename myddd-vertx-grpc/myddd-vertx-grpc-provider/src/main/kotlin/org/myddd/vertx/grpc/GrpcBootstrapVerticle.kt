@@ -35,7 +35,12 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
     override suspend fun start() {
         super.start()
-        initIOC()
+        initGlobalConfig().await()
+        vertx.executeBlocking<Unit> {
+            initIOC()
+            it.complete()
+        }.await()
+
         startGrpcServer().await()
         startDiscovery().await()
     }
@@ -100,6 +105,7 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
         }
     }
 
+
     private suspend fun initGlobalConfig(): Future<Unit> {
         return Config.loadGlobalConfig(vertx)
     }
@@ -111,10 +117,10 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
 
     private fun host():String {
-        return Config.getString("rpc.host",DEFAULT_HOST)
+        return Config.getString("grpc.host",DEFAULT_HOST)
     }
 
     private fun port():Int {
-        return Config.getInteger("rpc.port", DEFAULT_PORT)
+        return Config.getInteger("grpc.port", DEFAULT_PORT)
     }
 }
