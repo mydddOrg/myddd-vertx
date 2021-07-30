@@ -4,6 +4,7 @@ import io.grpc.Channel
 import io.grpc.NameResolver
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.grpc.VertxChannelBuilder
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
@@ -21,6 +22,8 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
         private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
         private val discovery by lazy { ServiceDiscovery.create(vertx) }
 
+        private val logger by lazy { LoggerFactory.getLogger(GrpcInstanceProvider::class.java) }
+
         private const val ROUND_ROBIN = "round_robin"
     }
 
@@ -32,7 +35,7 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
                 )
             }.await()
 
-            val signature = records.map { "${it.location.getString("host")}-${it.location.getString("port")}" }.joinToString { "::" }
+            val signature = records.map { "${it.location.getString("host")}-${it.location.getString("port")}" }.toString()
             Future.succeededFuture(signature)
         }catch (t:Throwable){
             Future.failedFuture(t)
@@ -47,8 +50,10 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
                 )
             }.await()
 
-            val signature = records.map { "${it.location.getString("host")}-${it.location.getString("port")}" }.joinToString { "::" }
+            val signature = records.map { "${it.location.getString("host")}-${it.location.getString("port")}" }.toString()
 
+            logger.warn("【服务签名】: ${grpcService.serviceName()}")
+            logger.warn("【服务签名】: $signature")
             if(records.isEmpty()){
                 throw GrpcInstanceNotFoundException(grpcService.serviceName())
             }

@@ -20,7 +20,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 
 @ExtendWith(VertxExtension::class)
-@Disabled("此测试需要一定的时间")
+//@Disabled("此测试需要一定的时间")
 class TestGrpcHealthCheckVerticle {
 
     companion object {
