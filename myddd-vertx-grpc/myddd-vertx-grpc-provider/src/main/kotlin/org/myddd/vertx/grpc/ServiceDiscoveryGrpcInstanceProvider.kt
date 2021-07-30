@@ -20,15 +20,34 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
 
         private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
         private val discovery by lazy { ServiceDiscovery.create(vertx) }
+
+        private const val ROUND_ROBIN = "round_robin"
     }
 
-    override suspend fun <T> getService(grpcService: GrpcService):Future<T> {
+    override suspend fun getSignature(grpcService: GrpcService):Future<String> {
         return try {
             val records = discovery.getRecords{
                 it.type.equals(TYPE).and(
                     it.name.equals(grpcService.serviceName())
                 )
             }.await()
+
+            val signature = records.map { "${it.location.getString("host")}-${it.location.getString("port")}" }.joinToString { "::" }
+            Future.succeededFuture(signature)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
+    }
+
+    override suspend fun <T> getService(grpcService: GrpcService):Future<Pair<T,String>> {
+        return try {
+            val records = discovery.getRecords{
+                it.type.equals(TYPE).and(
+                    it.name.equals(grpcService.serviceName())
+                )
+            }.await()
+
+            val signature = records.map { "${it.location.getString("host")}-${it.location.getString("port")}" }.joinToString { "::" }
 
             if(records.isEmpty()){
                 throw GrpcInstanceNotFoundException(grpcService.serviceName())
@@ -40,7 +59,7 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
 
             val channel = VertxChannelBuilder.forTarget(grpcService.serviceName())
                 .nameResolverFactory(nameResolverFactory)
-                .defaultLoadBalancingPolicy("round_robin")
+                .defaultLoadBalancingPolicy(ROUND_ROBIN)
                 .usePlaintext()
                 .build()
 
@@ -48,7 +67,7 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
 
             val method = service.getMethod("newVertxStub", Channel::class.java)
             val stub = method.invoke(null,channel) as T
-            Future.succeededFuture(stub)
+            Future.succeededFuture(Pair(stub,signature))
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

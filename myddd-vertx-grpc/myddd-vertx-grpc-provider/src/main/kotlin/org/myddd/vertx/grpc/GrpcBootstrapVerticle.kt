@@ -18,6 +18,7 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.servicediscovery.Record
 import io.vertx.servicediscovery.ServiceDiscovery
 import io.vertx.servicediscovery.Status
+import kotlinx.coroutines.delay
 import org.myddd.vertx.config.Config
 import org.myddd.vertx.grpc.health.HealthCheckApplication
 import org.myddd.vertx.ioc.InstanceFactory
@@ -59,10 +60,11 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
     }
 
     override suspend fun stop() {
-        logger.debug("准备关闭服务")
-        super.stop()
+        println("准备关闭服务")
         unPublishFromDiscovery().await()
         stopGrpcServer().await()
+        delay(1000)
+        super.stop()
     }
 
 
@@ -113,9 +115,11 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
     private suspend fun unPublishFromDiscovery():Future<Unit>{
         return try {
-            logger.debug("所有服务:${grpcRecords.map { it.name }}")
+            println("所有服务:${grpcRecords.map { it.name }}")
             grpcRecords.forEach {
-                logger.debug("反注册服务:${it.registration}")
+                println("反注册服务:${it.registration}")
+                it.status = Status.DOWN
+                vertx.eventBus().publish("vertx.discovery.announce",JsonObject.mapFrom(it))
                 discovery.unpublish(it.registration).await()
             }
             Future.succeededFuture()
@@ -123,6 +127,7 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
             Future.succeededFuture()
         }
     }
+
 
     private fun startGrpcServer():Future<Unit>{
         val promise = PromiseImpl<Unit>()

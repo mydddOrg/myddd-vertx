@@ -10,11 +10,13 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.myddd.vertx.config.Config
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.log
 
-class GrpcServiceProxy<T>(private val grpcService: GrpcService): ServiceProxy<T> {
+class GrpcServiceProxy<T>(private val grpcService: GrpcService,private var signature:String = ""): ServiceProxy<T> {
 
     private var service:T? = null
 
@@ -22,9 +24,21 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService): ServiceProxy<T>
 
     private var consumer = vertx.eventBus().consumer<JsonObject>("vertx.discovery.announce")
 
+    private var lastTimestamp:Long = System.currentTimeMillis()
+
+    private val heartbeat = Config.getLong("grpc.heartbeat",1000 * 60)
+
     companion object {
         private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
         private val logger by lazy { LoggerFactory.getLogger(GrpcServiceProxy::class.java) }
+    }
+
+    init {
+        vertx.setPeriodic(heartbeat){
+            GlobalScope.launch(vertx.dispatcher()) {
+                heartBeat()
+            }
+        }
     }
 
     init {
@@ -35,7 +49,7 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService): ServiceProxy<T>
                 if(name.equals(grpcService.serviceName())){
                     logger.info("gRPC Node Changed")
                     logger.info(body)
-                    retried().await()
+                    retried()
                 }
             }
         }
@@ -62,14 +76,29 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService): ServiceProxy<T>
         }
     }
 
+    private suspend fun heartBeat() {
+        if(System.currentTimeMillis() - lastTimestamp > heartbeat){
+            val signature = grpcInstanceProvider.getSignature(grpcService).await()
+            if(signature != this.signature){
+                logger.warn("【心跳检测】- 服务有变更: ${grpcService.serviceName()}")
+                retried()
+            }else{
+                logger.warn("【心跳检测】- 正常: ${grpcService.serviceName()}")
+            }
+        }
+        lastTimestamp = System.currentTimeMillis()
+    }
+
     override suspend fun lazyLoad():Future<Unit>{
         return retried()
     }
 
     private suspend fun retried():Future<Unit>{
         return try {
+            val (service,signature) = grpcInstanceProvider.getService<T>(grpcService).await()
             closeChannel().await()
-            this.service = grpcInstanceProvider.getService<T>(grpcService).await()
+            this.service = service
+            this.signature = signature
             if(Objects.isNull(this.service)){
                 throw GrpcInstanceNotFoundException(grpcService.serviceName())
             }
@@ -79,7 +108,7 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService): ServiceProxy<T>
         }
     }
 
-    private suspend fun closeChannel():Future<Unit>{
+    private fun closeChannel():Future<Unit>{
         return try {
             if(Objects.nonNull(this.service)){
                 val stub = this.service as AbstractStub<*>
