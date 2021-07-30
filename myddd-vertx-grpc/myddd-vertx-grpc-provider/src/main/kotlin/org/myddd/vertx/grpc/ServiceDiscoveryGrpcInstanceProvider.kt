@@ -6,7 +6,10 @@ import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.grpc.VertxChannelBuilder
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import io.vertx.servicediscovery.ServiceDiscovery
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.myddd.vertx.ioc.InstanceFactory
 import java.net.InetSocketAddress
 
@@ -19,7 +22,7 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
         private val discovery by lazy { ServiceDiscovery.create(vertx) }
     }
 
-    override suspend fun <T> getInstance(grpcService: GrpcService):Future<T> {
+    override suspend fun <T> getService(grpcService: GrpcService):Future<T> {
         return try {
             val records = discovery.getRecords{
                 it.type.equals(TYPE).and(
@@ -50,5 +53,15 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
             Future.failedFuture(t)
         }
 
+    }
+
+    override fun <T> getInstance(grpcService: GrpcService, lazyLoad: Boolean): ServiceProxy<T> {
+        val serviceProxy = GrpcServiceProxy<T>(grpcService)
+        if(!lazyLoad){
+            GlobalScope.launch(vertx.dispatcher()) {
+                serviceProxy.lazyLoad()
+            }
+        }
+        return serviceProxy
     }
 }

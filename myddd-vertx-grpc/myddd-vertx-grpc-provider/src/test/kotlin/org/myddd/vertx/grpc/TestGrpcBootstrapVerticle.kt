@@ -77,7 +77,7 @@ class TestGrpcBootstrapVerticle {
                 val discovery = ServiceDiscovery.create(vertx)
 
                 val records = discovery.getRecords{
-                    true
+                    it.type.equals("grpc")
                 }.await()
 
                 testContext.verify {
