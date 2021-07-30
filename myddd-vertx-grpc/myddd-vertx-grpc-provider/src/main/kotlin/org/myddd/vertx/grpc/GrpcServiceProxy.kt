@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class GrpcServiceProxy<T>(private val grpcService: GrpcService): ServiceProxy<T> {
 
@@ -31,9 +32,9 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService): ServiceProxy<T>
             GlobalScope.launch(vertx.dispatcher()) {
                 val body = it.body()
                 val name = body.getString("name")
-                logger.info("gRPC Node Changed")
-                logger.info(body)
                 if(name.equals(grpcService.serviceName())){
+                    logger.info("gRPC Node Changed")
+                    logger.info(body)
                     retried().await()
                 }
             }
@@ -83,7 +84,11 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService): ServiceProxy<T>
             if(Objects.nonNull(this.service)){
                 val stub = this.service as AbstractStub<*>
                 val channel = stub.channel as ManagedChannel
-                channel.shutdown()
+                try {
+                    channel.shutdown().awaitTermination(30,TimeUnit.SECONDS)
+                }catch (e:Exception){
+                    logger.warn("关闭gRPC连接失败,",e)
+                }
             }
             Future.succeededFuture()
         }catch (t:Throwable){

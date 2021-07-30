@@ -7,6 +7,7 @@ import io.vertx.core.Future
 import io.vertx.core.Promise
 import io.vertx.core.Vertx
 import io.vertx.core.impl.future.PromiseImpl
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.grpc.VertxServer
 import io.vertx.grpc.VertxServerBuilder
@@ -25,6 +26,7 @@ import java.util.*
 
 abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
+
     private val discovery: ServiceDiscovery by lazy {
         ServiceDiscovery.create(vertx)
     }
@@ -36,6 +38,8 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
     companion object {
         private val grpcRecords:MutableList<Record> = mutableListOf()
+
+        private val logger by lazy { LoggerFactory.getLogger(GrpcBootstrapVerticle::class.java) }
 
         private const val DEFAULT_HOST = "127.0.0.1"
 
@@ -55,6 +59,7 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
     }
 
     override suspend fun stop() {
+        logger.debug("准备关闭服务")
         super.stop()
         unPublishFromDiscovery().await()
         stopGrpcServer().await()
@@ -108,7 +113,9 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
 
     private suspend fun unPublishFromDiscovery():Future<Unit>{
         return try {
+            logger.debug("所有服务:${grpcRecords.map { it.name }}")
             grpcRecords.forEach {
+                logger.debug("反注册服务:${it.registration}")
                 discovery.unpublish(it.registration).await()
             }
             Future.succeededFuture()

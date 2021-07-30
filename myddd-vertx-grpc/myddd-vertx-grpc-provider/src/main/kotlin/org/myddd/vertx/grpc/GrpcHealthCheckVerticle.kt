@@ -26,7 +26,7 @@ class GrpcHealthCheckVerticle: CoroutineVerticle() {
 
     private val logger by lazy { LoggerFactory.getLogger(GrpcHealthCheckVerticle::class.java) }
 
-    private val delay by lazy { Config.getLong("grpc.health.delay",5000) }
+    private val delay by lazy { Config.getLong("grpc.health.delay",30000) }
 
     override suspend fun start() {
         vertx.setPeriodic(delay){
