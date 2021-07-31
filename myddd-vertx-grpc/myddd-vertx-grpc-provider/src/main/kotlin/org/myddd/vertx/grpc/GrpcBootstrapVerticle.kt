@@ -117,7 +117,6 @@ abstract class GrpcBootstrapVerticle: CoroutineVerticle() {
         return try {
             println("所有服务:${grpcRecords.map { it.name }}")
             grpcRecords.forEach {
-                println("反注册服务:${it.registration}")
                 it.status = Status.DOWN
                 vertx.eventBus().publish("vertx.discovery.announce",JsonObject.mapFrom(it))
                 discovery.unpublish(it.registration).await()

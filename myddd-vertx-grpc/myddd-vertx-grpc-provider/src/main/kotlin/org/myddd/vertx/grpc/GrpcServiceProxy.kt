@@ -83,7 +83,7 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService,private var signa
                 logger.warn("【心跳检测】- 服务有变更: ${grpcService.serviceName()}")
                 retried()
             }else{
-                logger.warn("【心跳检测】- 正常: ${grpcService.serviceName()}")
+                logger.debug("【心跳检测】- 正常: ${grpcService.serviceName()}")
             }
         }
         lastTimestamp = System.currentTimeMillis()

@@ -50,8 +50,8 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
 
             val signature = records.map { "${it.location.getString("host")}-${it.location.getString("port")}" }.toString()
 
-            logger.warn("【服务签名】: ${grpcService.serviceName()}")
-            logger.warn("【服务签名】: $signature")
+            logger.info("【服务名称】: ${grpcService.serviceName()}")
+            logger.info("【服务集地址】: $signature")
             if(records.isEmpty()){
                 throw GrpcInstanceNotFoundException(grpcService.serviceName())
             }
