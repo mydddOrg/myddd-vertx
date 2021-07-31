@@ -10,4 +10,10 @@ package org.myddd.vertx.grpc;
 
 service HealthCheck {
   rpc hello (google.protobuf.Empty) returns (google.protobuf.BoolValue) {}
+  rpc nodeInfo(google.protobuf.Empty) returns (NodeInfo) {}
+}
+
+message NodeInfo {
+  string host = 1;
+  int32 port = 2;
 }

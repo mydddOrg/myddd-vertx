@@ -45,9 +45,7 @@ class ServiceDiscoveryGrpcInstanceProvider:GrpcInstanceProvider {
     override suspend fun <T> getService(grpcService: GrpcService):Future<Pair<T,String>> {
         return try {
             val records = discovery.getRecords{
-                it.type.equals(TYPE).and(
-                    it.name.equals(grpcService.serviceName())
-                )
+                it.name.equals(grpcService.serviceName())
             }.await()
 
             val signature = records.map { "${it.location.getString("host")}-${it.location.getString("port")}" }.toString()

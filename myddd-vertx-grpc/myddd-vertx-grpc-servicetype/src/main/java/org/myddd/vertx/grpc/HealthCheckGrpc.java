@@ -45,13 +45,44 @@ public final class HealthCheckGrpc {
     return getHelloMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      NodeInfo> getNodeInfoMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "nodeInfo",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = NodeInfo.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      NodeInfo> getNodeInfoMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, NodeInfo> getNodeInfoMethod;
+    if ((getNodeInfoMethod = HealthCheckGrpc.getNodeInfoMethod) == null) {
+      synchronized (HealthCheckGrpc.class) {
+        if ((getNodeInfoMethod = HealthCheckGrpc.getNodeInfoMethod) == null) {
+          HealthCheckGrpc.getNodeInfoMethod = getNodeInfoMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, NodeInfo>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "nodeInfo"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  NodeInfo.getDefaultInstance()))
+              .setSchemaDescriptor(new HealthCheckMethodDescriptorSupplier("nodeInfo"))
+              .build();
+        }
+      }
+    }
+    return getNodeInfoMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
   public static HealthCheckStub newStub(io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<HealthCheckStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<HealthCheckStub>() {
-        @java.lang.Override
+        @Override
         public HealthCheckStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new HealthCheckStub(channel, callOptions);
         }
@@ -66,7 +97,7 @@ public final class HealthCheckGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<HealthCheckBlockingStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<HealthCheckBlockingStub>() {
-        @java.lang.Override
+        @Override
         public HealthCheckBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new HealthCheckBlockingStub(channel, callOptions);
         }
@@ -81,7 +112,7 @@ public final class HealthCheckGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<HealthCheckFutureStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<HealthCheckFutureStub>() {
-        @java.lang.Override
+        @Override
         public HealthCheckFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new HealthCheckFutureStub(channel, callOptions);
         }
@@ -100,7 +131,14 @@ public final class HealthCheckGrpc {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getHelloMethod(), responseObserver);
     }
 
-    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
+    /**
+     */
+    public void nodeInfo(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<NodeInfo> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getNodeInfoMethod(), responseObserver);
+    }
+
+    @Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             getHelloMethod(),
@@ -109,6 +147,13 @@ public final class HealthCheckGrpc {
                 com.google.protobuf.Empty,
                 com.google.protobuf.BoolValue>(
                   this, METHODID_HELLO)))
+          .addMethod(
+            getNodeInfoMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                NodeInfo>(
+                  this, METHODID_NODE_INFO)))
           .build();
     }
   }
@@ -121,7 +166,7 @@ public final class HealthCheckGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected HealthCheckStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new HealthCheckStub(channel, callOptions);
@@ -134,6 +179,14 @@ public final class HealthCheckGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getHelloMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void nodeInfo(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<NodeInfo> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getNodeInfoMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -144,7 +197,7 @@ public final class HealthCheckGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected HealthCheckBlockingStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new HealthCheckBlockingStub(channel, callOptions);
@@ -156,6 +209,13 @@ public final class HealthCheckGrpc {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getHelloMethod(), getCallOptions(), request);
     }
+
+    /**
+     */
+    public NodeInfo nodeInfo(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getNodeInfoMethod(), getCallOptions(), request);
+    }
   }
 
   /**
@@ -166,7 +226,7 @@ public final class HealthCheckGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected HealthCheckFutureStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new HealthCheckFutureStub(channel, callOptions);
@@ -179,9 +239,18 @@ public final class HealthCheckGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getHelloMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<NodeInfo> nodeInfo(
+        com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getNodeInfoMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_HELLO = 0;
+  private static final int METHODID_NODE_INFO = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -196,21 +265,25 @@ public final class HealthCheckGrpc {
       this.methodId = methodId;
     }
 
-    @java.lang.Override
-    @java.lang.SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_HELLO:
           serviceImpl.hello((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue>) responseObserver);
           break;
+        case METHODID_NODE_INFO:
+          serviceImpl.nodeInfo((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<NodeInfo>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
     }
 
-    @java.lang.Override
-    @java.lang.SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public io.grpc.stub.StreamObserver<Req> invoke(
         io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
@@ -224,12 +297,12 @@ public final class HealthCheckGrpc {
       implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
     HealthCheckBaseDescriptorSupplier() {}
 
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return org.myddd.vertx.grpc.HealthCheckProto.getDescriptor();
+      return HealthCheckProto.getDescriptor();
     }
 
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
       return getFileDescriptor().findServiceByName("HealthCheck");
     }
@@ -249,7 +322,7 @@ public final class HealthCheckGrpc {
       this.methodName = methodName;
     }
 
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.MethodDescriptor getMethodDescriptor() {
       return getServiceDescriptor().findMethodByName(methodName);
     }
@@ -266,6 +339,7 @@ public final class HealthCheckGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new HealthCheckFileDescriptorSupplier())
               .addMethod(getHelloMethod())
+              .addMethod(getNodeInfoMethod())
               .build();
         }
       }

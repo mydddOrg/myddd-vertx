@@ -44,6 +44,11 @@ public final class VertxHealthCheckGrpc {
             return io.vertx.grpc.stub.ClientCalls.oneToOne(ctx, request, delegateStub::hello);
         }
 
+        
+        public io.vertx.core.Future<NodeInfo> nodeInfo(com.google.protobuf.Empty request) {
+            return io.vertx.grpc.stub.ClientCalls.oneToOne(ctx, request, delegateStub::nodeInfo);
+        }
+
     }
 
     
@@ -65,20 +70,33 @@ public final class VertxHealthCheckGrpc {
             throw new io.grpc.StatusRuntimeException(io.grpc.Status.UNIMPLEMENTED);
         }
 
-        @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
+        
+        public io.vertx.core.Future<NodeInfo> nodeInfo(com.google.protobuf.Empty request) {
+            throw new io.grpc.StatusRuntimeException(io.grpc.Status.UNIMPLEMENTED);
+        }
+
+        @Override public final io.grpc.ServerServiceDefinition bindService() {
             return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
                     .addMethod(
-                            org.myddd.vertx.grpc.HealthCheckGrpc.getHelloMethod(),
+                            HealthCheckGrpc.getHelloMethod(),
                             asyncUnaryCall(
                                     new MethodHandlers<
                                             com.google.protobuf.Empty,
                                             com.google.protobuf.BoolValue>(
                                             this, METHODID_HELLO, compression)))
+                    .addMethod(
+                            HealthCheckGrpc.getNodeInfoMethod(),
+                            asyncUnaryCall(
+                                    new MethodHandlers<
+                                            com.google.protobuf.Empty,
+                                            NodeInfo>(
+                                            this, METHODID_NODE_INFO, compression)))
                     .build();
         }
     }
 
     private static final int METHODID_HELLO = 0;
+    private static final int METHODID_NODE_INFO = 1;
 
     private static final class MethodHandlers<Req, Resp> implements
             io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -96,8 +114,8 @@ public final class VertxHealthCheckGrpc {
             this.compression = compression;
         }
 
-        @java.lang.Override
-        @java.lang.SuppressWarnings("unchecked")
+        @Override
+        @SuppressWarnings("unchecked")
         public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
             switch (methodId) {
                 case METHODID_HELLO:
@@ -107,17 +125,24 @@ public final class VertxHealthCheckGrpc {
                             compression,
                             serviceImpl::hello);
                     break;
+                case METHODID_NODE_INFO:
+                    io.vertx.grpc.stub.ServerCalls.oneToOne(
+                            (com.google.protobuf.Empty) request,
+                            (io.grpc.stub.StreamObserver<NodeInfo>) responseObserver,
+                            compression,
+                            serviceImpl::nodeInfo);
+                    break;
                 default:
-                    throw new java.lang.AssertionError();
+                    throw new AssertionError();
             }
         }
 
-        @java.lang.Override
-        @java.lang.SuppressWarnings("unchecked")
+        @Override
+        @SuppressWarnings("unchecked")
         public io.grpc.stub.StreamObserver<Req> invoke(io.grpc.stub.StreamObserver<Resp> responseObserver) {
             switch (methodId) {
                 default:
-                    throw new java.lang.AssertionError();
+                    throw new AssertionError();
             }
         }
     }
