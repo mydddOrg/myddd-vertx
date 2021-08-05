@@ -25,8 +25,8 @@ val projectVersion = "1.2.0-SNAPSHOT"
 extra["version"] = projectVersion
 
 extra["kotlin_version"] = "1.5.21"
-extra["vertx_version"] = "4.1.1"
-extra["hibernate_reactive_version"] = "1.0.0.CR8"
+extra["vertx_version"] = "4.1.2"
+extra["hibernate_reactive_version"] = "1.0.0.CR9"
 
 extra["log4j_version"] = "2.14.0"
 extra["jackson_version"] = "2.12.1"
