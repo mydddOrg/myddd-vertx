@@ -11,8 +11,6 @@ import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.grpc.VertxServer
 import io.vertx.grpc.VertxServerBuilder
-import io.vertx.kotlin.core.json.json
-import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import io.vertx.servicediscovery.Record

@@ -14,7 +14,6 @@ import org.myddd.vertx.config.Config
 import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.math.log
 
 class GrpcServiceProxy<T>(private val grpcService: GrpcService,private var signature:String = ""): ServiceProxy<T> {
 

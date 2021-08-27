@@ -19,9 +19,7 @@ import java.time.LocalDateTime
 
 class LocalMediaStorage(private var storagePath: String = System.getProperty("java.io.tmpdir") + "STORAGE") :MediaStorage {
 
-    private val fileDigest by lazy { InstanceFactory.getInstance(FileDigest::class.java) }
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
-
 
     override suspend fun uploadToStorage(mediaFile: MediaFile): Future<MediaExtra> {
         return try {
@@ -53,6 +51,7 @@ class LocalMediaStorage(private var storagePath: String = System.getProperty("ja
                 throw BusinessLogicException(MediaErrorCode.SOURCE_FILE_NOT_EXISTS)
             }
             val buffer = fs.readFile(extra.path).await()
+
             Future.succeededFuture(ByteBufInputStream(buffer.byteBuf))
         }catch (t:Throwable){
             Future.failedFuture(t)

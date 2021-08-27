@@ -1,6 +1,7 @@
 rootProject.name = "myddd-vertx"
 
 include("myddd-vertx-base:myddd-vertx-base-api")
+include("myddd-vertx-base:myddd-vertx-base-config")
 include("myddd-vertx-base:myddd-vertx-base-provider")
 
 include("myddd-vertx-ioc:myddd-vertx-ioc-api")

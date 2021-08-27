@@ -46,7 +46,6 @@ class Media: BaseEntity() {
         private val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
         private val fileDigest by lazy { InstanceFactory.getInstance(FileDigest::class.java) }
 
-
         private val mediaStorage by lazy { InstanceFactory.getInstance(MediaStorage::class.java) }
 
         private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
@@ -118,6 +117,7 @@ class Media: BaseEntity() {
             }
         }
     }
+
 
 
 

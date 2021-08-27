@@ -1,12 +1,10 @@
 package org.myddd.vertx.grpc
 
 import com.google.protobuf.Empty
-import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.grpc.VertxChannelBuilder
-import io.vertx.kotlin.core.json.get
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
@@ -16,7 +14,6 @@ import io.vertx.servicediscovery.Status
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.config.Config
-import org.myddd.vertx.grpc.health.HealthGrpcService
 
 class GrpcHealthCheckVerticle: CoroutineVerticle() {
 

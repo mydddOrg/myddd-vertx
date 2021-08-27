@@ -2,6 +2,7 @@ package org.myddd.vertx.media.domain
 
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.buffer.Buffer
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.file.FileDigest
@@ -37,6 +38,17 @@ data class MediaFile(val inputStream:InputStream,val name:String,val size:Long,v
                 Future.failedFuture(t)
             }
 
+        }
+    }
+
+    suspend fun toBuffer():Future<Buffer>{
+        return try {
+            val buffer = vertx.executeBlocking<Buffer> {
+                it.complete(Buffer.buffer(inputStream.readAllBytes()))
+            }.await()
+            Future.succeededFuture(buffer)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
     }
 }

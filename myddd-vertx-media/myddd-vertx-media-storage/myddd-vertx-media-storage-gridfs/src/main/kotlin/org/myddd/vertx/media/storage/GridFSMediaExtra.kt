@@ -1,8 +1,7 @@
 package org.myddd.vertx.media.storage
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.myddd.vertx.media.domain.MediaExtra
 import org.myddd.vertx.media.domain.MediaType
+import java.beans.ConstructorProperties
 
-data class GridFSMediaExtra @JsonCreator constructor(@JsonProperty("fileId") val fileId:String) : MediaExtra(mediaType = MediaType.GridFs)
+data class GridFSMediaExtra  @ConstructorProperties(value = ["fileId"])constructor(val fileId: String) : MediaExtra(mediaType = MediaType.GridFs)
