@@ -5,10 +5,8 @@ plugins {
 
 group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
+
 extra["publishJar"] = true
-
-extra["cos_api_version"] = "5.6.38"
-
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
@@ -33,11 +31,10 @@ dependencies {
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
-
-    implementation("com.qcloud:cos_api:${project.extra["cos_api_version"]}")
-
     implementation(project(":myddd-vertx-media:myddd-vertx-media-domain"))
     implementation("com.fasterxml.jackson.core:jackson-annotations:${rootProject.extra["jackson_version"]}")
+
+    implementation("io.vertx:vertx-mongo-client:${rootProject.extra["vertx_version"]}")
 
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
     api(project(":myddd-vertx-base:myddd-vertx-base-api"))

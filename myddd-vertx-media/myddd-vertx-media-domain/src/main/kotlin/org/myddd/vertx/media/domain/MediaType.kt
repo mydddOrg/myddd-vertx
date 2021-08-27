@@ -4,5 +4,7 @@ enum class MediaType {
 
     LocalFile,
 
-    QCloud
+    QCloud,
+
+    GridFs
 }

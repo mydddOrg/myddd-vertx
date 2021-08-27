@@ -9,6 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.myddd.vertx.media.domain.MediaFile
 
 class LocalMediaStorageTest:AbstractTest() {
 
@@ -21,7 +22,8 @@ class LocalMediaStorageTest:AbstractTest() {
             try {
 
                 val absolutePath = LocalMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
-                val extra = mediaStorage.uploadToStorage(absolutePath).await()
+                val mediaFile = MediaFile.of(absolutePath).await()
+                val extra = mediaStorage.uploadToStorage(mediaFile).await()
                 testContext.verify {
                     logger.debug((extra as LocalMediaExtra).path)
                     Assertions.assertNotNull(extra)
@@ -50,7 +52,8 @@ class LocalMediaStorageTest:AbstractTest() {
                 }
 
                 val absolutePath = LocalMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
-                val extra = mediaStorage.uploadToStorage(absolutePath).await()
+                val mediaFile = MediaFile.of(absolutePath).await()
+                val extra = mediaStorage.uploadToStorage(mediaFile).await()
                 testContext.verify {
                     logger.debug((extra as LocalMediaExtra).path)
                     Assertions.assertNotNull(extra)
@@ -72,15 +75,10 @@ class LocalMediaStorageTest:AbstractTest() {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 val customMediaStorage = LocalMediaStorage(storagePath = "${System.getProperty("user.home")}/Downloads")
-                try {
-                    customMediaStorage.uploadToStorage(randomIDString.randomString()).await()
-                    testContext.failNow("不可能到这")
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
 
                 val absolutePath = LocalMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
-                val extra = customMediaStorage.uploadToStorage(absolutePath).await()
+                val mediaFile = MediaFile.of(absolutePath).await()
+                val extra = customMediaStorage.uploadToStorage(mediaFile).await()
                 testContext.verify {
                     logger.debug((extra as LocalMediaExtra).path)
                     Assertions.assertNotNull(extra)
@@ -97,15 +95,10 @@ class LocalMediaStorageTest:AbstractTest() {
     fun testUploadFile(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                try {
-                    mediaStorage.uploadToStorage(randomIDString.randomString()).await()
-                    testContext.failNow("不可能到这")
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
 
                 val absolutePath = LocalMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
-                val extra = mediaStorage.uploadToStorage(absolutePath).await()
+                val mediaFile = MediaFile.of(absolutePath).await()
+                val extra = mediaStorage.uploadToStorage(mediaFile).await()
                 testContext.verify {
                     logger.debug((extra as LocalMediaExtra).path)
                     Assertions.assertNotNull(extra)

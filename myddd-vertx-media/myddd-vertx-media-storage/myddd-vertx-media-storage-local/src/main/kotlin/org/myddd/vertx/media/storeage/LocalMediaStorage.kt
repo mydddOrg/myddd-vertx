@@ -1,7 +1,9 @@
 package org.myddd.vertx.media.storeage
 
+import io.netty.buffer.ByteBufInputStream
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.buffer.Buffer
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
@@ -9,8 +11,10 @@ import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.domain.MediaErrorCode
 import org.myddd.vertx.media.domain.MediaExtra
+import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
-import org.myddd.vertx.string.RandomIDString
+import java.io.FileInputStream
+import java.io.InputStream
 import java.time.LocalDateTime
 
 class LocalMediaStorage(private var storagePath: String = System.getProperty("java.io.tmpdir") + "STORAGE") :MediaStorage {
@@ -18,22 +22,20 @@ class LocalMediaStorage(private var storagePath: String = System.getProperty("ja
     private val fileDigest by lazy { InstanceFactory.getInstance(FileDigest::class.java) }
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 
-    override suspend fun uploadToStorage(tmpPath: String):Future<MediaExtra> {
+
+    override suspend fun uploadToStorage(mediaFile: MediaFile): Future<MediaExtra> {
         return try {
             val fs = vertx.fileSystem()
 
-            val exists = fs.exists(tmpPath).await()
-            if(!exists){
-                throw BusinessLogicException(MediaErrorCode.SOURCE_FILE_NOT_EXISTS)
-            }
-
             val destDir = randomFilePath().await()
-            val digest = fileDigest.digest(tmpPath).await()
-            val destPath ="$destDir/$digest"
+            val destPath ="$destDir/${mediaFile.digest}"
 
             val destFileExists = fs.exists(destPath).await()
             if(!destFileExists){
-                fs.copy(tmpPath,destPath).await()
+                val buffer = vertx.executeBlocking<Buffer> {
+                    it.complete(Buffer.buffer(mediaFile.inputStream.readAllBytes()))
+                }.await()
+                fs.writeFile(destPath, buffer)
             }
 
             Future.succeededFuture(LocalMediaExtra(path = destPath))
@@ -42,7 +44,7 @@ class LocalMediaStorage(private var storagePath: String = System.getProperty("ja
         }
     }
 
-    override suspend fun downloadFromStorage(extra: MediaExtra): Future<String> {
+    override suspend fun downloadFromStorage(extra: MediaExtra): Future<InputStream> {
         return try {
             val fs = vertx.fileSystem()
             val localMediaExtra = extra as LocalMediaExtra
@@ -50,7 +52,8 @@ class LocalMediaStorage(private var storagePath: String = System.getProperty("ja
             if(!exists){
                 throw BusinessLogicException(MediaErrorCode.SOURCE_FILE_NOT_EXISTS)
             }
-            Future.succeededFuture(extra.path)
+            val buffer = fs.readFile(extra.path).await()
+            Future.succeededFuture(ByteBufInputStream(buffer.byteBuf))
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

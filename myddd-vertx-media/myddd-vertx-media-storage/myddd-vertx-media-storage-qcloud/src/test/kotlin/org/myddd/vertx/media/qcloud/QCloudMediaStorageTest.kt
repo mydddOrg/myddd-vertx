@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
 
 class QCloudMediaStorageTest:AbstractTest() {
@@ -43,17 +44,11 @@ class QCloudMediaStorageTest:AbstractTest() {
     fun testUploadFile(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                try {
-                    mediaStorage.uploadToStorage(randomIDString.randomString()).await()
-                    testContext.failNow("不可能到这")
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
 
                 val absolutePath = QCloudMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
-                val extra = mediaStorage.uploadToStorage(absolutePath).await()
+                val mediaFile = MediaFile.of(absolutePath).await()
+                val extra = mediaStorage.uploadToStorage(mediaFile).await()
                 testContext.verify {
-                    logger.debug(extra.destPath())
                     Assertions.assertNotNull(extra)
                 }
 
@@ -76,9 +71,9 @@ class QCloudMediaStorageTest:AbstractTest() {
                 }
 
                 val absolutePath = QCloudMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
-                val extra = mediaStorage.uploadToStorage(absolutePath).await()
+                val mediaFile = MediaFile.of(absolutePath).await()
+                val extra = mediaStorage.uploadToStorage(mediaFile).await()
                 testContext.verify {
-                    logger.debug((extra as QCloudMediaExtra).destPath())
                     Assertions.assertNotNull(extra)
                 }
 

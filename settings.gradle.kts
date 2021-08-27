@@ -22,6 +22,7 @@ include("myddd-vertx-media:myddd-vertx-media-domain")
 include("myddd-vertx-media:myddd-vertx-media-infra")
 include("myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-local")
 include("myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-qcloud")
+include("myddd-vertx-media:myddd-vertx-media-storage:myddd-vertx-media-storage-gridfs")
 
 
 include("myddd-vertx-cache:myddd-vertx-cache-api")

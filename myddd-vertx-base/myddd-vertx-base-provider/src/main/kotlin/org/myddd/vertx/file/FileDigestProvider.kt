@@ -5,6 +5,7 @@ import io.vertx.core.Vertx
 import io.vertx.kotlin.coroutines.await
 import org.apache.commons.codec.digest.DigestUtils
 import org.myddd.vertx.ioc.InstanceFactory
+import java.io.InputStream
 
 class FileDigestProvider:FileDigest {
 
@@ -24,5 +25,17 @@ class FileDigestProvider:FileDigest {
             Future.failedFuture(t)
         }
 
+    }
+
+    override suspend fun digest(inputStream: InputStream): Future<String> {
+        return try {
+            val digest = vertx.executeBlocking<String> {
+                val md5 = DigestUtils.md5Hex(inputStream)
+                it.complete(md5)
+            }.await()
+            Future.succeededFuture(digest)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 }

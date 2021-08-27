@@ -86,7 +86,8 @@ class Media: BaseEntity() {
                 return if(Objects.nonNull(exists)){
                     Future.succeededFuture(exists)
                 }else{
-                    val extra = mediaStorage.uploadToStorage(path).await()
+                    val file = MediaFile.of(path).await()
+                    val extra = mediaStorage.uploadToStorage(file).await()
 
                     media.mediaId = randomIDString.randomUUID()
                     media.extra = extra

@@ -70,7 +70,6 @@ class MediaTest: AbstractTest() {
                 val created = createMedia().await()
                 testContext.verify {
                     Assertions.assertNotNull(created)
-                    Assertions.assertNotNull(created.extra.destPath())
                 }
             }catch (t:Throwable){
                 testContext.failNow(t)
