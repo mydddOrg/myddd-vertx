@@ -34,6 +34,7 @@ dependencies {
 
     implementation(project(":myddd-vertx-media:myddd-vertx-media-domain"))
     implementation("com.fasterxml.jackson.core:jackson-annotations:${rootProject.extra["jackson_version"]}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:${rootProject.extra["jackson_version"]}")
 
 
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))

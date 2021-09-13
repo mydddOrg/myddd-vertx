@@ -3,7 +3,7 @@ import com.google.protobuf.gradle.*
 plugins {
     java
     kotlin("jvm")
-    id("com.google.protobuf")
+    id("idea")
 }
 
 group = "org.myddd.vertx"
@@ -45,31 +45,4 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.7.7")
     testImplementation("io.vertx:vertx-service-discovery:${rootProject.extra["vertx_version"]}")
     testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
-}
-
-sourceSets.main {
-    proto.srcDir("src/main/protobuf")
-}
-
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:${rootProject.extra["protobuf-java"]}"
-    }
-    plugins {
-        id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.39.0"
-        }
-
-        id("vertx") {
-            artifact = "io.vertx:vertx-grpc-protoc-plugin:${rootProject.extra["vertx_version"]}"
-        }
-    }
-    generateProtoTasks {
-        ofSourceSet("main").forEach {
-            it.plugins {
-                id("grpc")
-                id("vertx")
-            }
-        }
-    }
 }
