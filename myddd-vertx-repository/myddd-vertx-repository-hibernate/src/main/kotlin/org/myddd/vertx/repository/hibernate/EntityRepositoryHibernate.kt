@@ -9,7 +9,6 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.EntityRepository
 import java.io.Serializable
 import java.util.*
-import javax.sql.CommonDataSource
 
 
 open class EntityRepositoryHibernate(private val dataSource: String? = null) : EntityRepository {
@@ -74,7 +73,7 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
     override suspend fun <T : Entity> batchSave(entityList: Array<T>): Future<Boolean> {
         val promise = PromiseImpl<Boolean>()
         sessionFactory.withTransaction { session, _ ->
-            session.persistAll(*entityList).call { _ -> session.flush() }
+            session.persistAll(*entityList)
         }.subscribe().with({ promise.onSuccess(true) }, { promise.fail(it) })
         return promise
     }

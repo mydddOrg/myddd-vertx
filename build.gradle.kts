@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 buildscript {
-    extra["kotlinVersion"] = "1.5.21"
+    extra["kotlinVersion"] = "1.5.31"
     val kotlinVersion: String by extra
 
     repositories {
@@ -15,18 +15,18 @@ buildscript {
 plugins {
     java
     `maven-publish`
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.5.31"
     id("jacoco")
     id("org.sonarqube") version "3.0"
 }
 
-val projectVersion = "1.2.0-SNAPSHOT"
+val projectVersion = "1.2.1-SNAPSHOT"
 
 extra["version"] = projectVersion
 
-extra["kotlin_version"] = "1.5.21"
-extra["vertx_version"] = "4.1.2"
-extra["hibernate_reactive_version"] = "1.0.0.CR9"
+extra["kotlin_version"] = "1.5.31"
+extra["vertx_version"] = "4.1.5"cle
+extra["hibernate_reactive_version"] = "1.0.0.Final"
 
 extra["log4j_version"] = "2.14.0"
 extra["jackson_version"] = "2.12.1"
@@ -113,13 +113,6 @@ allprojects {
             setUrl("https://maven.myddd.org/snapshots/")
         }
 
-        maven {
-            setUrl("https://maven.aliyun.com/repository/public/")
-        }
-        maven {
-            setUrl("https://maven.aliyun.com/repository/spring/")
-        }
-
         mavenCentral()
     }
 
@@ -137,13 +130,6 @@ repositories {
     }
     maven {
         setUrl("https://maven.myddd.org/snapshots/")
-    }
-
-    maven {
-        setUrl("https://maven.aliyun.com/repository/public/")
-    }
-    maven {
-        setUrl("https://maven.aliyun.com/repository/spring/")
     }
 
     mavenCentral()

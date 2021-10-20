@@ -33,26 +33,22 @@ class OAuth2ApplicationJPA : OAuth2Application {
     }
 
     override suspend fun refreshUserToken(clientId: String, refreshToken: String): Future<OAuth2UserDTO?> {
-        val promise = PromiseImpl<OAuth2UserDTO?>()
 
-        try {
+        return try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
 
-            if(Objects.isNull(queryUser)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
+            if(Objects.isNull(queryUser))throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
 
             val token = clientService.refreshUserToken(queryUser!!,refreshToken).await()
-            promise.onSuccess(toOAuth2UserDTO(queryUser,token))
-        }catch (e:Exception){
-            promise.fail(e)
-        }
 
-        return promise.future()
+            Future.succeededFuture(toOAuth2UserDTO(queryUser,token))
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
     override suspend fun revokeUserToken(clientId: String,accessToken:String): Future<Boolean> {
-        val promise = PromiseImpl<Boolean>()
-
-        try {
+        return try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
             if(Objects.isNull(queryUser)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
 
@@ -62,17 +58,15 @@ class OAuth2ApplicationJPA : OAuth2Application {
             if(queryToken?.accessToken != accessToken) throw BusinessLogicException(OAuth2ApiErrorCode.ACCESS_TOKEN_NOT_MATCH)
 
             clientService.revokeUserToken(queryUser!!).await()
-            promise.onSuccess(true)
-        }catch (e:Exception){
-            promise.fail(e)
-        }
 
-        return promise.future()
+            Future.succeededFuture(true)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
     override suspend fun loadUserToken(clientId: String): Future<OAuth2UserDTO?> {
-        val promise = PromiseImpl<OAuth2UserDTO?>()
-        try {
+        return try {
             val queryUser = clientService.queryClientByClientId(clientId).await()
             if(Objects.isNull(queryUser)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_NOT_FOUND)
 
@@ -81,11 +75,10 @@ class OAuth2ApplicationJPA : OAuth2Application {
             if(Objects.isNull(queryToken)) throw BusinessLogicException(OAuth2ApiErrorCode.CLIENT_TOKEN_NOT_FOUND)
 
 
-            promise.onSuccess(toOAuth2UserDTO(queryUser!!,queryToken!!))
-        }catch (e:Exception){
-            promise.fail(e)
+            Future.succeededFuture(toOAuth2UserDTO(queryUser!!,queryToken!!))
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
-        return promise.future()
     }
 
     override suspend fun queryValidClientIdByAccessToken(accessToken: String): Future<String> {

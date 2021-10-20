@@ -42,8 +42,8 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractRouter
                         val created = oAuth2ClientApplication.createClient(createClientDTO).await()
                         val createdJson = JsonObject.mapFrom(created)
                         it.end(createdJson.toBuffer())
-                    } catch (e: Exception) {
-                        it.fail(HTTP_400_RESPONSE, e)
+                    } catch (t: Throwable) {
+                        it.fail(HTTP_400_RESPONSE, t)
                     }
                 }
             }
@@ -74,8 +74,8 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractRouter
 
                         it.end(JsonObject().put("clientSecret",resetSecret).toBuffer())
 
-                    }catch (e:Exception){
-                        it.fail(HTTP_400_RESPONSE,e)
+                    }catch (t:Throwable){
+                        it.fail(HTTP_400_RESPONSE,t)
                     }
                 }
             }
@@ -106,8 +106,8 @@ class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractRouter
 
                         it.response().setStatusCode(204).end()
 
-                    }catch (e:Exception){
-                        it.fail(400,e)
+                    }catch (t:Throwable){
+                        it.fail(HTTP_400_RESPONSE,t)
                     }
                 }
             }

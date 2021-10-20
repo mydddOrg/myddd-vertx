@@ -16,6 +16,8 @@ import org.myddd.vertx.config.Config
 class OAuth2Verticle(private val port:Int = 8080) : CoroutineVerticle() {
 
 
+    private lateinit var server:HttpServer;
+
     override suspend fun start() {
         super.start()
         initGlobalConfig().await()
@@ -27,22 +29,31 @@ class OAuth2Verticle(private val port:Int = 8080) : CoroutineVerticle() {
     }
 
     private fun initHttpServer(): Future<HttpServer> {
-        val server = vertx.createHttpServer()
-        val router = Router.router(vertx)
+        return try {
+            server = vertx.createHttpServer()
+            val router = Router.router(vertx)
 
-        router.route().order(Int.MAX_VALUE).respond { ctx ->
-            val response = ctx.response()
-            response.putHeader("content-type","application/json")
-            response.statusCode = 404
-            Future.succeededFuture(JsonObject()
-                .put("errorCode", "NO_SUCH_API")
-                .put("errorMsg","调用的API不存在"))
+            router.route().order(Int.MAX_VALUE).respond { ctx ->
+                val response = ctx.response()
+                response.putHeader("content-type","application/json")
+                response.statusCode = 404
+                Future.succeededFuture(JsonObject()
+                    .put("errorCode", "NO_SUCH_API"))
+            }
+
+            OAuth2ClientRouter(router = router,vertx = vertx)
+            OAuth2TokenRouter(router = router,vertx = vertx)
+            server.requestHandler(router).listen(port)
+            Future.succeededFuture(server)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
 
-        OAuth2ClientRouter(router = router,vertx = vertx)
-        OAuth2TokenRouter(router = router,vertx = vertx)
+    }
 
-        return server.requestHandler(router).listen(8080)
+    override suspend fun stop() {
+        super.stop()
+        server.close().await()
     }
 
     private fun initIOC(){

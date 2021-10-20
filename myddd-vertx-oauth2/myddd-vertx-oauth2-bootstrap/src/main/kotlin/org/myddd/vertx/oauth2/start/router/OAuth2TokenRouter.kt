@@ -44,8 +44,8 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = ve
 
                         it.end(requestToken.toBuffer())
 
-                    }catch (e:Exception){
-                        it.fail(HTTP_400_RESPONSE,e)
+                    }catch (t:Throwable){
+                        it.fail(HTTP_400_RESPONSE,t)
                     }
                 }
             }
@@ -68,8 +68,8 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = ve
 
                         it.end(requestToken.toBuffer())
 
-                    }catch (e:Exception){
-                        it.fail(HTTP_400_RESPONSE,e)
+                    }catch (t:Throwable){
+                        it.fail(HTTP_400_RESPONSE,t)
                     }
                 }
             }
@@ -89,8 +89,8 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = ve
                         oAuth2Application.revokeUserToken(clientId,accessToken).await()
                         it.response().setStatusCode(204).end()
 
-                    }catch (e:Exception){
-                        it.fail(HTTP_400_RESPONSE,e)
+                    }catch (t:Throwable){
+                        it.fail(HTTP_400_RESPONSE,t)
                     }
                 }
             }

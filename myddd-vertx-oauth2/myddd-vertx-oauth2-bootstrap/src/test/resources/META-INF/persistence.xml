@@ -27,7 +27,7 @@
 
             <!-- Automatic schema export -->
             <property name="javax.persistence.schema-generation.database.action"
-                      value="drop-and-create"/>
+                      value="create-drop"/>
 
             <!-- SQL statement logging -->
             <property name="hibernate.show_sql" value="true" />

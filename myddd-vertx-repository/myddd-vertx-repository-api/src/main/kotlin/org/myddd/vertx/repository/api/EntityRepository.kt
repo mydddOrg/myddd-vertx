@@ -10,6 +10,8 @@ import java.io.Serializable
  */
 interface EntityRepository {
 
+
+
     /**
      * 更新一个实体
      */

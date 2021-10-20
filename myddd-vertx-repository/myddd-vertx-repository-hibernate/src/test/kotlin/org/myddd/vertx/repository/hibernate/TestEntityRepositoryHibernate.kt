@@ -58,8 +58,7 @@ class TestEntityRepositoryHibernate {
         @JvmStatic
         fun parametersRepository():Stream<EntityRepository>{
             return Stream.of(
-                EntityRepositoryHibernate(),
-                EntityRepositoryHibernate(dataSource = "pg")
+                EntityRepositoryHibernate()
             )
         }
 

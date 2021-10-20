@@ -31,14 +31,13 @@ import javax.persistence.Persistence
 @ExtendWith(VertxExtension::class)
 class TestQueryChannelHibernate {
 
-    private val repositories:Array<EntityRepository> = arrayOf(EntityRepositoryHibernate(),EntityRepositoryHibernate(dataSource = "pg"))
+    private val repositories:Array<EntityRepository> = arrayOf(EntityRepositoryHibernate())
 
     companion object {
         @JvmStatic
         fun parametersQueryChannel():Stream<QueryChannel>{
             return Stream.of(
                 QueryChannelHibernate(),
-                QueryChannelHibernate(dataSource = "pg")
             )
         }
 
@@ -47,17 +46,20 @@ class TestQueryChannelHibernate {
         fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
-                    InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
-                        override fun configure() {
-                            bind(Vertx::class.java).toInstance(vertx)
+                    vertx.executeBlocking<Void> {
+                        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
+                            override fun configure() {
+                                bind(Vertx::class.java).toInstance(vertx)
 
-                            bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
-                            bind(Mutiny.SessionFactory::class.java).toInstance(Persistence.createEntityManagerFactory("default")
-                                .unwrap(Mutiny.SessionFactory::class.java))
-                            bind(Mutiny.SessionFactory::class.java).annotatedWith(Names.named("pg")).toInstance(Persistence.createEntityManagerFactory("pg")
-                                .unwrap(Mutiny.SessionFactory::class.java))
-                        }
-                    })))
+                                bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
+                                bind(Mutiny.SessionFactory::class.java).toInstance(Persistence.createEntityManagerFactory("default")
+                                    .unwrap(Mutiny.SessionFactory::class.java))
+                                bind(Mutiny.SessionFactory::class.java).annotatedWith(Names.named("pg")).toInstance(Persistence.createEntityManagerFactory("pg")
+                                    .unwrap(Mutiny.SessionFactory::class.java))
+                            }
+                        })))
+                        it.complete()
+                    }.await()
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }

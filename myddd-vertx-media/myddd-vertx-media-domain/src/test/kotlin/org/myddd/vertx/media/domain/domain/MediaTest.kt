@@ -8,10 +8,10 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.media.domain.AbstractTest
 import org.myddd.vertx.media.domain.Media
-
 
 class MediaTest: AbstractTest() {
 

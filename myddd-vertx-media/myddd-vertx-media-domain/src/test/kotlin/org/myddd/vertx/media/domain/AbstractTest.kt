@@ -16,7 +16,7 @@ import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.media.infra.repository.MediaRepositoryHibernate
-import org.myddd.vertx.media.qcloud.QCloudMediaStorage
+import org.myddd.vertx.media.storeage.LocalMediaStorage
 import org.myddd.vertx.string.RandomIDString
 import org.myddd.vertx.string.RandomIDStringProvider
 import javax.persistence.Persistence
@@ -46,13 +46,7 @@ abstract class AbstractTest {
                     bind(MediaRepository::class.java).to(MediaRepositoryHibernate::class.java)
                     bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
 
-                    bind(MediaStorage::class.java).toInstance(
-                        QCloudMediaStorage(
-                            secretId = "AKIDXopZ5LR2pa5JHEJ4fz2EAuOcaHgrhkH3",
-                            secretKey = "aNtFPKxIONPAez5uTlxTklZtymIOFrBD",
-                            bucketName = "isv-gateway-test-1258930758"
-                        )
-                    )
+                    bind(MediaStorage::class.java).toInstance(LocalMediaStorage())
                 }
             })))
 

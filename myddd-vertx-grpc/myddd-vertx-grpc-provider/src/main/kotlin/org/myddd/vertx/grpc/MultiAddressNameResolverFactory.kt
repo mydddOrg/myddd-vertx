@@ -31,7 +31,9 @@ class MultiAddressNameResolverFactory internal constructor(addresses: List<Socke
                 )
             }
 
-            override fun shutdown() {}
+            override fun shutdown() {
+                println("shutdown")
+            }
         }
     }
 

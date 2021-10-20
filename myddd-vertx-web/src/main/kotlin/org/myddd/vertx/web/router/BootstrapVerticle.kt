@@ -18,6 +18,8 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
 
     private val logger by lazy { LoggerFactory.getLogger(BootstrapVerticle::class.java) }
 
+    private lateinit var server:HttpServer;
+
     private val startedPort:Int by lazy {
         Config.getInteger("port",port)
     }
@@ -37,7 +39,7 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
     }
 
     private fun initHttpServer(): Future<HttpServer> {
-        val server = vertx.createHttpServer()
+        server = vertx.createHttpServer()
         val router = Router.router(vertx)
         NotExistsRouter(vertx,router)
         routers(vertx,router)()
@@ -55,4 +57,9 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
     abstract fun abstractModules(vertx: Vertx):AbstractModule
 
     abstract fun routers(vertx: Vertx,router: Router):()->Unit
+
+    override suspend fun stop() {
+        super.stop()
+        server.close().await()
+    }
 }

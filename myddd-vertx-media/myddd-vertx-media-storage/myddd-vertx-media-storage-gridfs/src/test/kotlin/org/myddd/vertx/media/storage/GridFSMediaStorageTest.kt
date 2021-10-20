@@ -12,11 +12,13 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
 
+@Disabled
 class GridFSMediaStorageTest : AbstractTest() {
 
 

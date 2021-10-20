@@ -21,6 +21,10 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     implementation(kotlin("stdlib"))
+
+    implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
+    implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
+
     api("javax.inject:javax.inject:1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")

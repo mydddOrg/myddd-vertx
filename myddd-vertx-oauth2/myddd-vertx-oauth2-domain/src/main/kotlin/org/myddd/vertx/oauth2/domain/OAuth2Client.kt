@@ -45,19 +45,30 @@ class OAuth2Client:BaseEntity() {
     }
 
     suspend fun createClient():Future<OAuth2Client>{
-        if(name.isEmpty()){
-            throw BusinessLogicException(OAuth2ErrorCode.CLIENT_NAME_CAN_NOT_NULL)
+        return try{
+            if(name.isEmpty()){
+                throw BusinessLogicException(OAuth2ErrorCode.CLIENT_NAME_CAN_NOT_NULL)
+            }
+
+            this.created = System.currentTimeMillis()
+            this.clientSecret = randomIDString.randomString(32)
+
+            val client = repository.save(this).await()
+            Future.succeededFuture(client)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
 
-        this.created = System.currentTimeMillis()
-        this.clientSecret = randomIDString.randomString(32)
-
-        return repository.save(this)
     }
 
     suspend fun renewClientSecret():Future<OAuth2Client>{
-        this.clientSecret = randomIDString.randomString(32)
-        return repository.save(this)
+        return try {
+            this.clientSecret = randomIDString.randomString(32)
+            val client = repository.save(this).await()
+            Future.succeededFuture(client)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
+        }
     }
 
     suspend fun disable():Future<OAuth2Client>{

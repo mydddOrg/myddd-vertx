@@ -26,8 +26,6 @@ dependencies {
 
     api("org.hibernate.reactive:hibernate-reactive-core:${rootProject.extra["hibernate_reactive_version"]}")
 
-    api("io.smallrye.reactive:mutiny:0.14.0")
-    api("com.ibm.async:asyncutil:0.1.0")
     implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
 
     testImplementation("javax.inject:javax.inject:1")

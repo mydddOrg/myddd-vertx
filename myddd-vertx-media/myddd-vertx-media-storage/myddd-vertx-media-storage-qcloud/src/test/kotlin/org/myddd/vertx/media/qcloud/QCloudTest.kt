@@ -14,11 +14,10 @@ import com.qcloud.cos.model.COSObjectInputStream
 import com.qcloud.cos.model.COSObject
 
 import com.qcloud.cos.model.GetObjectRequest
+import org.junit.jupiter.api.Disabled
 
 
-
-
-
+@Disabled
 class QCloudTest {
 
     val bucketName = "isv-gateway-test-1258930758"

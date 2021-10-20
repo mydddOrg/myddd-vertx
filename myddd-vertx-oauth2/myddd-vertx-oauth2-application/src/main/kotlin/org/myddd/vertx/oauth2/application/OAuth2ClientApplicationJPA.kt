@@ -12,46 +12,70 @@ class OAuth2ClientApplicationJPA : OAuth2ClientApplication {
     private val oAuth2ClientService by lazy { InstanceFactory.getInstance(OAuth2ClientService::class.java) }
 
     override suspend fun createClient(clientDTO: OAuth2ClientDTO): Future<OAuth2ClientDTO> {
-        check(clientDTO.validForCreate()){
-            "ID_VERSION_AND_SECRET_MUST_BE_NULL"
+        return try {
+            check(clientDTO.validForCreate()){
+                "ID_VERSION_AND_SECRET_MUST_BE_NULL"
+            }
+            val oAuth2Client = toOAuth2Client(clientDTO)
+            val created =  oAuth2Client.createClient().await()
+            Future.succeededFuture(toOAuth2ClientDTO(created))
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
-        val oAuth2Client = toOAuth2Client(clientDTO)
-        val created =  oAuth2Client.createClient().await()
-        return Future.succeededFuture(toOAuth2ClientDTO(created))
+
     }
 
     override suspend fun queryClient(clientId: String): Future<OAuth2ClientDTO?> {
-        val query = oAuth2ClientService.queryClientByClientId(clientId).await()
-        query?.also {
-            return Future.succeededFuture(toOAuth2ClientDTO(it))
+        return try {
+            val query = oAuth2ClientService.queryClientByClientId(clientId).await()
+            query?.also {
+                return Future.succeededFuture(toOAuth2ClientDTO(it))
+            }
+            Future.succeededFuture(null)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
-        return Future.succeededFuture(null)
+
     }
 
     override suspend fun resetClientSecret(clientId: String): Future<String> {
-        val query = oAuth2ClientService.queryClientByClientId(clientId).await()
-        checkNotNull(query){
-            "CLIENT_ID_NOT_EXISTS"
+        return try {
+            val query = oAuth2ClientService.queryClientByClientId(clientId).await()
+            checkNotNull(query){
+                "CLIENT_ID_NOT_EXISTS"
+            }
+            val reset = query.renewClientSecret().await()
+            Future.succeededFuture(reset.clientSecret)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
-        val reset = query.renewClientSecret().await()
-        return Future.succeededFuture(reset.clientSecret)
+
     }
 
     override suspend fun enableClient(clientId: String): Future<Boolean> {
-        val query = oAuth2ClientService.queryClientByClientId(clientId).await()
-        checkNotNull(query){
-            "CLIENT_ID_NOT_EXISTS"
+        return try {
+            val query = oAuth2ClientService.queryClientByClientId(clientId).await()
+            checkNotNull(query){
+                "CLIENT_ID_NOT_EXISTS"
+            }
+            query.enable().await()
+            Future.succeededFuture(true)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
-        query.enable().await()
-        return Future.succeededFuture(true)
+
     }
 
     override suspend fun disableClient(clientId: String): Future<Boolean> {
-        val query = oAuth2ClientService.queryClientByClientId(clientId).await()
-        checkNotNull(query){
-            "CLIENT_ID_NOT_EXISTS"
+        return try {
+            val query = oAuth2ClientService.queryClientByClientId(clientId).await()
+            checkNotNull(query){
+                "CLIENT_ID_NOT_EXISTS"
+            }
+            query.disable().await()
+            Future.succeededFuture(true)
+        }catch (t:Throwable){
+            Future.failedFuture(t)
         }
-        query.disable().await()
-        return Future.succeededFuture(true)
     }
 }
