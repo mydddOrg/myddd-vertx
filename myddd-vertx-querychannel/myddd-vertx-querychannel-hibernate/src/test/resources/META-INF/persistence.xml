@@ -12,7 +12,7 @@
 
             <!-- MySQL -->
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://127.0.0.1:3306/test"/>
+                      value="jdbc:mariadb://127.0.0.1:3306/test"/>
 
             <!-- Credentials -->
             <property name="javax.persistence.jdbc.user"
