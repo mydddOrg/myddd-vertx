@@ -43,11 +43,3 @@ include("myddd-vertx-oauth2:myddd-vertx-oauth2-bootstrap")
 include("myddd-vertx-grpc:myddd-vertx-grpc-api")
 include("myddd-vertx-grpc:myddd-vertx-grpc-provider")
 include("myddd-vertx-grpc:myddd-vertx-grpc-servicetype")
-
-
-//example
-include("example:document-domain")
-include("example:document-api")
-include("example:document-application")
-include("example:document-infra")
-include("example:document-bootstrap")
