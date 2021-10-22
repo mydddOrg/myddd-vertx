@@ -1,6 +1,5 @@
-package org.myddd.vertx.web.router.config
+package org.myddd.vertx.config
 
-import com.google.inject.Guice
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -9,28 +8,12 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.myddd.vertx.config.Config
-import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
-import org.myddd.vertx.web.router.WebGuice
 
 @ExtendWith(VertxExtension::class)
-class GlobalConfigTest {
+class TestConfig {
 
-    companion object {
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll(vertx:Vertx,testContext: VertxTestContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(WebGuice(vertx))))
-                testContext.completeNow()
-            }
-        }
-    }
 
     @Test
     fun testLoadConfigFromEnvPath(vertx: Vertx,testContext: VertxTestContext){
@@ -70,7 +53,7 @@ class GlobalConfigTest {
         }
     }
     @Test
-    fun testGlobalConfig(vertx: Vertx,testContext: VertxTestContext){
+    fun testConfig(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
                 System.setProperty("config","META-INF/config.properties")
@@ -81,6 +64,31 @@ class GlobalConfigTest {
 
                 testContext.verify {
                     Assertions.assertEquals(false,enableWhiteIPFilter)
+                }
+
+                val withDefaultBoolean = Config.getBoolean("notExists.boolean",true)
+                testContext.verify {
+                    Assertions.assertTrue(withDefaultBoolean)
+                }
+
+                val intValue = Config.getInteger("integer.value")
+                testContext.verify {
+                    Assertions.assertTrue(intValue > 0)
+                }
+
+                val withDefaultIntValue = Config.getInteger("integer.notExists",100)
+                testContext.verify {
+                    Assertions.assertEquals(100,withDefaultIntValue)
+                }
+
+                val longValue = Config.getLong("long.value");
+                testContext.verify {
+                    Assertions.assertTrue(longValue > 0)
+                }
+
+                val withDefaultLongValue = Config.getLong("long.notExists",200L)
+                testContext.verify {
+                    Assertions.assertEquals(withDefaultLongValue,200L)
                 }
                 testContext.completeNow()
 
