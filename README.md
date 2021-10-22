@@ -26,5 +26,5 @@ myddd-vertx是myddd在后端的大胆尝试 ，myddd-vertx遵循以下宗旨：
 
 我在[微言码道](https://taoofcode.cc)中有数篇文章与myddd-vertx有所关联，附录在此以供参阅:
 
-1. [为什么我会选择Vertx与Kotlin](https://taoofcode.cc/blogs/2021-01-23/why_i_select_vertx_and_kotlin)
-2. [难以置信的性能优势，来自myddd-vert.x的性能测试报告](https://taoofcode.cc/blogs/2021-04-11/huge_advantage_of_myddd_vertx)
+1. [为什么我会选择Vertx与Kotlin](https://taoofcoding.tech/blogs/2021-01-23/why_i_select_vertx_and_kotlin)
+2. [难以置信的性能优势，来自myddd-vert.x的性能测试报告](https://taoofcoding.tech/blogs/2021-04-11/huge_advantage_of_myddd_vertx)
