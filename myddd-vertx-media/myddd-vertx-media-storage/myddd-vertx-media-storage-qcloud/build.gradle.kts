@@ -48,3 +48,7 @@ dependencies {
     testImplementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
 
 }
+
+sonarqube {
+    isSkipProject = true
+}

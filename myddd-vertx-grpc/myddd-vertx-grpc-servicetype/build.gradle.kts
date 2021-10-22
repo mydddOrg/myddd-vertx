@@ -16,6 +16,12 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+    }
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
@@ -35,7 +41,7 @@ dependencies {
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
     testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
-    testImplementation("org.mockito:mockito-core:3.7.7")
+    testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
 
 }
 

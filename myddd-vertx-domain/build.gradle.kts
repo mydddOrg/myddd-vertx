@@ -38,6 +38,8 @@ dependencies {
 
 
     testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
+    testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
+
     testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
     testImplementation(project(":myddd-vertx-base:myddd-vertx-base-provider"))
 }

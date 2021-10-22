@@ -5,12 +5,14 @@ import com.google.inject.Guice
 import com.google.protobuf.Empty
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -22,19 +24,19 @@ import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 
 @ExtendWith(VertxExtension::class)
 class TestGrpcInstanceProvider {
-
-
     companion object {
 
-        private val healthCheckServiceProxy by lazy {
-            GrpcInstanceFactory.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(HealthGrpcService.HealthCheck)
-        }
+        private val logger by lazy { LoggerFactory.getLogger(TestGrpcInstanceProvider::class.java) }
 
         private lateinit var deployId:String
 
+        private val healthApplicationProxy by lazy {
+            GrpcInstanceFactory.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(HealthGrpcService.HealthCheck)
+        }
+
         @BeforeAll
         @JvmStatic
-        fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
+        fun beforeAll(vertx: Vertx, testContext: VertxTestContext){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
 
@@ -42,10 +44,13 @@ class TestGrpcInstanceProvider {
                         override fun configure() {
                             bind(Vertx::class.java).toInstance(vertx)
                             bind(GrpcInstanceProvider::class.java).to(ServiceDiscoveryGrpcInstanceProvider::class.java)
+
                             bind(HealthCheckApplication::class.java)
                         }
                     })))
 
+                    deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
+                    Assertions.assertNotNull(deployId)
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }
@@ -53,55 +58,27 @@ class TestGrpcInstanceProvider {
             }
         }
 
-        private suspend fun startRpcService(vertx: Vertx):Future<Unit>{
-            return try {
-                deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
-                Future.succeededFuture()
-            }catch (t:Throwable){
-                Future.failedFuture(t)
-            }
-        }
-
-        private suspend fun stopRpcService(vertx: Vertx):Future<Unit>{
-            return try {
-                vertx.undeploy(deployId).await()
-                Future.succeededFuture()
-            }catch (t:Throwable){
-                Future.failedFuture(t)
+        @AfterAll
+        @JvmStatic
+        fun afterAll(vertx: Vertx, testContext: VertxTestContext){
+            GlobalScope.launch(vertx.dispatcher()) {
+                try {
+                    vertx.undeploy(deployId).await()
+                }catch (t:Throwable){
+                    testContext.failNow(t)
+                }
+                testContext.completeNow()
             }
         }
     }
 
     @Test
-    fun testInstanceProvider(vertx: Vertx,testContext: VertxTestContext){
+    fun testHealthApplicationNotNull(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                try {
-                    healthCheckServiceProxy.rpcRun {
-                        it.hello(Empty.getDefaultInstance())
-                    }.await()
-
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
-
-                //启动服务
-                startRpcService(vertx).await()
-
                 testContext.verify {
-                    Assertions.assertNotNull(healthCheckServiceProxy)
+                    Assertions.assertNotNull(healthApplicationProxy)
                 }
-
-                val sayHello = healthCheckServiceProxy.rpcRun {
-                    it.hello(Empty.getDefaultInstance())
-                }.await()
-
-                testContext.verify {
-                    Assertions.assertTrue(sayHello.value)
-                }
-
-                stopRpcService(vertx).await()
-
             }catch (t:Throwable){
                 testContext.failNow(t)
             }

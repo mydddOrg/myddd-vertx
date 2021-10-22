@@ -48,3 +48,7 @@ dependencies {
 
 
 }
+
+sonarqube {
+    isSkipProject = true
+}

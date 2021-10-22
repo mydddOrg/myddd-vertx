@@ -4,7 +4,6 @@ import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
-import io.vertx.core.json.JsonObject
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -91,5 +90,6 @@ class TestGrpcBootstrapVerticle {
             testContext.completeNow()
         }
     }
+
 
 }

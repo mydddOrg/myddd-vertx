@@ -1,7 +1,6 @@
 #!/bin/sh
 
-
-./gradlew test jacocoTestReport
+./gradlew test jacocoTestReport && echo "测试成功" || exit 1
 ./gradlew sonarqube \
   -Dsonar.projectKey=myddd-vertx \
   -Dsonar.host.url=http://localhost:9000 \

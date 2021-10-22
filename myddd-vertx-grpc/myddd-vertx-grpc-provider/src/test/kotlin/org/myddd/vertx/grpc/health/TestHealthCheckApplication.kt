@@ -1,4 +1,4 @@
-package org.myddd.vertx.grpc
+package org.myddd.vertx.grpc.health
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
@@ -10,24 +10,23 @@ import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.myddd.vertx.grpc.health.HealthCheckApplication
-import org.myddd.vertx.grpc.health.HealthGrpcService
+import org.myddd.vertx.grpc.*
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 
 @ExtendWith(VertxExtension::class)
-@Disabled("此测试需要一定的时间")
-class TestGrpcHealthCheckVerticle {
+class TestHealthCheckApplication {
 
     companion object {
 
         private val logger by lazy { LoggerFactory.getLogger(TestGrpcBootstrapVerticle::class.java) }
         private lateinit var deployId:String
-        private lateinit var healthCheckDeployId:String
 
         private val healthApplicationProxy by lazy {
             GrpcInstanceFactory.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(HealthGrpcService.HealthCheck)
@@ -50,9 +49,6 @@ class TestGrpcHealthCheckVerticle {
 
                     deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
                     Assertions.assertNotNull(deployId)
-
-                    healthCheckDeployId = vertx.deployVerticle(GrpcHealthCheckVerticle()).await()
-                    Assertions.assertNotNull(healthCheckDeployId)
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }
@@ -75,16 +71,12 @@ class TestGrpcHealthCheckVerticle {
     }
 
     @Test
-    fun testGrpcBusEvent(vertx: Vertx,testContext: VertxTestContext){
+    fun testHealthApplicationNotNull(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                healthApplicationProxy.rpcRun {
-                    it.hello(Empty.getDefaultInstance())
-                }.await()
-                delay(1000 * 2)
-                vertx.undeploy(deployId).await()
-                delay(1000 * 5)
-
+                testContext.verify {
+                    Assertions.assertNotNull(healthApplicationProxy)
+                }
             }catch (t:Throwable){
                 testContext.failNow(t)
             }
@@ -93,10 +85,16 @@ class TestGrpcHealthCheckVerticle {
     }
 
     @Test
-    fun testGrpcHealthCheck(vertx: Vertx,testContext: VertxTestContext){
+    fun testHealthApplicationHello(vertx: Vertx,testContext: VertxTestContext){
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                delay(1000 * 20)
+                val success = healthApplicationProxy.rpcRun {
+                    it.hello(Empty.getDefaultInstance())
+                }.await()
+
+                testContext.verify {
+                    Assertions.assertTrue(success.value)
+                }
             }catch (t:Throwable){
                 testContext.failNow(t)
             }
@@ -104,6 +102,23 @@ class TestGrpcHealthCheckVerticle {
         }
     }
 
+    @Test
+    fun testHealthApplicationNodeInfo(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val nodeInfo = healthApplicationProxy.rpcRun {
+                    it.nodeInfo(Empty.getDefaultInstance())
+                }.await()
+
+                testContext.verify {
+                    Assertions.assertNotNull(nodeInfo)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
 
 
 }
