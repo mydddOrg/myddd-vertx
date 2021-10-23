@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.AbstractTest
 import org.myddd.vertx.ioc.InstanceFactory
+import java.io.FileInputStream
+import java.io.InputStream
 import java.util.*
 
 class FileDigestTest: AbstractTest() {
@@ -29,6 +31,22 @@ class FileDigestTest: AbstractTest() {
                 }
 
                 val digest = fileDigest.digest(FileDigestTest::class.java.classLoader.getResource("my_avatar.png")!!.path)
+                testContext.verify {
+                    Assertions.assertNotNull(digest)
+                }
+            }catch (t:Throwable){
+                testContext.failNow(t)
+            }
+            testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testFileDigestForInputStream(vertx: Vertx,testContext: VertxTestContext){
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                val path = FileDigestTest::class.java.classLoader.getResource("my_avatar.png")!!.path
+                val digest = fileDigest.digest(FileInputStream(path))
                 testContext.verify {
                     Assertions.assertNotNull(digest)
                 }

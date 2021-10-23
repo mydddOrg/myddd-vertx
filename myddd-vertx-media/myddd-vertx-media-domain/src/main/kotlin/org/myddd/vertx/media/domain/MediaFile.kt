@@ -12,13 +12,13 @@ import java.io.FileInputStream
 import java.io.InputStream
 
 data class MediaFile(val inputStream:InputStream,val name:String,val size:Long,val digest:String) {
-    companion object {
 
-        private val fileDigest by lazy { InstanceFactory.getInstance(FileDigest::class.java) }
-        private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
+    companion object {
 
         suspend fun of(path:String):Future<MediaFile>{
             return try {
+                val vertx = InstanceFactory.getInstance(Vertx::class.java)
+                val fileDigest = InstanceFactory.getInstance(FileDigest::class.java)
                 val fs = vertx.fileSystem()
                 val exists = fs.exists(path).await()
                 if(!exists){
@@ -42,6 +42,8 @@ data class MediaFile(val inputStream:InputStream,val name:String,val size:Long,v
     }
 
     suspend fun toBuffer():Future<Buffer>{
+        val vertx = InstanceFactory.getInstance(Vertx::class.java)
+
         return try {
             val buffer = vertx.executeBlocking<Buffer> {
                 it.complete(Buffer.buffer(inputStream.readAllBytes()))
