@@ -50,7 +50,8 @@ class LocalMediaStorage(private var storagePath: String = System.getProperty("ja
             if(!exists){
                 throw BusinessLogicException(MediaErrorCode.SOURCE_FILE_NOT_EXISTS)
             }
-            val buffer = fs.readFile(extra.path).await()
+
+            val buffer = fs.readFile(localMediaExtra.path).await()
 
             Future.succeededFuture(ByteBufInputStream(buffer.byteBuf))
         }catch (t:Throwable){

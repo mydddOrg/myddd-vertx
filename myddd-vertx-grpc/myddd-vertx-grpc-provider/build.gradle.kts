@@ -11,16 +11,6 @@ version = rootProject.extra["version"]!!
 val mySkipTests = true
 extra["publishJar"] = true
 
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}
-
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-    }
-}
-
 dependencies {
     implementation(kotlin("stdlib"))
 

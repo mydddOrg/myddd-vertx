@@ -9,23 +9,6 @@ version = rootProject.extra["version"]!!
 extra["publishJar"] = true
 
 
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-    testLogging {
-        events = setOf(
-            org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
-            org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED,
-            org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
-        )
-    }
-}
-
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-    }
-}
-
 dependencies {
     implementation(kotlin("stdlib"))
 

@@ -15,20 +15,6 @@ version = rootProject.extra["version"]!!
 val mainVerticleName = "org.myddd.vertx.oauth2.start."
 val launcherClassName = "io.vertx.core.Launcher"
 
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-    testLogging {
-        events = setOf(PASSED, SKIPPED, FAILED)
-    }
-}
-
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-    }
-}
-
 application {
     mainClassName = launcherClassName
 }

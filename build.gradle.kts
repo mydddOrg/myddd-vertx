@@ -52,6 +52,18 @@ subprojects {
         toolVersion = "0.8.7"
     }
 
+    tasks.jacocoTestReport {
+        reports {
+            xml.required.set(true)
+            csv.required.set(false)
+            html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+        }
+    }
+
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
+
     afterEvaluate {
         val publishJar = this.extra.has("publishJar")
         if(publishJar){

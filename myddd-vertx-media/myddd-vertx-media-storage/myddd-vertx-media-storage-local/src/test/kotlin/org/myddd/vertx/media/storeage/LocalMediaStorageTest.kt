@@ -77,6 +77,7 @@ class LocalMediaStorageTest:AbstractTest() {
                 val customMediaStorage = LocalMediaStorage(storagePath = "${System.getProperty("user.home")}/Downloads")
 
                 val absolutePath = LocalMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
+
                 val mediaFile = MediaFile.of(absolutePath).await()
                 val extra = customMediaStorage.uploadToStorage(mediaFile).await()
                 testContext.verify {

@@ -7,12 +7,6 @@ group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
 extra["publishJar"] = true
 
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-    }
-}
-
 dependencies {
     implementation(kotlin("stdlib"))
 
@@ -36,8 +30,4 @@ dependencies {
     testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
     testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
 
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
 }

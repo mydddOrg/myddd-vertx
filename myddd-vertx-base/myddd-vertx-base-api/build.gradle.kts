@@ -8,16 +8,6 @@ version = rootProject.extra["version"]!!
 
 extra["publishJar"] = true
 
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-    }
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}
-
 
 dependencies {
     //base
