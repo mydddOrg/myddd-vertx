@@ -15,16 +15,15 @@ myddd-vertx是myddd在后端的大胆尝试 ，myddd-vertx遵循以下宗旨：
 
 当然，myddd仍然提供了基于Java及Spring Boot的领域驱动实现**myddd-java**，你仍然可以使用你最熟悉的Java语言及Spring来编码代码。
 
+## SonarQube质量管控
 
+myddd-vertx遵照TDD测试驱动开发的理念进行开发，使用SonarQube进行质量管控。
+
+当前主干的SonarQube数据为:
+
+![SonarQube质量管控](https://images.taoofcoding.tech/2021/11/sonar-data-of-myddd-vertx-1.3.0-snapshot.png)
 
 ## 文档与教程
 
-官网： https://myddd.org
-
-
-## 关联文章
-
-我在[微言码道](https://taoofcode.cc)中有数篇文章与myddd-vertx有所关联，附录在此以供参阅:
-
-1. [为什么我会选择Vertx与Kotlin](https://taoofcoding.tech/blogs/2021-01-23/why_i_select_vertx_and_kotlin)
-2. [难以置信的性能优势，来自myddd-vert.x的性能测试报告](https://taoofcoding.tech/blogs/2021-04-11/huge_advantage_of_myddd_vertx)
+myddd官网： [https://myddd.org](https://myddd.org)
+微言码道官网: [https://taoofcoding.tech](https://taoofcoding.tech)
