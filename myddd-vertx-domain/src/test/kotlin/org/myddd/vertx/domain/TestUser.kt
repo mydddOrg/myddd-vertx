@@ -2,13 +2,11 @@ package org.myddd.vertx.domain
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
-import com.google.inject.name.Names
 import io.vertx.junit5.VertxExtension
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mockito
 import org.myddd.vertx.id.IDGenerator
 import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.ioc.InstanceFactory

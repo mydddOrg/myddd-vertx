@@ -30,8 +30,6 @@ tasks.withType<ShadowJar> {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
-    implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
 
     implementation("io.vertx:vertx-web:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-config:${rootProject.extra["vertx_version"]}")
@@ -53,9 +51,7 @@ dependencies {
     implementation("javax.inject:javax.inject:1")
     implementation("org.eclipse.persistence:javax.persistence:${rootProject.extra["javax_persistence_version"]}")
 
-    testImplementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
 
-    testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
 
     implementation("com.fasterxml.jackson.core:jackson-databind:${rootProject.extra["jackson_version"]}")
     implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
@@ -66,6 +62,6 @@ dependencies {
 
     implementation(project(":myddd-vertx-web"))
 
-    testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
     testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
+    testImplementation("io.vertx:vertx-web-client:${rootProject.extra["vertx_version"]}")
 }

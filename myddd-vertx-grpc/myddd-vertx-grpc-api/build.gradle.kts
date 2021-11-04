@@ -13,23 +13,14 @@ extra["publishJar"] = true
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
-    implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
     implementation("io.vertx:vertx-grpc:${rootProject.extra["vertx_version"]}")
-
     api(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
 
 
     implementation("javax.annotation:javax.annotation-api:${rootProject.extra["annotation-api"]}")
     implementation("com.google.protobuf:protobuf-java:${rootProject.extra["protobuf-java"]}")
 
-    testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
-    testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
     testImplementation(project(":myddd-vertx-grpc:myddd-vertx-grpc-provider"))
-    testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
-
-
 }
 
 sourceSets.main {

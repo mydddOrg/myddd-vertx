@@ -12,10 +12,6 @@ dependencies {
     //base
     implementation(kotlin("stdlib"))
 
-    implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
-    implementation("io.vertx:vertx-lang-kotlin:${rootProject.extra["vertx_version"]}")
-    implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
-
     implementation(project(":myddd-vertx-media:myddd-vertx-media-domain"))
 
     //api
@@ -30,9 +26,5 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:${rootProject.extra["jackson_version"]}")
     
     //test
-    testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
-    testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-
-    testImplementation("io.vertx:vertx-pg-client:${rootProject.extra["vertx_version"]}")
     testImplementation("io.vertx:vertx-mysql-client:${rootProject.extra["vertx_version"]}")
 }

@@ -14,10 +14,6 @@ extra["publishJar"] = true
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
-    implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
-
-
     api(project(":myddd-vertx-grpc:myddd-vertx-grpc-api"))
 
     implementation("com.google.protobuf:protobuf-java:${rootProject.extra["protobuf-java"]}")
@@ -28,11 +24,6 @@ dependencies {
 
     implementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
     implementation("com.fasterxml.jackson.core:jackson-databind:${rootProject.extra["jackson_version"]}")
-
-    testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
-    testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
-
 }
 
 
