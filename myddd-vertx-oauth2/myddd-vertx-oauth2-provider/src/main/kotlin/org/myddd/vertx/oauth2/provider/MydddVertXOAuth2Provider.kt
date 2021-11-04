@@ -74,4 +74,6 @@ class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {
         }
         return this
     }
+
+
 }

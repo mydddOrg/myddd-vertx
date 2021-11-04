@@ -65,28 +65,4 @@ class TestAbstractOAuth2Auth {
         }
         testContext.completeNow()
     }
-
-    @Test
-    fun testIntrospectToken(testContext: VertxTestContext){
-        Assertions.assertThrows(UnsupportedOperationException::class.java){
-            oauth2Auth.introspectToken(null)
-        }
-        testContext.completeNow()
-    }
-
-    @Test
-    fun testGetFlowType(testContext: VertxTestContext){
-        Assertions.assertThrows(UnsupportedOperationException::class.java){
-            oauth2Auth.flowType
-        }
-        testContext.completeNow()
-    }
-
-    @Test
-    fun testRbacHandler(testContext: VertxTestContext){
-        Assertions.assertThrows(UnsupportedOperationException::class.java){
-            oauth2Auth.rbacHandler(null)
-        }
-        testContext.completeNow()
-    }
 }

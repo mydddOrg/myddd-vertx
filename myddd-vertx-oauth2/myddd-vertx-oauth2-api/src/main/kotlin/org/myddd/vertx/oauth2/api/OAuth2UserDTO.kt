@@ -35,4 +35,8 @@ class OAuth2UserDTO : User {
     override fun setAuthProvider(authProvider: AuthProvider?) {
         throw UnsupportedOperationException()
     }
+
+    override fun merge(other: User?): User {
+        return this
+    }
 }
