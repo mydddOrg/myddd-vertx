@@ -23,7 +23,14 @@ myddd-vertx遵照TDD测试驱动开发的理念进行开发，使用SonarQube进
 
 ![SonarQube质量管控](https://images.taoofcoding.tech/2021/11/sonar-data-of-myddd-vertx-1.3.0-snapshot.png)
 
-## 文档与教程
+## 为什么叫myddd
 
-myddd官网： [https://myddd.org](https://myddd.org)
-微言码道官网: [https://taoofcoding.tech](https://taoofcoding.tech)
+ddd领域驱动的理念较为复杂，概念较多。包含实体，值对象，仓储，领域服务，领域事件，聚合根，应用服务，查询通道，DTO数据对象等众多要素。
+
+因此大家对于它的理解与争议较多，我个人不是非常喜欢与人争论，将自己对DDD的理解，结合自己十多年在后台，移动端（iOS,Android)，基于Electron的桌面开发以及前端（TypeScript + React）的技术经验的基础上，取之名为myddd，表意为：ddd，我理解，我实现。不与人陷入争议之中。
+
+## 官网
+
+【myddd官网】: https://myddd.org
+
+【微言码道】官网：https://taoofcoding.tech
