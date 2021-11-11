@@ -28,7 +28,7 @@ extra["kotlin_version"] = "1.5.31"
 extra["vertx_version"] = "4.2.0"
 extra["hibernate_reactive_version"] = "1.0.1.Final"
 
-extra["log4j_version"] = "2.14.0"
+extra["log4j_version"] = "2.14.1"
 extra["jackson_version"] = "2.12.1"
 extra["javax_persistence_version"] = "2.2.1"
 extra["mockito_version"] = "4.0.0"
@@ -108,6 +108,22 @@ subprojects {
 
             }
         }
+
+        if(!this.sonarqube.isSkipProject){
+            tasks.check {
+                finalizedBy(tasks.jacocoTestCoverageVerification) // report is always generated after tests run
+            }
+
+            tasks.jacocoTestCoverageVerification {
+                violationRules {
+                    rule {
+                        limit {
+                            minimum = "0.8".toBigDecimal()
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -174,5 +190,5 @@ tasks.jar {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
 }
