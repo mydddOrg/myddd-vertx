@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 buildscript {
     extra["kotlinVersion"] = "1.5.31"
-    val kotlinVersion: String by extra
 
     repositories {
         gradlePluginPortal()
@@ -17,7 +16,7 @@ plugins {
     `maven-publish`
     kotlin("jvm") version "1.5.31"
     id("jacoco")
-    id("org.sonarqube") version "3.0"
+    id("org.sonarqube") version "3.3"
 }
 
 val projectVersion = "1.3.0-SNAPSHOT"
