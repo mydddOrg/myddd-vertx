@@ -32,7 +32,7 @@ extra["jackson_version"] = "2.12.1"
 extra["javax_persistence_version"] = "2.2.1"
 extra["mockito_version"] = "4.0.0"
 extra["commons_lang3_version"] = "3.12.0"
-extra["junit5_version"] = "5.7.1"
+extra["junit5_version"] = "5.8.1"
 
 extra["protobuf-java"] = "3.17.3"
 extra["annotation-api"] = "1.3.2"

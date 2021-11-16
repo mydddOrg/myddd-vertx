@@ -1,5 +1,6 @@
 rootProject.name = "myddd-vertx"
 
+
 include("myddd-vertx-base:myddd-vertx-base-api")
 include("myddd-vertx-base:myddd-vertx-base-config")
 include("myddd-vertx-base:myddd-vertx-base-provider")
@@ -43,3 +44,5 @@ include("myddd-vertx-oauth2:myddd-vertx-oauth2-bootstrap")
 include("myddd-vertx-grpc:myddd-vertx-grpc-api")
 include("myddd-vertx-grpc:myddd-vertx-grpc-provider")
 include("myddd-vertx-grpc:myddd-vertx-grpc-servicetype")
+
+include("myddd-vertx-junit")
