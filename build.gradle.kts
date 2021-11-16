@@ -37,7 +37,7 @@ extra["junit5_version"] = "5.7.1"
 
 extra["protobuf-java"] = "3.17.3"
 extra["annotation-api"] = "1.3.2"
-
+extra["assertj-core-version"] = "3.21.0"
 group = "org.myddd.vertx"
 version = projectVersion
 
@@ -139,6 +139,7 @@ subprojects {
         testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
         testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
         testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
+        testImplementation("org.assertj:assertj-core:${rootProject.extra["assertj-core-version"]}")
 
         testImplementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
     }
