@@ -13,8 +13,9 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     //api
-    implementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    implementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
-    implementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
-    implementation("org.assertj:assertj-core:${rootProject.extra["assertj-core-version"]}")
+    api("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
+    api("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
+    api("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
+    api("org.assertj:assertj-core:${rootProject.extra["assertj-core-version"]}")
+    api("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
 }
