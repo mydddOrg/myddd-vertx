@@ -70,6 +70,17 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
         return promise.future()
     }
 
+    override suspend fun <T : Entity> remove(entity: T): Future<Unit> {
+        val promise = PromiseImpl<Unit>()
+        sessionFactory.withTransaction{ session, _ ->
+            session.remove(entity)
+        }.subscribe()
+            .with({promise.onSuccess(Unit)},{
+                promise.fail(it)
+            })
+        return promise.future()
+    }
+
     override suspend fun <T : Entity> batchSave(entityList: Array<T>): Future<Boolean> {
         val promise = PromiseImpl<Boolean>()
         sessionFactory.withTransaction { session, _ ->

@@ -28,6 +28,11 @@ interface EntityRepository {
     suspend fun <T : Entity> exists(clazz: Class<T>?, id: Serializable?): Future<Boolean>
 
     /**
+     * 移除一个实体
+     */
+    suspend fun <T : Entity> remove(entity:T):Future<Unit>
+
+    /**
      * 批量更新
      */
     suspend fun <T : Entity> batchSave(entityList:Array<T>): Future<Boolean>

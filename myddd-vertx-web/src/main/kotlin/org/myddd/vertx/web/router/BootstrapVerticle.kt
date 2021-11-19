@@ -20,6 +20,7 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
 
     private lateinit var server:HttpServer;
 
+
     private val startedPort:Int by lazy {
         Config.getInteger("port",port)
     }

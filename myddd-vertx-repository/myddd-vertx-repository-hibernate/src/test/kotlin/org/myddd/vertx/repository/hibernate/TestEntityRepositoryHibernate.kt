@@ -10,6 +10,7 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.hibernate.HibernateException
 import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -20,12 +21,16 @@ import org.myddd.vertx.id.IDGenerator
 import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.junit.assertNotThrow
+import org.myddd.vertx.junit.assertThrow
+import org.myddd.vertx.junit.execute
 import org.myddd.vertx.repository.api.EntityRepository
 import org.myddd.vertx.string.RandomIDString
 import org.myddd.vertx.string.RandomIDStringProvider
 import java.util.*
 import java.util.stream.Stream
 import javax.persistence.Persistence
+import javax.persistence.PersistenceException
 import kotlin.Exception
 import kotlin.collections.ArrayList
 
@@ -101,6 +106,25 @@ class TestEntityRepositoryHibernate {
             }
         }
 
+    }
+
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testRemoveEntity(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
+        testContext.execute {
+
+            testContext.assertThrow(PersistenceException::class.java){
+                repository.remove(User()).await()
+            }
+
+            val user =  User(username = "lingen",age = 35)
+            val created = repository.save(user).await()
+
+            testContext.assertNotThrow{
+                repository.remove(created).await()
+            }
+
+        }
     }
 
     @ParameterizedTest

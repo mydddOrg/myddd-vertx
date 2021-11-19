@@ -5,6 +5,16 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions
 
+suspend fun VertxTestContext.assertNotThrow(execution:suspend () -> Any){
+    try {
+        execution()
+    }catch (t:Throwable){
+        this.verify {
+            Assertions.assertThat(t).isNull()
+        }
+    }
+}
+
 suspend fun <T:Throwable> VertxTestContext.assertThrow(clazz: Class<T>,execution:suspend () -> Any){
     try {
         execution()
