@@ -5,7 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions
 
-suspend fun <T:Throwable> VertxTestContext.assertThrow(clazz: Class<T>,execution:suspend () -> Unit){
+suspend fun <T:Throwable> VertxTestContext.assertThrow(clazz: Class<T>,execution:suspend () -> Any){
     try {
         execution()
     }catch (t:Throwable){
@@ -15,7 +15,7 @@ suspend fun <T:Throwable> VertxTestContext.assertThrow(clazz: Class<T>,execution
     }
 }
 
-fun VertxTestContext.execute(execution:suspend () -> Unit){
+fun VertxTestContext.execute(execution:suspend () -> Any){
     val vertxTestContext = this
     GlobalScope.launch {
         try {

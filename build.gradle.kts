@@ -135,7 +135,11 @@ subprojects {
         testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
 
 
-        testImplementation(project(":myddd-vertx-junit"))
+        testImplementation("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")
+        testImplementation("org.junit.jupiter:junit-jupiter:${rootProject.extra["junit5_version"]}")
+        testImplementation("org.mockito:mockito-core:${rootProject.extra["mockito_version"]}")
+        testImplementation("org.assertj:assertj-core:${rootProject.extra["assertj-core-version"]}")
+
         testImplementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
     }
 }
