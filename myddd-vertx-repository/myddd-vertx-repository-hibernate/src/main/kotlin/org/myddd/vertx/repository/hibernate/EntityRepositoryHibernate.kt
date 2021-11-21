@@ -73,7 +73,9 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
     override suspend fun <T : Entity> remove(entity: T): Future<Unit> {
         val promise = PromiseImpl<Unit>()
         sessionFactory.withTransaction{ session, _ ->
-            session.remove(entity)
+            session.merge(entity).chain { it ->
+                session.remove(it)
+            }
         }.subscribe()
             .with({promise.onSuccess(Unit)},{
                 promise.fail(it)
@@ -104,7 +106,7 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
         return promise.future()
     }
 
-    override suspend fun <T : Entity> listQuery(
+    override suspend fun <T> listQuery(
         clazz: Class<T>?,
         sql: String,
         params: Map<String, Any>
@@ -122,7 +124,7 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
         return promise.future()
     }
 
-    override suspend fun <T : Entity> singleQuery(clazz: Class<T>?, sql: String, params: Map<String, Any>): Future<T?> {
+    override suspend fun <T> singleQuery(clazz: Class<T>?, sql: String, params: Map<String, Any>): Future<T?> {
         val promise = PromiseImpl<T?>()
         sessionFactory.withSession { session ->
             val query = session.createQuery(sql, clazz)

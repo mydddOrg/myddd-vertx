@@ -45,13 +45,13 @@ interface EntityRepository {
     /**
      * 执行一个查询，返回一个LIST
      */
-    suspend fun <T: Entity> listQuery(clazz: Class<T>?,sql:String,params:Map<String,Any> = HashMap()):Future<List<T>>
+    suspend fun <T> listQuery(clazz: Class<T>?,sql:String,params:Map<String,Any> = HashMap()):Future<List<T>>
 
 
     /**
      * 执行一个查询，返回单个数值
      */
-    suspend fun <T:Entity> singleQuery(clazz: Class<T>?,sql:String,params:Map<String,Any> = HashMap()):Future<T?>
+    suspend fun <T> singleQuery(clazz: Class<T>?,sql:String,params:Map<String,Any> = HashMap()):Future<T?>
 
     /**
      * 执行一个更新操作
