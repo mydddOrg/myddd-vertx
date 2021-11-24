@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 buildscript {
-    extra["kotlinVersion"] = "1.5.31"
+    extra["kotlinVersion"] = "1.6.0"
 
     repositories {
         gradlePluginPortal()
@@ -14,7 +14,7 @@ buildscript {
 plugins {
     java
     `maven-publish`
-    kotlin("jvm") version "1.5.31"
+    kotlin("jvm") version "1.6.0"
     id("jacoco")
     id("org.sonarqube") version "3.3"
 }
@@ -23,7 +23,7 @@ val projectVersion = "1.3.0-SNAPSHOT"
 
 extra["version"] = projectVersion
 
-extra["kotlin_version"] = "1.5.31"
+extra["kotlin_version"] = "1.6.0"
 extra["vertx_version"] = "4.2.1"
 extra["hibernate_reactive_version"] = "1.1.0.Final"
 
@@ -128,6 +128,10 @@ subprojects {
 
 
     dependencies{
+
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.0")
+
+
         implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
         implementation("io.vertx:vertx-lang-kotlin:${rootProject.extra["vertx_version"]}")
         implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
@@ -182,8 +186,4 @@ repositories {
 
 tasks.jar {
     enabled = true
-}
-
-dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
 }
