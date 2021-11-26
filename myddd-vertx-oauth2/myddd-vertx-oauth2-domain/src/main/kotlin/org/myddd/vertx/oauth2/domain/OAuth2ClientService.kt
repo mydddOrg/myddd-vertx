@@ -3,6 +3,9 @@ package org.myddd.vertx.oauth2.domain
 import io.vertx.core.Future
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
+import org.myddd.vertx.oauth2.AccessTokenNotExistsException
+import org.myddd.vertx.oauth2.OAuth2ErrorCode
+import org.myddd.vertx.oauth2.RefreshTokenNotMatchException
 import java.util.*
 import javax.inject.Inject
 
@@ -41,9 +44,9 @@ class OAuth2ClientService {
         return try {
             val token = queryClientToken(client.clientId).await()
 
-            if(Objects.isNull(token)) throw BusinessLogicException(OAuth2ErrorCode.ACCESS_TOKEN_NOT_EXISTS)
+            if(Objects.isNull(token)) throw AccessTokenNotExistsException()
 
-            if(token?.refreshToken != refreshToken) throw  BusinessLogicException(OAuth2ErrorCode.REFRESH_TOKEN_NOT_MATCH)
+            if(token?.refreshToken != refreshToken) throw RefreshTokenNotMatchException()
 
             val refreshToken = token.refreshToken().await()
 

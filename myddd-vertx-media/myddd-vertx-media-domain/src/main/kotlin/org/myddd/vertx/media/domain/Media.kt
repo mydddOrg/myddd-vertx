@@ -7,6 +7,8 @@ import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.domain.BaseEntity
 import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.media.MediaErrorCode
+import org.myddd.vertx.media.SourceFileNotExistsException
 import org.myddd.vertx.media.domain.converter.MediaExtraConverter
 import org.myddd.vertx.string.RandomIDString
 import java.io.File
@@ -103,7 +105,7 @@ class Media: BaseEntity() {
                 val fs = vertx.fileSystem()
                 val exists = fs.exists(path).await()
                 if(!exists){
-                    throw BusinessLogicException(MediaErrorCode.SOURCE_FILE_NOT_EXISTS)
+                    throw SourceFileNotExistsException()
                 }
                 val fileSystemProps = fs.lprops(path).await()
                 val media = Media()
@@ -117,9 +119,4 @@ class Media: BaseEntity() {
             }
         }
     }
-
-
-
-
-
 }

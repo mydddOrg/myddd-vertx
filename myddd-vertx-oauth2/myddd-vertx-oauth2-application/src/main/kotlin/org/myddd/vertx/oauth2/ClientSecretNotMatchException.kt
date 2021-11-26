@@ -1,0 +1,5 @@
+package org.myddd.vertx.oauth2
+
+import org.myddd.vertx.base.BusinessLogicException
+
+class ClientSecretNotMatchException:BusinessLogicException(OAuth2ApiErrorCode.CLIENT_SECRET_NOT_MATCH)

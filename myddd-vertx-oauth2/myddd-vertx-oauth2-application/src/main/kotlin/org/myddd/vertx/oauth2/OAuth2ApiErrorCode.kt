@@ -1,4 +1,4 @@
-package org.myddd.vertx.oauth2.application
+package org.myddd.vertx.oauth2
 
 import org.myddd.vertx.error.ErrorCode
 

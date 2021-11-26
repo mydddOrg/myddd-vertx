@@ -1,0 +1,5 @@
+package org.myddd.vertx.media
+
+import org.myddd.vertx.base.BusinessLogicException
+
+class SourceFileNotExistsException:BusinessLogicException(MediaErrorCode.SOURCE_FILE_NOT_EXISTS)

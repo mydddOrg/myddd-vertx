@@ -4,6 +4,9 @@ import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import org.myddd.vertx.base.BusinessLogicException
+import org.myddd.vertx.web.SomethingErrorException
+import org.myddd.vertx.web.SomethingErrorWithParamException
+import org.myddd.vertx.web.WebErrorCode
 import org.myddd.vertx.web.router.ext.jsonFormatEnd
 import org.myddd.vertx.web.router.ext.singleQueryParam
 import org.myddd.vertx.web.router.handler.AccessTokenAuthorizationHandler
@@ -25,7 +28,7 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
             route.handler {
                 val error = it.queryParam("error")
                 if(error.isNotEmpty()){
-                    throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR)
+                    throw SomethingErrorException()
                 }
                 it.end()
             }
@@ -39,7 +42,7 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
             route.handler {
                 val error = it.queryParam("error")
                 if(error.isNotEmpty()){
-                    throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR)
+                    throw SomethingErrorException()
                 }
                 it.end()
             }
@@ -55,7 +58,7 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
 
                 val error = it.queryParam("error")
                 if(error.isNotEmpty()){
-                    throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR_WITH_PARAM, arrayOf(userId))
+                    throw SomethingErrorWithParamException(arrayOf(userId))
                 }
 
                 it.jsonFormatEnd(JsonObject().put("userId",userId).toBuffer())
@@ -71,7 +74,7 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
 
                 val error = it.queryParam("error")
                 if(error.isNotEmpty()){
-                    throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR_WITH_PARAM, arrayOf(userId))
+                    throw SomethingErrorWithParamException(arrayOf(userId))
                 }
 
                 it.jsonFormatEnd(JsonObject().put("userId",userId).put("name",name).toBuffer())
@@ -87,7 +90,7 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
 
                 val error = it.singleQueryParam("error")
                 if(!error.isNullOrEmpty()){
-                    throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR_WITH_PARAM, arrayOf(userId))
+                    throw SomethingErrorWithParamException(arrayOf(userId))
                 }
                 it.jsonFormatEnd(JsonObject().put("userId",userId).put("name",name.reversed()).toBuffer())
             }
@@ -100,7 +103,7 @@ class UserRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx,rou
                 val userId = it.pathParam("userId")
                 val error = it.singleQueryParam("error")
                 if(!error.isNullOrEmpty()){
-                    throw BusinessLogicException(WebErrorCode.SOMETHING_ERROR_WITH_PARAM, arrayOf(userId))
+                    throw SomethingErrorWithParamException(arrayOf(userId))
                 }
 
                 it.response().setStatusCode(204).end()

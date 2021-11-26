@@ -5,3 +5,5 @@
 build
 example/comment-infra/out
 **/*/out
+.DS_Store
+**/*/.DS_Store

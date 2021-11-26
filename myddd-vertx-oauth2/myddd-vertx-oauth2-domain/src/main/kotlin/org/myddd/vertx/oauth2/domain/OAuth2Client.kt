@@ -47,7 +47,7 @@ class OAuth2Client:BaseEntity() {
     suspend fun createClient():Future<OAuth2Client>{
         return try{
             if(name.isEmpty()){
-                throw BusinessLogicException(OAuth2ErrorCode.CLIENT_NAME_CAN_NOT_NULL)
+                throw IllegalArgumentException("name不能为空")
             }
 
             this.created = System.currentTimeMillis()

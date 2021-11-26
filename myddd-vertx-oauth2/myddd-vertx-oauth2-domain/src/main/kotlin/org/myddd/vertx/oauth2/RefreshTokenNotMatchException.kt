@@ -1,0 +1,5 @@
+package org.myddd.vertx.oauth2
+
+import org.myddd.vertx.base.BusinessLogicException
+
+class RefreshTokenNotMatchException:BusinessLogicException(OAuth2ErrorCode.REFRESH_TOKEN_NOT_MATCH)

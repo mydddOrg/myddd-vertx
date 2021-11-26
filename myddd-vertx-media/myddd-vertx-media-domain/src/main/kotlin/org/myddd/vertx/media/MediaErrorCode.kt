@@ -1,4 +1,4 @@
-package org.myddd.vertx.media.domain
+package org.myddd.vertx.media
 
 import org.myddd.vertx.error.ErrorCode
 

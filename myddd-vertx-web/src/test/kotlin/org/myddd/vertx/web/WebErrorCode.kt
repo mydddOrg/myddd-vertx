@@ -1,4 +1,4 @@
-package org.myddd.vertx.web.router
+package org.myddd.vertx.web
 
 import org.myddd.vertx.error.ErrorCode
 

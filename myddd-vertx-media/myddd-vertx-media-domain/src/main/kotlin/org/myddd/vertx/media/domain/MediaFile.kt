@@ -7,6 +7,8 @@ import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.media.MediaErrorCode
+import org.myddd.vertx.media.SourceFileNotExistsException
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -22,7 +24,7 @@ data class MediaFile(val inputStream:InputStream,val name:String,val size:Long,v
                 val fs = vertx.fileSystem()
                 val exists = fs.exists(path).await()
                 if(!exists){
-                    throw BusinessLogicException(MediaErrorCode.SOURCE_FILE_NOT_EXISTS)
+                    throw SourceFileNotExistsException()
                 }
                 val props = fs.props(path).await()
                 val digest = fileDigest.digest(FileInputStream(path)).await()

@@ -1,0 +1,5 @@
+package org.myddd.vertx.oauth2
+
+import org.myddd.vertx.base.BusinessLogicException
+
+class AccessTokenNotExistsException:BusinessLogicException(OAuth2ErrorCode.ACCESS_TOKEN_NOT_EXISTS)

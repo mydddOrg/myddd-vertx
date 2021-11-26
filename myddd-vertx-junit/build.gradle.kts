@@ -10,7 +10,7 @@ extra["publishJar"] = true
 
 dependencies {
     //base
-    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.0")
 
     //api
     api("io.vertx:vertx-junit5:${rootProject.extra["vertx_version"]}")

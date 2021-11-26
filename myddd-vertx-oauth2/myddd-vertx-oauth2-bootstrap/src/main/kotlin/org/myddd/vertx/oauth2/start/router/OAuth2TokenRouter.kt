@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
+import org.myddd.vertx.oauth2.start.NotSupportOAuth2GrantTypeException
 import org.myddd.vertx.oauth2.start.OAuth2WebErrorCode
 import org.myddd.vertx.web.router.AbstractRouter
 import kotlin.Exception
@@ -36,7 +37,7 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = ve
                         val clientId = jsonBody.getString("clientId")
                         val clientSecret = jsonBody.getString("clientSecret")
 
-                        if(grantType != "client_credentials") throw BusinessLogicException(OAuth2WebErrorCode.NOT_SUPPORT_OAUTH2_GRANT_TYPE)
+                        if(grantType != "client_credentials") throw NotSupportOAuth2GrantTypeException()
 
                         val userDTO = oAuth2Application.requestClientToken(clientId,clientSecret).await()
 
@@ -61,7 +62,8 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = ve
                         val clientId = bodyJson.getString("clientId")
                         val refreshToken = bodyJson.getString("refreshToken")
 
-                        if(clientId.isNullOrEmpty() || refreshToken.isNullOrEmpty()) throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REFRESH_TOKEN)
+                        if(clientId.isNullOrEmpty() || refreshToken.isNullOrEmpty())
+                            throw IllegalArgumentException("clientId与refreshToken不能为空")
 
                         val tokenDTO = oAuth2Application.refreshUserToken(clientId,refreshToken).await()
                         val requestToken = JsonObject.mapFrom(tokenDTO?.tokenDTO)
@@ -84,7 +86,8 @@ class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = ve
                         val clientId = it.pathParam("clientId")
                         val accessToken = it.pathParam("accessToken")
 
-                        if(clientId.isNullOrEmpty() || accessToken.isNullOrEmpty()) throw BusinessLogicException(OAuth2WebErrorCode.ILLEGAL_PARAMETER_FOR_REVOKE_TOKEN)
+                        if(clientId.isNullOrEmpty() || accessToken.isNullOrEmpty())
+                            throw IllegalArgumentException("clientId与accessToken不能为空")
 
                         oAuth2Application.revokeUserToken(clientId,accessToken).await()
                         it.response().setStatusCode(204).end()
