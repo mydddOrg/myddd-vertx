@@ -158,30 +158,22 @@ allprojects {
         maven {
             setUrl("https://maven.myddd.org/releases/")
         }
+
         maven {
             setUrl("https://maven.myddd.org/snapshots/")
         }
 
         mavenCentral()
+
+        maven {
+            setUrl("https://jitpack.io")
+        }
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "11"
     }
 
-
-
-}
-
-repositories {
-    maven {
-        setUrl("https://maven.myddd.org/releases/")
-    }
-    maven {
-        setUrl("https://maven.myddd.org/snapshots/")
-    }
-
-    mavenCentral()
 }
 
 tasks.jar {

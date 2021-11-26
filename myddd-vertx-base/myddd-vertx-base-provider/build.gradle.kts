@@ -20,4 +20,7 @@ dependencies {
     //the 3rd lib
     implementation("org.apache.commons:commons-lang3:${rootProject.extra["commons_lang3_version"]}")
     implementation("commons-codec:commons-codec:1.15")
+    //ulid kotlin库
+    implementation("com.github.guepardoapps:kulid:2.0.0.0")
+
 }

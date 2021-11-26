@@ -2,19 +2,17 @@ package org.myddd.vertx.domain
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
-import io.vertx.junit5.VertxExtension
-import org.junit.jupiter.api.Assertions
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.id.IDGenerator
 import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.id.StringIDGenerator
 import org.myddd.vertx.id.ULIDStringGenerator
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
-@ExtendWith(VertxExtension::class)
-class TestUser {
+
+class TestPerson {
 
     companion object {
 
@@ -31,8 +29,8 @@ class TestUser {
     }
 
     @Test
-    fun testEntity(){
-        val user = UserEntity()
-        Assertions.assertTrue(user.getId() > 0)
+    fun testCreatePerson(){
+        val person = PersonEntity()
+        Assertions.assertThat(person.id).isNotNull
     }
 }
