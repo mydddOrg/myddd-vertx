@@ -9,6 +9,7 @@ import org.myddd.vertx.domain.BaseStringIDEntity
 import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.MediaErrorCode
+import org.myddd.vertx.media.MediaNotFoundException
 import org.myddd.vertx.media.SourceFileNotExistsException
 import org.myddd.vertx.media.domain.converter.MediaExtraConverter
 import org.myddd.vertx.string.RandomIDString
@@ -43,6 +44,15 @@ class Media: BaseStringIDEntity() {
         private val repository by lazy { InstanceFactory.getInstance(MediaRepository::class.java) }
         private val fileDigest by lazy { InstanceFactory.getInstance(FileDigest::class.java) }
         private val mediaStorage by lazy { InstanceFactory.getInstance(MediaStorage::class.java) }
+
+        suspend fun downloadByMediaId(mediaId: String):Future<String>{
+            val exist = queryMediaById(mediaId).await()
+            if(Objects.isNull(exist)){
+                throw MediaNotFoundException(arrayOf(mediaId))
+            }
+
+            return mediaStorage.downloadFromStorage(exist!!.extra)
+        }
 
 
         suspend fun queryMediaById(mediaId:String):Future<Media?>{

@@ -7,7 +7,7 @@ interface MediaStorage {
 
     suspend fun uploadToStorage(mediaFile: MediaFile):Future<MediaExtra>
 
-    suspend fun downloadFromStorage(extra: MediaExtra):Future<InputStream>
+    suspend fun downloadFromStorage(extra: MediaExtra):Future<String>
 
     fun loadMediaExtra(dbData: String): MediaExtra
 }

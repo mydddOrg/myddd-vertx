@@ -8,7 +8,6 @@ import com.qcloud.cos.model.GetObjectRequest
 import com.qcloud.cos.model.ObjectMetadata
 import com.qcloud.cos.model.PutObjectRequest
 import com.qcloud.cos.region.Region
-import io.netty.buffer.ByteBufInputStream
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
@@ -19,7 +18,6 @@ import org.myddd.vertx.media.domain.MediaExtra
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
 import java.io.File
-import java.io.InputStream
 import java.time.LocalDateTime
 
 class QCloudMediaStorage(private val secretId:String,private val secretKey:String,private val bucketName:String,private val region:String = "ap-guangzhou"): MediaStorage {
@@ -56,16 +54,15 @@ class QCloudMediaStorage(private val secretId:String,private val secretKey:Strin
         }
     }
 
-    override suspend fun downloadFromStorage(extra: MediaExtra): Future<InputStream> {
+    override suspend fun downloadFromStorage(extra: MediaExtra): Future<String> {
         return try {
             val fs = vertx.fileSystem()
 
             val mediaExtra = extra as QCloudMediaExtra
 
-            val destPath = storagePath + File.separator + mediaExtra.key
-            return if(fs.exists(destPath).await()){
-                val buffer = fs.readFile(destPath).await()
-                Future.succeededFuture(ByteBufInputStream(buffer.byteBuf))
+            val downloadPath = storagePath + File.separator + mediaExtra.key
+            return if(fs.exists(downloadPath).await()){
+                Future.succeededFuture(downloadPath)
             }else {
                 val getObjectRequest = GetObjectRequest(bucketName, mediaExtra.key)
                 val objectMetadata = cosClient.getObject(getObjectRequest)
@@ -79,8 +76,8 @@ class QCloudMediaStorage(private val secretId:String,private val secretKey:Strin
                     it.complete(Buffer.buffer(objectMetadata.objectContent.readAllBytes()))
                 }.await()
 
-                fs.writeFile(destPath,buffer).await()
-                Future.succeededFuture(ByteBufInputStream(buffer.byteBuf))
+                fs.writeFile(downloadPath,buffer).await()
+                Future.succeededFuture(downloadPath)
             }
         }catch (t:Throwable){
             Future.failedFuture(t)

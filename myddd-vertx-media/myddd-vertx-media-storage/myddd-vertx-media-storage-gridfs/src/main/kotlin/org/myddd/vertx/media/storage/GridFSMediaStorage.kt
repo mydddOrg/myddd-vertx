@@ -10,9 +10,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.domain.MediaExtra
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
-import java.io.ByteArrayInputStream
 import java.io.File
-import java.io.InputStream
 
 class GridFSMediaStorage : MediaStorage {
 
@@ -48,22 +46,21 @@ class GridFSMediaStorage : MediaStorage {
         }
     }
 
-    override suspend fun downloadFromStorage(extra: MediaExtra): Future<InputStream> {
+    override suspend fun downloadFromStorage(extra: MediaExtra): Future<String> {
         return try {
             val fs = vertx.fileSystem()
             val gridFSClient = mongoClient.createGridFsBucketService(bucketName).await()
             val gridFSMediaExtra = extra as GridFSMediaExtra
 
-            val destFilePath = storagePath + File.separator + gridFSMediaExtra.fileId
-            val exists = fs.exists(destFilePath).await()
+            val downloadFilePath = storagePath + File.separator + gridFSMediaExtra.fileId
+            val exists = fs.exists(downloadFilePath).await()
             if(!exists){
                 if(!fs.exists(storagePath + File.separator).await()){
                     fs.mkdirs(storagePath + File.separator)
                 }
-                gridFSClient.downloadFileByID(gridFSMediaExtra.fileId,destFilePath).await()
+                gridFSClient.downloadFileByID(gridFSMediaExtra.fileId,downloadFilePath).await()
             }
-            val buffer = fs.readFile(destFilePath).await()
-            Future.succeededFuture(ByteArrayInputStream(buffer.bytes))
+            Future.succeededFuture(downloadFilePath)
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

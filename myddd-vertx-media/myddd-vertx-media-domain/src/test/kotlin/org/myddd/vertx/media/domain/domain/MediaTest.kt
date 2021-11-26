@@ -25,6 +25,9 @@ import org.myddd.vertx.id.StringIDGenerator
 import org.myddd.vertx.id.ULIDStringGenerator
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.junit.assertThrow
+import org.myddd.vertx.junit.execute
+import org.myddd.vertx.media.MediaNotFoundException
 import org.myddd.vertx.media.domain.AbstractTest
 import org.myddd.vertx.media.domain.Media
 import org.myddd.vertx.media.domain.MediaRepository
@@ -114,6 +117,22 @@ class MediaTest {
                 testContext.failNow(t)
             }
             testContext.completeNow()
+        }
+    }
+
+    @Test
+    fun testDownloadMedia(testContext: VertxTestContext){
+        testContext.execute {
+            testContext.assertThrow(MediaNotFoundException::class.java){
+                Media.downloadByMediaId(randomString()).await()
+            }
+
+            val created = createMedia().await()
+
+            val downloadPath = Media.downloadByMediaId(created.id).await()
+            testContext.verify {
+                Assertions.assertNotNull(downloadPath)
+            }
         }
     }
 

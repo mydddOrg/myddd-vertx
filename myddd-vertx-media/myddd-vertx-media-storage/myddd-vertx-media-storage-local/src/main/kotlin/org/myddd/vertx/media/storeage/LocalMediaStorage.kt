@@ -1,19 +1,15 @@
 package org.myddd.vertx.media.storeage
 
-import io.netty.buffer.ByteBufInputStream
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.await
-import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.media.MediaErrorCode
 import org.myddd.vertx.media.SourceFileNotExistsException
 import org.myddd.vertx.media.domain.MediaExtra
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
-import java.io.InputStream
 import java.time.LocalDateTime
 
 class LocalMediaStorage(private var storagePath: String = System.getProperty("java.io.tmpdir") + "STORAGE") :MediaStorage {
@@ -41,7 +37,7 @@ class LocalMediaStorage(private var storagePath: String = System.getProperty("ja
         }
     }
 
-    override suspend fun downloadFromStorage(extra: MediaExtra): Future<InputStream> {
+    override suspend fun downloadFromStorage(extra: MediaExtra): Future<String> {
         return try {
             val fs = vertx.fileSystem()
             val localMediaExtra = extra as LocalMediaExtra
@@ -49,10 +45,7 @@ class LocalMediaStorage(private var storagePath: String = System.getProperty("ja
             if(!exists){
                 throw SourceFileNotExistsException()
             }
-
-            val buffer = fs.readFile(localMediaExtra.path).await()
-
-            Future.succeededFuture(ByteBufInputStream(buffer.byteBuf))
+            Future.succeededFuture(localMediaExtra.path)
         }catch (t:Throwable){
             Future.failedFuture(t)
         }

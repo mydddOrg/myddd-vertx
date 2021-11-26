@@ -2,7 +2,6 @@ package org.myddd.vertx.media.storage
 
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
-import io.vertx.core.json.JsonObject
 import io.vertx.ext.mongo.MongoClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.core.json.json
@@ -77,21 +76,10 @@ class GridFSMediaStorageTest : AbstractTest() {
                 val fs = vertx.fileSystem()
                 val destFile = fs.createTempFile("gridFs",".png").await()
                 val extra = mediaStorage.uploadToStorage(mediaFile).await()
-                val downloadInputStream = mediaStorage.downloadFromStorage(extra).await()
+                val downloadPath = mediaStorage.downloadFromStorage(extra).await()
 
                 testContext.verify {
-                    Assertions.assertNotNull(downloadInputStream)
-                }
-
-                val buffer = vertx.executeBlocking<Buffer> {
-                    it.complete(Buffer.buffer(downloadInputStream.readAllBytes()))
-                }.await()
-                fs.writeFile(destFile,buffer)
-
-                val exists = fs.exists(destFile).await()
-                testContext.verify {
-                    logger.debug(destFile)
-                    Assertions.assertTrue(exists)
+                    Assertions.assertNotNull(downloadPath)
                 }
             }catch (t:Throwable){
                 testContext.failNow(t)
