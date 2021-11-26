@@ -1,6 +1,5 @@
 package org.myddd.vertx.domain
 
-import org.myddd.vertx.id.IDGenerator
 import org.myddd.vertx.id.StringIDGenerator
 import org.myddd.vertx.ioc.InstanceFactory
 import java.io.Serializable
