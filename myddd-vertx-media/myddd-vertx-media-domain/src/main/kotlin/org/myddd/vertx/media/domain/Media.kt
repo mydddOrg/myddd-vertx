@@ -5,6 +5,7 @@ import io.vertx.core.Vertx
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.domain.BaseEntity
+import org.myddd.vertx.domain.BaseStringIDEntity
 import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.MediaErrorCode
@@ -18,17 +19,12 @@ import javax.persistence.*
 @Entity
 @Table(name="media",
     indexes = [
-        Index(name = "index_media_id",columnList = "media_id"),
         Index(name = "index_digest",columnList = "digest")
     ],
     uniqueConstraints = [
-        UniqueConstraint(columnNames = ["media_id"]),
         UniqueConstraint(columnNames = ["digest"])
     ])
-class Media: BaseEntity() {
-
-    @Column(name = "media_id",nullable = false,length = 32)
-    lateinit var mediaId:String
+class Media: BaseStringIDEntity() {
 
     lateinit var digest:String
 
@@ -40,23 +36,20 @@ class Media: BaseEntity() {
     @Convert(converter = MediaExtraConverter::class)
     lateinit var extra: MediaExtra
 
-
     companion object {
 
+        private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
+
         private val repository by lazy { InstanceFactory.getInstance(MediaRepository::class.java) }
-
-        private val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
         private val fileDigest by lazy { InstanceFactory.getInstance(FileDigest::class.java) }
-
         private val mediaStorage by lazy { InstanceFactory.getInstance(MediaStorage::class.java) }
 
-        private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 
         suspend fun queryMediaById(mediaId:String):Future<Media?>{
             return try {
                 repository.singleQuery(
                     clazz = Media::class.java,
-                    sql = "from Media where mediaId = :mediaId",
+                    sql = "from Media where id = :mediaId",
                     params = mapOf(
                         "mediaId" to mediaId
                     )
@@ -90,7 +83,6 @@ class Media: BaseEntity() {
                     val file = MediaFile.of(path).await()
                     val extra = mediaStorage.uploadToStorage(file).await()
 
-                    media.mediaId = randomIDString.randomUUID()
                     media.extra = extra
                     repository.save(media)
                 }

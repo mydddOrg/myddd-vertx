@@ -21,6 +21,8 @@ import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.file.FileDigestProvider
 import org.myddd.vertx.id.IDGenerator
 import org.myddd.vertx.id.SnowflakeDistributeId
+import org.myddd.vertx.id.StringIDGenerator
+import org.myddd.vertx.id.ULIDStringGenerator
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.media.domain.AbstractTest
@@ -57,6 +59,7 @@ class MediaTest {
                     bind(FileDigest::class.java).to(FileDigestProvider::class.java)
                     bind(MediaRepository::class.java).to(MediaRepositoryHibernate::class.java)
                     bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
+                    bind(StringIDGenerator::class.java).to(ULIDStringGenerator::class.java)
 
                     bind(MediaStorage::class.java).toInstance(LocalMediaStorage())
                 }
@@ -76,7 +79,7 @@ class MediaTest {
                 val created = createMedia().await()
                 testContext.verify {
                     Assertions.assertNotNull(created)
-                    Assertions.assertTrue(created.getId() > 0)
+                    Assertions.assertNotNull(created.getId())
                 }
 
                 val query = Media.queryMediaByDigest(digest = created.digest).await()
@@ -100,10 +103,10 @@ class MediaTest {
                 val created = createMedia().await()
                 testContext.verify {
                     Assertions.assertNotNull(created)
-                    Assertions.assertTrue(created.getId() > 0)
+                    Assertions.assertNotNull(created.getId())
                 }
 
-                val query = Media.queryMediaById(mediaId = created.mediaId).await()
+                val query = Media.queryMediaById(mediaId = created.id).await()
                 testContext.verify {
                     Assertions.assertNotNull(query)
                 }
@@ -114,7 +117,7 @@ class MediaTest {
         }
     }
 
-    fun randomString():String {
+    private fun randomString():String {
         return TestMediaFile.randomIDString.randomString()
     }
 

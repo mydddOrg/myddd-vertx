@@ -21,4 +21,14 @@ class TestULIDStringGenerator {
     fun testNextId(){
         Assertions.assertThat(stringIDGenerator.nextId()).isNotNull
     }
+
+    @Test
+    fun testUniqueId(){
+        val ids = arrayListOf<String>()
+        for (i in 1 .. 10000){
+            val nextId = stringIDGenerator.nextId()
+            Assertions.assertThat(ids.contains(nextId)).isFalse
+            ids.add(nextId)
+        }
+    }
 }
