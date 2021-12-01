@@ -12,6 +12,7 @@ include("myddd-vertx-domain")
 
 include("myddd-vertx-repository:myddd-vertx-repository-api")
 include("myddd-vertx-repository:myddd-vertx-repository-hibernate")
+include("myddd-vertx-repository:myddd-vertx-repository-mongo")
 
 
 include("myddd-vertx-querychannel:myddd-vertx-querychannel-api")
