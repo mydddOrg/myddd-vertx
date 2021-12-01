@@ -49,8 +49,6 @@ class TestDocumentEntity {
             mockDocumentEntity.id = randomString()
 
             testContext.verify {
-                Assertions.assertThat(mockDocumentEntity.created).isGreaterThan(0)
-                Assertions.assertThat(mockDocumentEntity.updated).isEqualTo(0)
                 Assertions.assertThat(mockDocumentEntity.id).isNotNull
                 Assertions.assertThat(mockDocumentEntity.name).isNotNull
             }

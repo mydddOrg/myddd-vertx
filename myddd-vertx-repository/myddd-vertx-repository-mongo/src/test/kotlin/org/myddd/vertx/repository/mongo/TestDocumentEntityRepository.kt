@@ -11,7 +11,6 @@ import org.myddd.vertx.junit.execute
 import org.myddd.vertx.repository.AbstractTest
 import org.myddd.vertx.repository.api.DocumentEntityRepository
 import org.myddd.vertx.repository.mongo.mock.MockDocumentEntity
-import java.util.*
 
 @ExtendWith(VertxExtension::class)
 class TestDocumentEntityRepository:AbstractTest() {
@@ -25,7 +24,7 @@ class TestDocumentEntityRepository:AbstractTest() {
 
             testContext.verify {
                 Assertions.assertThat(inserted).isNotNull
-                Assertions.assertThat(inserted!!.id).isNotNull
+                Assertions.assertThat(inserted.id).isNotNull
             }
         }
     }
@@ -33,11 +32,11 @@ class TestDocumentEntityRepository:AbstractTest() {
     @Test
     fun testQueryById(testContext: VertxTestContext){
         testContext.execute {
-            val notValidQuery = documentEntityRepository.queryById(randomString(),MockDocumentEntity::class.java).await()
+            val notValidQuery = documentEntityRepository.queryEntityById(randomString(),MockDocumentEntity::class.java).await()
             testContext.verify { Assertions.assertThat(notValidQuery).isNull() }
 
             val inserted = documentEntityRepository.insert(randomMockDocumentEntity()).await()
-            val query = documentEntityRepository.queryById(inserted!!.id!!,MockDocumentEntity::class.java).await()
+            val query = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
             testContext.verify { Assertions.assertThat(query).isNotNull }
         }
     }
