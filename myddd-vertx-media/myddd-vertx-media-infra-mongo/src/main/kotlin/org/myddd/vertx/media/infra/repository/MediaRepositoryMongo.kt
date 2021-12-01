@@ -13,7 +13,7 @@ class MediaRepositoryMongo:DocumentEntityRepositoryMongo(),MediaRepository {
     }
 
     override suspend fun queryByMediaId(mediaId: String): Future<Media?> {
-        return singleQuery(JsonObject().put("_id",mediaId),Media::class.java)
+        return queryEntityById(mediaId,Media::class.java)
     }
 
     override suspend fun queryByDigest(digest: String): Future<Media?> {
@@ -21,6 +21,6 @@ class MediaRepositoryMongo:DocumentEntityRepositoryMongo(),MediaRepository {
     }
 
     override suspend fun saveMedia(media: Media): Future<Media> {
-        return insert(media)
+        return save(media)
     }
 }

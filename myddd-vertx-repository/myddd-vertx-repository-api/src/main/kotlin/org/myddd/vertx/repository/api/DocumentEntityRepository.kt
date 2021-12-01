@@ -6,7 +6,7 @@ import org.myddd.vertx.domain.Entity
 
 interface DocumentEntityRepository {
 
-    suspend fun <T:Entity> insert(entity:T):Future<T>
+    suspend fun <T:Entity> save(entity:T):Future<T>
 
     suspend fun <T:Entity> queryEntityById(id:String, clazz: Class<T>):Future<T?>
 

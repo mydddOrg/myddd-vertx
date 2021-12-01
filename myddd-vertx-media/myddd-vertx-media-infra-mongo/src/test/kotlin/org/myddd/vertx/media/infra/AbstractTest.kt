@@ -5,6 +5,8 @@ import com.google.inject.Guice
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
+import io.vertx.core.json.JsonObject
+import io.vertx.ext.mongo.MongoClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -18,7 +20,6 @@ import org.myddd.vertx.file.FileDigestProvider
 import org.myddd.vertx.id.IDGenerator
 import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.id.StringIDGenerator
-import org.myddd.vertx.id.ULIDStringGenerator
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.media.domain.Media
@@ -49,6 +50,7 @@ abstract class AbstractTest {
                             AbstractModule() {
                             override fun configure() {
                                 bind(Vertx::class.java).toInstance(vertx)
+                                bind(MongoClient::class.java).toInstance(MongoClient.create(vertx, JsonObject()))
                                 bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
                                 bind(FileDigest::class.java).to(FileDigestProvider::class.java)
                                 bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())

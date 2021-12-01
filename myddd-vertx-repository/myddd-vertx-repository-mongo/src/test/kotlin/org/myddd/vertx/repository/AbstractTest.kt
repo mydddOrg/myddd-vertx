@@ -4,6 +4,8 @@ import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
+import io.vertx.core.json.JsonObject
+import io.vertx.ext.mongo.MongoClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -44,6 +46,7 @@ abstract class AbstractTest {
                             AbstractModule() {
                             override fun configure() {
                                 bind(Vertx::class.java).toInstance(vertx)
+                                bind(MongoClient::class.java).toInstance(MongoClient.create(vertx, JsonObject()))
                                 bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
                                 bind(StringIDGenerator::class.java).to(ULIDStringGenerator::class.java)
                                 bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)

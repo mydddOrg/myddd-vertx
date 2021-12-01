@@ -17,15 +17,15 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
 
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 
-    val mongoClient: MongoClient by lazy { MongoClient.create(vertx, JsonObject()) }
+    val mongoClient: MongoClient by lazy { InstanceFactory.getInstance(MongoClient::class.java) }
 
     companion object {
-        private const val MONGO_ID = "_id"
+        const val MONGO_ID = "_id"
     }
 
-    override suspend fun <T : Entity> insert(entity: T): Future<T> {
+    override suspend fun <T : Entity> save(entity: T): Future<T> {
         val insertId = mongoClient.save(entity.collectionName(), JsonObject.mapFrom(entity)).await()
-        entity.setId(insertId)
+        if(Objects.nonNull(insertId)) entity.setId(insertId)
         return Future.succeededFuture(entity)
     }
 

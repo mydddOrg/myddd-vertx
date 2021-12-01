@@ -11,9 +11,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
 import org.myddd.vertx.repository.AbstractTest
 import org.myddd.vertx.repository.api.DocumentEntityRepository
-import org.myddd.vertx.repository.mongo.ext.collectionName
 import org.myddd.vertx.repository.mongo.mock.MockDocumentEntity
-import org.myddd.vertx.repository.mongo.mock.MockEntityWithTableAnnotation
 
 @ExtendWith(VertxExtension::class)
 class TestDocumentEntityRepository:AbstractTest() {
@@ -29,11 +27,18 @@ class TestDocumentEntityRepository:AbstractTest() {
     @Test
     fun testInsertDocument(testContext: VertxTestContext){
         testContext.execute {
-            val inserted = documentEntityRepository.insert(randomMockDocumentEntity()).await()
+            val created = documentEntityRepository.save(randomMockDocumentEntity()).await()
 
             testContext.verify {
-                Assertions.assertThat(inserted).isNotNull
-                Assertions.assertThat(inserted.id).isNotNull
+                Assertions.assertThat(created).isNotNull
+                Assertions.assertThat(created.id).isNotNull
+            }
+
+            created.name = randomString()
+            val updated = documentEntityRepository.save(created).await()
+            testContext.verify {
+                Assertions.assertThat(updated).isNotNull
+                Assertions.assertThat(updated.id).isEqualTo(created.id)
             }
         }
     }
@@ -44,7 +49,7 @@ class TestDocumentEntityRepository:AbstractTest() {
             val notValidQuery = documentEntityRepository.queryEntityById(randomString(),MockDocumentEntity::class.java).await()
             testContext.verify { Assertions.assertThat(notValidQuery).isNull() }
 
-            val inserted = documentEntityRepository.insert(randomMockDocumentEntity()).await()
+            val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
             val query = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
             testContext.verify { Assertions.assertThat(query).isNotNull }
         }
@@ -59,7 +64,7 @@ class TestDocumentEntityRepository:AbstractTest() {
                 Assertions.assertThat(notExistsQuery).isNull()
             }
 
-            val inserted = documentEntityRepository.insert(randomMockDocumentEntity()).await()
+            val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
             val query = documentEntityRepository.singleQuery(JsonObject().put("_id",inserted.id),MockDocumentEntity::class.java).await()
             testContext.verify {
                 Assertions.assertThat(query).isNotNull
@@ -75,7 +80,7 @@ class TestDocumentEntityRepository:AbstractTest() {
                 Assertions.assertThat(emptyList.isEmpty()).isTrue()
             }
 
-            val inserted = documentEntityRepository.insert(randomMockDocumentEntity()).await()
+            val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
             val listQuery = documentEntityRepository.listQuery(JsonObject().put("_id",inserted.id),MockDocumentEntity::class.java).await()
             testContext.verify {
                 Assertions.assertThat(listQuery.isNotEmpty()).isTrue()
@@ -86,7 +91,7 @@ class TestDocumentEntityRepository:AbstractTest() {
     @Test
     fun testDeleteEntity(testContext: VertxTestContext){
         testContext.execute {
-            val inserted = documentEntityRepository.insert(randomMockDocumentEntity()).await()
+            val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
             val query = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
             testContext.verify { Assertions.assertThat(query).isNotNull }
 
