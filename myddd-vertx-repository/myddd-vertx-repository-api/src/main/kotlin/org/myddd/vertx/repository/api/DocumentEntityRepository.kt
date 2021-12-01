@@ -16,4 +16,6 @@ interface DocumentEntityRepository {
 
     suspend fun <T:Entity> listQuery(query:JsonObject,clazz: Class<T>):Future<List<T>>
 
+    suspend fun <T:Entity> listQueryWithOptions(query: JsonObject,options: QueryOptions,clazz: Class<T>):Future<List<JsonObject>>
+
 }

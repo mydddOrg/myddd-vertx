@@ -3,12 +3,14 @@ package org.myddd.vertx.repository.mongo
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
+import io.vertx.ext.mongo.FindOptions
 import io.vertx.ext.mongo.MongoClient
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.DocumentEntity
 import org.myddd.vertx.domain.Entity
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.DocumentEntityRepository
+import org.myddd.vertx.repository.api.QueryOptions
 import org.myddd.vertx.repository.mongo.ext.collectionName
 import java.util.*
 import kotlin.streams.toList
@@ -50,5 +52,17 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
         val listSet = mongoClient.find(clazz.collectionName(),query).await()
         val entities = listSet.stream().map { it.mapTo(clazz) }.toList()
         return Future.succeededFuture(entities)
+    }
+
+    override suspend fun <T : Entity> listQueryWithOptions(query: JsonObject, options: QueryOptions, clazz: Class<T>): Future<List<JsonObject>> {
+        val findOptions = FindOptions()
+            .setFields(options.fields)
+            .setSort(options.sort)
+            .setLimit(options.limit)
+            .setSkip(options.limit)
+            .setBatchSize(options.batchSize)
+
+        val query = mongoClient.findWithOptions(clazz.collectionName(),query,findOptions).await()
+        return Future.succeededFuture(query)
     }
 }

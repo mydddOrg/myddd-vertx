@@ -11,6 +11,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
 import org.myddd.vertx.repository.AbstractTest
 import org.myddd.vertx.repository.api.DocumentEntityRepository
+import org.myddd.vertx.repository.api.QueryOptions
 import org.myddd.vertx.repository.mongo.mock.MockDocumentEntity
 
 @ExtendWith(VertxExtension::class)
@@ -56,6 +57,13 @@ class TestDocumentEntityRepository:AbstractTest() {
     }
 
     @Test
+    fun testQueryAllNames(testContext: VertxTestContext){
+        testContext.execute {
+            documentEntityRepository
+        }
+    }
+
+    @Test
     fun testSingleQuery(testContext: VertxTestContext){
         testContext.execute {
 
@@ -85,6 +93,17 @@ class TestDocumentEntityRepository:AbstractTest() {
             testContext.verify {
                 Assertions.assertThat(listQuery.isNotEmpty()).isTrue()
             }
+        }
+    }
+
+    @Test
+    fun testListQueryWithOptions(testContext: VertxTestContext){
+        testContext.execute {
+            documentEntityRepository.save(randomMockDocumentEntity()).await()
+
+            val queryOptions = QueryOptions(fields = JsonObject().put("name",true))
+            val query = documentEntityRepository.listQueryWithOptions(JsonObject(),queryOptions,MockDocumentEntity::class.java).await()
+            testContext.verify { Assertions.assertThat(query.isEmpty()).isFalse() }
         }
     }
 
