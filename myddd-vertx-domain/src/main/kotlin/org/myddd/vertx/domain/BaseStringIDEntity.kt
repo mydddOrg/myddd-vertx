@@ -31,4 +31,8 @@ abstract class BaseStringIDEntity:Entity {
     override fun getId(): Serializable {
         return id
     }
+
+    override fun setId(id: Serializable) {
+        this.id = id as String
+    }
 }

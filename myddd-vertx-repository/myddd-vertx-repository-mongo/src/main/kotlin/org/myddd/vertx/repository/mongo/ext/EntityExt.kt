@@ -1,9 +1,9 @@
 package org.myddd.vertx.repository.mongo.ext
 
-import org.myddd.vertx.domain.DocumentEntity
+import org.myddd.vertx.domain.Entity
 import javax.persistence.Table
 
-fun <T:DocumentEntity> Class<T>.collectionName(): String {
+fun <T: Entity> Class<T>.collectionName(): String {
     val tableAnnotation = this.annotations.asList().stream().filter{it is Table}.findFirst()
     if(tableAnnotation.isPresent){
         val name = (tableAnnotation.get() as Table).name
@@ -12,7 +12,7 @@ fun <T:DocumentEntity> Class<T>.collectionName(): String {
     return this.simpleName
 }
 
-fun DocumentEntity.collectionName():String {
+fun Entity.collectionName():String {
     return this.javaClass.collectionName()
 }
 

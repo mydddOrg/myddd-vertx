@@ -3,6 +3,7 @@ package org.myddd.vertx.domain
 
 import org.myddd.vertx.id.IDGenerator
 import org.myddd.vertx.ioc.InstanceFactory
+import java.io.Serializable
 import javax.persistence.*
 
 /**
@@ -32,5 +33,9 @@ abstract class BaseEntity : Entity {
 
     override fun getId(): Long {
         return id
+    }
+
+    override fun setId(id: Serializable) {
+        this.id = id as Long
     }
 }

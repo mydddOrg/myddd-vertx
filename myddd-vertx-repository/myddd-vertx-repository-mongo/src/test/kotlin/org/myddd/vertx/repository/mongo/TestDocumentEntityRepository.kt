@@ -20,7 +20,6 @@ class TestDocumentEntityRepository:AbstractTest() {
 
     private val documentEntityRepository by lazy { InstanceFactory.getInstance(DocumentEntityRepository::class.java) }
 
-
     @Test
     fun testNoNull(){
         Assertions.assertThat(documentEntityRepository).isNotNull
@@ -96,6 +95,4 @@ class TestDocumentEntityRepository:AbstractTest() {
             testContext.verify { Assertions.assertThat(notValidQuery).isNull() }
         }
     }
-
-
 }

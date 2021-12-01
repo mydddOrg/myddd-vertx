@@ -9,4 +9,6 @@ interface Entity : Serializable{
     var updated:Long
 
     fun getId():Serializable
+
+    fun setId(id:Serializable)
 }
