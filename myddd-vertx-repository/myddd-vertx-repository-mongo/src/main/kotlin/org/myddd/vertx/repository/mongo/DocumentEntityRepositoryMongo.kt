@@ -10,12 +10,13 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.DocumentEntityRepository
 import org.myddd.vertx.repository.mongo.ext.collectionName
 import java.util.*
+import kotlin.streams.toList
 
 open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
 
     private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 
-    private val mongoClient by lazy { MongoClient.create(vertx, JsonObject()) }
+    val mongoClient: MongoClient by lazy { MongoClient.create(vertx, JsonObject()) }
 
     companion object {
         private const val MONGO_ID = "_id"
@@ -31,5 +32,22 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
         val query = mongoClient.findOne(clazz.collectionName(),JsonObject().put(MONGO_ID,id),null).await()
         return if(Objects.isNull(query)) Future.succeededFuture(null)
         else Future.succeededFuture(query.mapTo(clazz))
+    }
+
+    override suspend fun <T : DocumentEntity> singleQuery(query: JsonObject, clazz: Class<T>): Future<T?> {
+        val findOneResult = mongoClient.findOne(clazz.collectionName(),query,null).await()
+        return if(Objects.isNull(findOneResult)) Future.succeededFuture(null)
+        else Future.succeededFuture(findOneResult.mapTo(clazz))
+    }
+
+    override suspend fun <T : DocumentEntity> removeEntity(id: String, clazz: Class<T>): Future<Unit> {
+        mongoClient.findOneAndDelete(clazz.collectionName(),JsonObject().put(MONGO_ID,id)).await()
+        return Future.succeededFuture(Unit)
+    }
+
+    override suspend fun <T : DocumentEntity> listQuery(query: JsonObject, clazz: Class<T>): Future<List<T>> {
+        val listSet = mongoClient.find(clazz.collectionName(),query).await()
+        val entities = listSet.stream().map { it.mapTo(clazz) }.toList()
+        return Future.succeededFuture(entities)
     }
 }
