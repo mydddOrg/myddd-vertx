@@ -10,7 +10,9 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
 import org.myddd.vertx.repository.AbstractTest
 import org.myddd.vertx.repository.api.DocumentEntityRepository
+import org.myddd.vertx.repository.mongo.ext.collectionName
 import org.myddd.vertx.repository.mongo.mock.MockDocumentEntity
+import org.myddd.vertx.repository.mongo.mock.MockEntityWithTableAnnotation
 
 @ExtendWith(VertxExtension::class)
 class TestDocumentEntityRepository:AbstractTest() {

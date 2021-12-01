@@ -8,6 +8,7 @@ import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.DocumentEntity
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.DocumentEntityRepository
+import org.myddd.vertx.repository.mongo.ext.collectionName
 import java.util.*
 
 open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
@@ -21,13 +22,13 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
     }
 
     override suspend fun <T : DocumentEntity> insert(entity: T): Future<T> {
-        val insertId = mongoClient.insert(entity::class.java.simpleName, JsonObject.mapFrom(entity)).await()
+        val insertId = mongoClient.insert(entity.collectionName(), JsonObject.mapFrom(entity)).await()
         entity.id = insertId
         return Future.succeededFuture(entity)
     }
 
     override suspend fun <T : DocumentEntity> queryEntityById(id: String, clazz: Class<T>): Future<T?> {
-        val query = mongoClient.findOne(clazz.simpleName,JsonObject().put(MONGO_ID,id),null).await()
+        val query = mongoClient.findOne(clazz.collectionName(),JsonObject().put(MONGO_ID,id),null).await()
         return if(Objects.isNull(query)) Future.succeededFuture(null)
         else Future.succeededFuture(query.mapTo(clazz))
     }

@@ -9,9 +9,6 @@ import java.io.Serializable
  * 抽像仓储
  */
 interface EntityRepository {
-
-
-
     /**
      * 更新一个实体
      */

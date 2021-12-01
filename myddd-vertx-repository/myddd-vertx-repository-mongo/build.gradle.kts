@@ -9,6 +9,7 @@ extra["publishJar"] = true
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect:${rootProject.extra["kotlin_version"]}")
 
     implementation(project(":myddd-vertx-domain"))
     api(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
