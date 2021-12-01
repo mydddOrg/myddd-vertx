@@ -21,7 +21,7 @@ abstract class BaseEntity : Entity {
     @Version
     var version:Long = 0
 
-    final override var created:Long = 0
+    final override var created:Long = System.currentTimeMillis()
 
     override var updated:Long = 0
 

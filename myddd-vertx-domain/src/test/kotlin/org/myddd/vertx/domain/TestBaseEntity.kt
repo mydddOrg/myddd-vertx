@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.myddd.vertx.domain.mock.MockBaseEntity
 import org.myddd.vertx.id.IDGenerator
 import org.myddd.vertx.id.SnowflakeDistributeId
 import org.myddd.vertx.id.StringIDGenerator
@@ -14,7 +15,7 @@ import org.myddd.vertx.id.ULIDStringGenerator
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 @ExtendWith(VertxExtension::class)
-class TestUser {
+class TestBaseEntity {
 
     companion object {
 
@@ -32,7 +33,7 @@ class TestUser {
 
     @Test
     fun testEntity(){
-        val user = UserEntity()
+        val user = MockBaseEntity()
         Assertions.assertTrue(user.getId() > 0)
     }
 }
