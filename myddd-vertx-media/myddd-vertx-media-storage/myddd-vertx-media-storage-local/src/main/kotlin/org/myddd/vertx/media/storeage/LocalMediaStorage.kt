@@ -10,6 +10,7 @@ import org.myddd.vertx.media.SourceFileNotExistsException
 import org.myddd.vertx.media.domain.MediaExtra
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
+import org.myddd.vertx.media.storage.LocalMediaExtra
 import java.time.LocalDateTime
 
 class LocalMediaStorage(private var storagePath: String = System.getProperty("java.io.tmpdir") + "STORAGE") :MediaStorage {

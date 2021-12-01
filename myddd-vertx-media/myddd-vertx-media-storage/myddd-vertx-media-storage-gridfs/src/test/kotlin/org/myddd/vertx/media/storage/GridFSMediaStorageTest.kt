@@ -1,7 +1,6 @@
 package org.myddd.vertx.media.storage
 
 import io.vertx.core.Vertx
-import io.vertx.core.buffer.Buffer
 import io.vertx.ext.mongo.MongoClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.core.json.json

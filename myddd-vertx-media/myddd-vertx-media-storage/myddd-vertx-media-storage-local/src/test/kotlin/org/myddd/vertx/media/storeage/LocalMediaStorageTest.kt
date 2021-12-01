@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.media.domain.MediaFile
+import org.myddd.vertx.media.storage.LocalMediaExtra
 
 class LocalMediaStorageTest:AbstractTest() {
 

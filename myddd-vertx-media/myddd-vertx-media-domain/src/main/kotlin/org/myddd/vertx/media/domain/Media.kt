@@ -1,31 +1,44 @@
 package org.myddd.vertx.media.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSetter
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.await
-import org.myddd.vertx.base.BusinessLogicException
-import org.myddd.vertx.domain.BaseEntity
-import org.myddd.vertx.domain.BaseStringIDEntity
 import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.media.MediaErrorCode
 import org.myddd.vertx.media.MediaNotFoundException
 import org.myddd.vertx.media.SourceFileNotExistsException
 import org.myddd.vertx.media.domain.converter.MediaExtraConverter
-import org.myddd.vertx.string.RandomIDString
 import java.io.File
+import java.io.Serializable
 import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name="media",
+@Table(name="media_",
     indexes = [
         Index(name = "index_digest",columnList = "digest")
     ],
     uniqueConstraints = [
         UniqueConstraint(columnNames = ["digest"])
     ])
-class Media: BaseStringIDEntity() {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class Media: org.myddd.vertx.domain.Entity {
+
+    @Id
+    @JsonProperty(value = "_id")
+    var id:String? = null
+
+    @Version
+    var version:Long = 0
+
+    override var created:Long = System.currentTimeMillis()
+
+    override var updated:Long = 0
 
     lateinit var digest:String
 
@@ -37,10 +50,18 @@ class Media: BaseStringIDEntity() {
     @Convert(converter = MediaExtraConverter::class)
     lateinit var extra: MediaExtra
 
+    override fun setId(id: Serializable) {
+        this.id = id as String
+    }
+
+    @JsonIgnore
+    override fun getId(): Serializable {
+        return this.id!!
+    }
+
     companion object {
 
         private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
-
         private val repository by lazy { InstanceFactory.getInstance(MediaRepository::class.java) }
         private val fileDigest by lazy { InstanceFactory.getInstance(FileDigest::class.java) }
         private val mediaStorage by lazy { InstanceFactory.getInstance(MediaStorage::class.java) }
@@ -56,49 +77,24 @@ class Media: BaseStringIDEntity() {
 
 
         suspend fun queryMediaById(mediaId:String):Future<Media?>{
-            return try {
-                repository.singleQuery(
-                    clazz = Media::class.java,
-                    sql = "from Media where id = :mediaId",
-                    params = mapOf(
-                        "mediaId" to mediaId
-                    )
-                )
-            }catch (t:Throwable){
-                Future.failedFuture(t)
-            }
+            return repository.queryByMediaId(mediaId)
         }
 
         suspend fun queryMediaByDigest(digest:String):Future<Media?>{
-            return try {
-                repository.singleQuery(
-                    clazz = Media::class.java,
-                    sql = "from Media where digest = :digest",
-                    params = mapOf(
-                        "digest" to digest
-                    )
-                )
-            }catch (t:Throwable){
-                Future.failedFuture(t)
-            }
+            return repository.queryByDigest(digest)
         }
 
         suspend fun createByLocalFile(path:String):Future<Media>{
-            return try {
-                val media = mediaFromFile(path).await()
-                val exists = queryMediaByDigest(digest = media.digest).await()
-                return if(Objects.nonNull(exists)){
-                    Future.succeededFuture(exists)
-                }else{
-                    val file = MediaFile.of(path).await()
-                    val extra = mediaStorage.uploadToStorage(file).await()
-
-                    media.extra = extra
-                    repository.save(media)
-                }
-
-            }catch (t:Throwable){
-                Future.failedFuture(t)
+            val media = mediaFromFile(path).await()
+            val exists = queryMediaByDigest(digest = media.digest).await()
+            return if(Objects.nonNull(exists)){
+                Future.succeededFuture(exists)
+            }else{
+                val file = MediaFile.of(path).await()
+                val extra = mediaStorage.uploadToStorage(file).await()
+                media.extra = extra
+                media.id = repository.nextId()
+                repository.saveMedia(media)
             }
         }
 

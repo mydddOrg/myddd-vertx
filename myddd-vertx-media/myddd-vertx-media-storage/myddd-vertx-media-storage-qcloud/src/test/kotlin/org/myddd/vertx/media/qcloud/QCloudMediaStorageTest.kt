@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
+import org.myddd.vertx.media.storage.QCloudMediaExtra
 
 @Disabled
 class QCloudMediaStorageTest:AbstractTest() {

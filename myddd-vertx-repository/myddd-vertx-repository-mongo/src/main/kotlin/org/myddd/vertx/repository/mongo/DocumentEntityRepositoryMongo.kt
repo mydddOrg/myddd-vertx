@@ -24,7 +24,7 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
     }
 
     override suspend fun <T : Entity> insert(entity: T): Future<T> {
-        val insertId = mongoClient.insert(entity.collectionName(), JsonObject.mapFrom(entity)).await()
+        val insertId = mongoClient.save(entity.collectionName(), JsonObject.mapFrom(entity)).await()
         entity.setId(insertId)
         return Future.succeededFuture(entity)
     }

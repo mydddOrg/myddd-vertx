@@ -17,6 +17,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.domain.MediaExtra
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
+import org.myddd.vertx.media.storage.QCloudMediaExtra
 import java.io.File
 import java.time.LocalDateTime
 

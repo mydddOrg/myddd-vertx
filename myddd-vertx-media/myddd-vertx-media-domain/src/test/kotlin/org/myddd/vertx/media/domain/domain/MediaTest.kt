@@ -109,7 +109,7 @@ class MediaTest {
                     Assertions.assertNotNull(created.getId())
                 }
 
-                val query = Media.queryMediaById(mediaId = created.id).await()
+                val query = Media.queryMediaById(mediaId = created.id!!).await()
                 testContext.verify {
                     Assertions.assertNotNull(query)
                 }
@@ -129,7 +129,7 @@ class MediaTest {
 
             val created = createMedia().await()
 
-            val downloadPath = Media.downloadByMediaId(created.id).await()
+            val downloadPath = Media.downloadByMediaId(created.id!!).await()
             testContext.verify {
                 Assertions.assertNotNull(downloadPath)
             }
