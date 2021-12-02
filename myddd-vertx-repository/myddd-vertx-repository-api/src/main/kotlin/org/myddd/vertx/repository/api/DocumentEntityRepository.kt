@@ -10,16 +10,16 @@ interface DocumentEntityRepository {
 
     suspend fun <T:Entity> batchInsert(entities:List<T>):Future<Unit>
 
-    suspend fun <T:Entity> queryEntityById(id:String, clazz: Class<T>):Future<T?>
+    suspend fun <T:Entity> queryEntityById(clazz: Class<T>, id: String):Future<T?>
 
-    suspend fun <T:Entity> singleQuery(query:JsonObject,clazz: Class<T>):Future<T?>
+    suspend fun <T:Entity> singleQuery(clazz: Class<T>, query: JsonObject):Future<T?>
 
-    suspend fun <T:Entity> removeEntity(id:String,clazz: Class<T>):Future<Unit>
+    suspend fun <T:Entity> removeEntity(clazz: Class<T>, id: String):Future<Unit>
 
-    suspend fun <T:Entity> removeEntities(query: JsonObject,clazz: Class<T>):Future<Long>
+    suspend fun <T:Entity> removeEntities(clazz: Class<T>, query: JsonObject):Future<Long>
 
-    suspend fun <T:Entity> listQuery(query:JsonObject,clazz: Class<T>):Future<List<T>>
+    suspend fun <T:Entity> listQuery(clazz: Class<T>, query: JsonObject):Future<List<T>>
 
-    suspend fun <T:Entity> listQueryWithOptions(query: JsonObject,options: QueryOptions,clazz: Class<T>):Future<List<JsonObject>>
+    suspend fun <T:Entity> listQueryWithOptions(clazz: Class<T>, query: JsonObject, options: QueryOptions):Future<List<JsonObject>>
 
 }

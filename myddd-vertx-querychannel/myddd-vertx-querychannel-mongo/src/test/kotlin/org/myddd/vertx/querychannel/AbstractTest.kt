@@ -1,4 +1,4 @@
-package org.myddd.vertx.repository
+package org.myddd.vertx.querychannel
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice

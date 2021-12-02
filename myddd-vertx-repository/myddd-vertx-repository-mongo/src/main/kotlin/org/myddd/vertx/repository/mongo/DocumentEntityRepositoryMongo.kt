@@ -7,7 +7,6 @@ import io.vertx.ext.mongo.BulkOperation
 import io.vertx.ext.mongo.FindOptions
 import io.vertx.ext.mongo.MongoClient
 import io.vertx.kotlin.coroutines.await
-import org.myddd.vertx.domain.DocumentEntity
 import org.myddd.vertx.domain.Entity
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.DocumentEntityRepository
@@ -40,35 +39,35 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
         return Future.succeededFuture(Unit)
     }
 
-    override suspend fun <T : Entity> queryEntityById(id: String, clazz: Class<T>): Future<T?> {
+    override suspend fun <T : Entity> queryEntityById(clazz: Class<T>, id: String): Future<T?> {
         val query = mongoClient.findOne(clazz.collectionName(),JsonObject().put(MONGO_ID,id),null).await()
         return if(Objects.isNull(query)) Future.succeededFuture(null)
         else Future.succeededFuture(query.mapTo(clazz))
     }
 
-    override suspend fun <T : Entity> singleQuery(query: JsonObject, clazz: Class<T>): Future<T?> {
+    override suspend fun <T : Entity> singleQuery(clazz: Class<T>, query: JsonObject): Future<T?> {
         val findOneResult = mongoClient.findOne(clazz.collectionName(),query,null).await()
         return if(Objects.isNull(findOneResult)) Future.succeededFuture(null)
         else Future.succeededFuture(findOneResult.mapTo(clazz))
     }
 
-    override suspend fun <T : Entity> removeEntity(id: String, clazz: Class<T>): Future<Unit> {
+    override suspend fun <T : Entity> removeEntity(clazz: Class<T>, id: String): Future<Unit> {
         mongoClient.findOneAndDelete(clazz.collectionName(),JsonObject().put(MONGO_ID,id)).await()
         return Future.succeededFuture(Unit)
     }
 
-    override suspend fun <T : Entity> removeEntities(query: JsonObject, clazz: Class<T>): Future<Long> {
+    override suspend fun <T : Entity> removeEntities(clazz: Class<T>, query: JsonObject): Future<Long> {
         val results = mongoClient.removeDocuments(clazz.collectionName(),query).await()
         return Future.succeededFuture(results.removedCount)
     }
 
-    override suspend fun <T : Entity> listQuery(query: JsonObject, clazz: Class<T>): Future<List<T>> {
+    override suspend fun <T : Entity> listQuery(clazz: Class<T>, query: JsonObject): Future<List<T>> {
         val listSet = mongoClient.find(clazz.collectionName(),query).await()
         val entities = listSet.stream().map { it.mapTo(clazz) }.toList()
         return Future.succeededFuture(entities)
     }
 
-    override suspend fun <T : Entity> listQueryWithOptions(query: JsonObject, options: QueryOptions, clazz: Class<T>): Future<List<JsonObject>> {
+    override suspend fun <T : Entity> listQueryWithOptions(clazz: Class<T>, query: JsonObject, options: QueryOptions): Future<List<JsonObject>> {
         val findOptions = FindOptions()
             .setFields(options.fields)
             .setSort(options.sort)

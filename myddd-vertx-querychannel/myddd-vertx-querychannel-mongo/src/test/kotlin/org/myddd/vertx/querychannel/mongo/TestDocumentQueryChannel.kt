@@ -11,10 +11,10 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
 import org.myddd.vertx.querychannel.api.DocumentQueryChannel
 import org.myddd.vertx.querychannel.mock.MockUser
-import org.myddd.vertx.repository.AbstractTest
+import org.myddd.vertx.querychannel.AbstractTest
 import org.myddd.vertx.repository.api.DocumentEntityRepository
 
-class TestDocumentQueryChannel:AbstractTest() {
+class TestDocumentQueryChannel: AbstractTest() {
     private val documentEntityRepository by lazy { InstanceFactory.getInstance(DocumentEntityRepository::class.java) }
 
     private val documentQueryChannel by lazy { InstanceFactory.getInstance(DocumentQueryChannel::class.java) }
@@ -29,7 +29,7 @@ class TestDocumentQueryChannel:AbstractTest() {
     @AfterEach
     fun afterEach(testContext: VertxTestContext){
         testContext.execute {
-            documentEntityRepository.removeEntities(JsonObject(),MockUser::class.java)
+            documentEntityRepository.removeEntities(MockUser::class.java, JsonObject())
         }
     }
 

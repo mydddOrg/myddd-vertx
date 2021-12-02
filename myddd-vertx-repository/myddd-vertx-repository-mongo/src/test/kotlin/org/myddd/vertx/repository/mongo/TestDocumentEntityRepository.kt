@@ -49,11 +49,11 @@ class TestDocumentEntityRepository:AbstractTest() {
     @Test
     fun testQueryEntityById(testContext: VertxTestContext){
         testContext.execute {
-            val notValidQuery = documentEntityRepository.queryEntityById(randomString(),MockDocumentEntity::class.java).await()
+            val notValidQuery = documentEntityRepository.queryEntityById(MockDocumentEntity::class.java, randomString()).await()
             testContext.verify { Assertions.assertThat(notValidQuery).isNull() }
 
             val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
-            val query = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
+            val query = documentEntityRepository.queryEntityById(MockDocumentEntity::class.java, inserted.id!!).await()
             testContext.verify { Assertions.assertThat(query).isNotNull }
         }
     }
@@ -69,13 +69,19 @@ class TestDocumentEntityRepository:AbstractTest() {
     fun testSingleQuery(testContext: VertxTestContext){
         testContext.execute {
 
-            val notExistsQuery = documentEntityRepository.singleQuery(JsonObject().put("_id",randomString()),MockDocumentEntity::class.java).await()
+            val notExistsQuery = documentEntityRepository.singleQuery(
+                MockDocumentEntity::class.java,
+                JsonObject().put("_id",randomString())
+            ).await()
             testContext.verify {
                 Assertions.assertThat(notExistsQuery).isNull()
             }
 
             val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
-            val query = documentEntityRepository.singleQuery(JsonObject().put("_id",inserted.id),MockDocumentEntity::class.java).await()
+            val query = documentEntityRepository.singleQuery(
+                MockDocumentEntity::class.java,
+                JsonObject().put("_id",inserted.id)
+            ).await()
             testContext.verify {
                 Assertions.assertThat(query).isNotNull
             }
@@ -85,13 +91,19 @@ class TestDocumentEntityRepository:AbstractTest() {
     @Test
     fun testListQuery(testContext: VertxTestContext){
         testContext.execute {
-            val emptyList = documentEntityRepository.listQuery(JsonObject().put("_id",randomString()),MockDocumentEntity::class.java).await()
+            val emptyList = documentEntityRepository.listQuery(
+                MockDocumentEntity::class.java,
+                JsonObject().put("_id",randomString())
+            ).await()
             testContext.verify {
                 Assertions.assertThat(emptyList.isEmpty()).isTrue()
             }
 
             val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
-            val listQuery = documentEntityRepository.listQuery(JsonObject().put("_id",inserted.id),MockDocumentEntity::class.java).await()
+            val listQuery = documentEntityRepository.listQuery(
+                MockDocumentEntity::class.java,
+                JsonObject().put("_id",inserted.id)
+            ).await()
             testContext.verify {
                 Assertions.assertThat(listQuery.isNotEmpty()).isTrue()
             }
@@ -104,7 +116,11 @@ class TestDocumentEntityRepository:AbstractTest() {
             documentEntityRepository.save(randomMockDocumentEntity()).await()
 
             val queryOptions = QueryOptions(fields = JsonObject().put("name",true))
-            val query = documentEntityRepository.listQueryWithOptions(JsonObject(),queryOptions,MockDocumentEntity::class.java).await()
+            val query = documentEntityRepository.listQueryWithOptions(
+                MockDocumentEntity::class.java,
+                JsonObject(),
+                queryOptions
+            ).await()
             testContext.verify { Assertions.assertThat(query.isEmpty()).isFalse() }
         }
     }
@@ -113,11 +129,11 @@ class TestDocumentEntityRepository:AbstractTest() {
     fun testDeleteEntity(testContext: VertxTestContext){
         testContext.execute {
             val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
-            val query = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
+            val query = documentEntityRepository.queryEntityById(MockDocumentEntity::class.java, inserted.id!!).await()
             testContext.verify { Assertions.assertThat(query).isNotNull }
 
-            documentEntityRepository.removeEntity(inserted.id!!,MockDocumentEntity::class.java).await()
-            val notValidQuery = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
+            documentEntityRepository.removeEntity(MockDocumentEntity::class.java, inserted.id!!).await()
+            val notValidQuery = documentEntityRepository.queryEntityById(MockDocumentEntity::class.java, inserted.id!!).await()
             testContext.verify { Assertions.assertThat(notValidQuery).isNull() }
         }
     }
@@ -127,15 +143,15 @@ class TestDocumentEntityRepository:AbstractTest() {
     fun testRemoveEntities(testContext: VertxTestContext){
         testContext.execute {
             val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
-            val query = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
+            val query = documentEntityRepository.queryEntityById(MockDocumentEntity::class.java, inserted.id!!).await()
             testContext.verify { Assertions.assertThat(query).isNotNull }
 
-            val count = documentEntityRepository.removeEntities(JsonObject(),MockDocumentEntity::class.java).await()
+            val count = documentEntityRepository.removeEntities(MockDocumentEntity::class.java, JsonObject()).await()
             logger.debug(count)
             testContext.verify {
                 Assertions.assertThat(count).isGreaterThan(0)
             }
-            val notValidQuery = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
+            val notValidQuery = documentEntityRepository.queryEntityById(MockDocumentEntity::class.java, inserted.id!!).await()
             testContext.verify { Assertions.assertThat(notValidQuery).isNull() }
         }
     }
