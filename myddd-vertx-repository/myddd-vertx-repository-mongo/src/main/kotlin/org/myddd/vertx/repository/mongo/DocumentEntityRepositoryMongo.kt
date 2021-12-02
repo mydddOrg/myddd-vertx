@@ -42,7 +42,7 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
         return Future.succeededFuture(Unit)
     }
 
-    override suspend fun <T : Document> queryEntityById(clazz: Class<T>, id: String): Future<T?> {
+    override suspend fun <T : Document> get(clazz: Class<T>, id: String): Future<T?> {
         val query = mongoClient.findOne(clazz.collectionName(),JsonObject().put(MONGO_ID,id),null).await()
         return if(Objects.isNull(query)) Future.succeededFuture(null)
         else Future.succeededFuture(query.mapTo(clazz))

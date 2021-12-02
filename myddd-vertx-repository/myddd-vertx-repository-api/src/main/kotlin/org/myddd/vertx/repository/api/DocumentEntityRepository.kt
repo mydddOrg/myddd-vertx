@@ -14,7 +14,7 @@ interface DocumentEntityRepository {
 
     suspend fun <T:Document> batchInsert(entities:List<T>):Future<Unit>
 
-    suspend fun <T:Document> queryEntityById(clazz: Class<T>, id: String):Future<T?>
+    suspend fun <T:Document> get(clazz: Class<T>, id: String):Future<T?>
 
     suspend fun <T:Document> singleQuery(clazz: Class<T>, query: JsonObject):Future<T?>
 

@@ -22,7 +22,7 @@ class MediaRepositoryMongo:DocumentEntityRepositoryMongo(),MediaRepository {
     }
 
     override suspend fun queryByMediaId(mediaId: String): Future<Media?> {
-        return queryEntityById(Media::class.java, mediaId)
+        return get(Media::class.java, mediaId)
     }
 
     override suspend fun queryByDigest(digest: String): Future<Media?> {
