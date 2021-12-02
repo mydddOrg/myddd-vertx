@@ -2,7 +2,7 @@ package org.myddd.vertx.repository.mongo
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.myddd.vertx.repository.mongo.ext.collectionName
+import org.myddd.vertx.domain.ext.collectionName
 import org.myddd.vertx.repository.mongo.mock.MockDocumentEntity
 import org.myddd.vertx.repository.mongo.mock.MockEntityWithTableAnnotation
 

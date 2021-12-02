@@ -2,11 +2,20 @@ package org.myddd.vertx.media.infra.repository
 
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
+import io.vertx.kotlin.coroutines.await
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.myddd.vertx.media.domain.Media
 import org.myddd.vertx.media.domain.MediaRepository
 import org.myddd.vertx.repository.mongo.DocumentEntityRepositoryMongo
 
 class MediaRepositoryMongo:DocumentEntityRepositoryMongo(),MediaRepository {
+
+    init {
+        GlobalScope.launch {
+            createDocument(Media::class.java).await()
+        }
+    }
 
     override fun nextId(): String? {
         return null

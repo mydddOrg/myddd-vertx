@@ -23,6 +23,7 @@ import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.repository.api.DocumentEntityRepository
 import org.myddd.vertx.repository.mongo.DocumentEntityRepositoryMongo
 import org.myddd.vertx.repository.mongo.mock.MockDocumentEntity
+import org.myddd.vertx.repository.mongo.mock.MockMedia
 import org.myddd.vertx.string.RandomIDString
 import org.myddd.vertx.string.RandomIDStringProvider
 import java.util.*
@@ -72,6 +73,13 @@ abstract class AbstractTest {
     protected fun randomMockDocumentEntity(): MockDocumentEntity {
         val random = MockDocumentEntity()
         random.name = UUID.randomUUID().toString()
+        return random
+    }
+
+    protected fun randomMockMedia():MockMedia {
+        val random = MockMedia()
+        random.digest = randomString()
+        random.name = randomString()
         return random
     }
 }
