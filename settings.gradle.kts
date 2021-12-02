@@ -17,6 +17,7 @@ include("myddd-vertx-repository:myddd-vertx-repository-mongo")
 
 include("myddd-vertx-querychannel:myddd-vertx-querychannel-api")
 include("myddd-vertx-querychannel:myddd-vertx-querychannel-hibernate")
+include("myddd-vertx-querychannel:myddd-vertx-querychannel-mongo")
 
 include("myddd-vertx-i18n:myddd-vertx-i18n-api")
 include("myddd-vertx-i18n:myddd-vertx-i18n-provider")

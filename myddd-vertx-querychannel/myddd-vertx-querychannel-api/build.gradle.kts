@@ -9,4 +9,5 @@ extra["publishJar"] = true
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(project(":myddd-vertx-domain"))
 }

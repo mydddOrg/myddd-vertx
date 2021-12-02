@@ -8,6 +8,8 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.junit.assertNotThrow
+import org.myddd.vertx.junit.assertThrow
 import org.myddd.vertx.junit.execute
 import org.myddd.vertx.repository.AbstractTest
 import org.myddd.vertx.repository.api.DocumentEntityRepository
@@ -117,6 +119,39 @@ class TestDocumentEntityRepository:AbstractTest() {
             documentEntityRepository.removeEntity(inserted.id!!,MockDocumentEntity::class.java).await()
             val notValidQuery = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
             testContext.verify { Assertions.assertThat(notValidQuery).isNull() }
+        }
+    }
+
+
+    @Test
+    fun testRemoveEntities(testContext: VertxTestContext){
+        testContext.execute {
+            val inserted = documentEntityRepository.save(randomMockDocumentEntity()).await()
+            val query = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
+            testContext.verify { Assertions.assertThat(query).isNotNull }
+
+            val count = documentEntityRepository.removeEntities(JsonObject(),MockDocumentEntity::class.java).await()
+            logger.debug(count)
+            testContext.verify {
+                Assertions.assertThat(count).isGreaterThan(0)
+            }
+            val notValidQuery = documentEntityRepository.queryEntityById(inserted.id!!,MockDocumentEntity::class.java).await()
+            testContext.verify { Assertions.assertThat(notValidQuery).isNull() }
+        }
+    }
+
+
+    @Test
+    fun testBatchInsert(testContext: VertxTestContext){
+        testContext.execute {
+            val adds = listOf(randomMockDocumentEntity(),randomMockDocumentEntity())
+            testContext.assertNotThrow {
+                documentEntityRepository.batchInsert(adds).await()
+            }
+
+            testContext.assertThrow(IllegalArgumentException::class.java){
+                documentEntityRepository.batchInsert(listOf()).await()
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package org.myddd.vertx.repository.mongo
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
+import io.vertx.ext.mongo.BulkOperation
 import io.vertx.ext.mongo.FindOptions
 import io.vertx.ext.mongo.MongoClient
 import io.vertx.kotlin.coroutines.await
@@ -31,6 +32,14 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
         return Future.succeededFuture(entity)
     }
 
+    override suspend fun <T : Entity> batchInsert(entities: List<T>): Future<Unit> {
+        require(entities.isNotEmpty()){"BATCH_ADD_ENTITIES_EMPTY"}
+        val bulkOperations = entities.stream().map { BulkOperation.createInsert(JsonObject.mapFrom(it)) }.toList()
+        mongoClient.bulkWrite(entities.stream().findAny().get().collectionName(),bulkOperations).await()
+
+        return Future.succeededFuture(Unit)
+    }
+
     override suspend fun <T : Entity> queryEntityById(id: String, clazz: Class<T>): Future<T?> {
         val query = mongoClient.findOne(clazz.collectionName(),JsonObject().put(MONGO_ID,id),null).await()
         return if(Objects.isNull(query)) Future.succeededFuture(null)
@@ -46,6 +55,11 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
     override suspend fun <T : Entity> removeEntity(id: String, clazz: Class<T>): Future<Unit> {
         mongoClient.findOneAndDelete(clazz.collectionName(),JsonObject().put(MONGO_ID,id)).await()
         return Future.succeededFuture(Unit)
+    }
+
+    override suspend fun <T : Entity> removeEntities(query: JsonObject, clazz: Class<T>): Future<Long> {
+        val results = mongoClient.removeDocuments(clazz.collectionName(),query).await()
+        return Future.succeededFuture(results.removedCount)
     }
 
     override suspend fun <T : Entity> listQuery(query: JsonObject, clazz: Class<T>): Future<List<T>> {
