@@ -8,6 +8,7 @@ import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
+import io.vertx.kotlin.ext.sql.updateResultOf
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.hibernate.HibernateException
@@ -358,6 +359,18 @@ class TestEntityRepositoryHibernate {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("parametersRepository")
+    fun testInTransaction(repository:EntityRepository,vertx: Vertx,testContext: VertxTestContext){
+        testContext.execute {
+            val repositoryJpa = repository as EntityRepositoryHibernate
+            val results = repositoryJpa.inTransaction { session ->
+                session.persist(randomUser()).chain { _ -> session.persist(randomUser()) }
+            }
+            testContext.verify { Assertions.assertNotNull(results) }
+        }
+    }
+
 
     @ParameterizedTest
     @MethodSource("parametersRepository")
@@ -391,6 +404,10 @@ class TestEntityRepositoryHibernate {
                 testContext.failNow(e)
             }
         }
+    }
+
+    private fun randomUser():User {
+        return User(username = randomIDString.randomString(),age = 35)
     }
 
 }

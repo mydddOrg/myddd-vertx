@@ -153,4 +153,16 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
         return promise.future()
     }
 
+    fun <T> inTransaction(execution: (session: Mutiny.Session) -> Uni<T>): Future<T> {
+        val promise = PromiseImpl<T>()
+        sessionFactory.withTransaction { session, _ ->
+            execution(session)
+        }.subscribe().with({ it ->
+            promise.onSuccess(it)
+        },{
+            promise.fail(it)
+        })
+        return promise.future()
+    }
+
 }
