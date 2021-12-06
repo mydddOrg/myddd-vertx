@@ -19,9 +19,7 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
     }
 
     override suspend fun <T : Entity> save(entity: T): Future<T> {
-        val promise = PromiseImpl<T>()
-
-        sessionFactory.withTransaction { session, _ ->
+        return inTransaction { session ->
             session.find(entity::class.java, entity.getId())
                 .chain { t ->
                     if (Objects.isNull(t)) {
@@ -33,136 +31,86 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
                     }
                 }
                 .call { _ -> session.flush() }
-        }.subscribe().with({
-            if (Objects.nonNull(it)) {
-                promise.onSuccess(it as T)
-            } else {
-                promise.onSuccess(entity)
-            }
-        }, {
-            promise.fail(it)
-        })
-
-        return promise.future()
+                .map { entity }
+        }
     }
 
     override suspend fun <T : Entity> get(clazz: Class<T>?, id: Serializable?): Future<T?> {
-        val promise = PromiseImpl<T>()
-        sessionFactory.withSession { session ->
+        return inQuery { session ->
             session.find(clazz, id)
-        }.subscribe().with({
-            promise.onSuccess(it)
-        }, {
-            promise.fail(it)
-        })
-        return promise.future()
+        }
     }
 
     override suspend fun <T : Entity> exists(clazz: Class<T>?, id: Serializable?): Future<Boolean> {
-        val promise = PromiseImpl<Boolean>()
-        sessionFactory.withSession { session ->
+        return inQuery { session ->
             session.find(clazz, id)
-        }.subscribe().with({ findObj -> if (findObj != null) promise.onSuccess(true) else promise.onSuccess(false) },
-            {
-                promise.fail(it)
-            }
-        )
-        return promise.future()
+                .chain { it ->
+                    if(Objects.nonNull(it)) Uni.createFrom().item(true) else Uni.createFrom().item(false)
+                }
+        }
     }
 
     override suspend fun <T : Entity> remove(entity: T): Future<Unit> {
-        val promise = PromiseImpl<Unit>()
-        sessionFactory.withTransaction{ session, _ ->
+        return inTransaction { session ->
             session.merge(entity).chain { it ->
                 session.remove(it)
-            }
-        }.subscribe()
-            .with({promise.onSuccess(Unit)},{
-                promise.fail(it)
-            })
-        return promise.future()
+            }.map {  }
+        }
     }
 
     override suspend fun <T : Entity> batchSave(entityList: Array<T>): Future<Boolean> {
-        val promise = PromiseImpl<Boolean>()
-        sessionFactory.withTransaction { session, _ ->
+        return inTransaction { session ->
             session.persistAll(*entityList)
-        }.subscribe().with({ promise.onSuccess(true) }, { promise.fail(it) })
-        return promise
+                .map { true }
+        }
     }
 
     override suspend fun <T : Entity> delete(clazz: Class<T>?, id: Serializable?): Future<Boolean> {
-        val promise = PromiseImpl<Boolean>()
-        sessionFactory.withSession { session ->
+        return inTransaction { session ->
             session.find(clazz, id)
                 .chain { it -> if (Objects.nonNull(it)) session.remove(it) else Uni.createFrom().nullItem() }
                 .chain { _ -> session.flush() }
-        }.subscribe().with({
-            promise.onSuccess(true)
-        }, {
-            promise.fail(it)
+                .map { true }
         }
-        )
-        return promise.future()
     }
 
-    override suspend fun <T> listQuery(
-        clazz: Class<T>?,
-        sql: String,
-        params: Map<String, Any>
-    ): Future<List<T>> {
-        val promise = PromiseImpl<List<T>>()
-        sessionFactory.withSession { session ->
+    override suspend fun <T> listQuery(clazz: Class<T>?, sql: String, params: Map<String, Any>): Future<List<T>> {
+        return inQuery { session ->
             val query = session.createQuery(sql, clazz)
             params.forEach { (key, value) -> query.setParameter(key, value) }
             query.resultList
-        }.subscribe().with({
-            promise.onSuccess(it)
-        }, {
-            promise.fail(it)
-        })
-        return promise.future()
+        }
     }
 
     override suspend fun <T> singleQuery(clazz: Class<T>?, sql: String, params: Map<String, Any>): Future<T?> {
-        val promise = PromiseImpl<T?>()
-        sessionFactory.withSession { session ->
+        return inQuery { session ->
             val query = session.createQuery(sql, clazz)
             params.forEach { (key, value) -> query.setParameter(key, value) }
             query.singleResultOrNull
-        }.subscribe().with({
-            promise.onSuccess(it)
-        }, {
-            promise.fail(it)
-        })
-        return promise.future()
+        }
     }
 
     override suspend fun executeUpdate(sql: String, params: Map<String, Any>): Future<Int?> {
-        val promise = PromiseImpl<Int?>()
-        sessionFactory.withTransaction { session, _ ->
-
+        return inTransaction { session ->
             val query = session.createQuery<Any>(sql)
             params.forEach { (key, value) -> query.setParameter(key, value) }
             query.executeUpdate().call { _ -> session.flush() }
-        }.subscribe().with({
-            promise.onSuccess(it)
-        }, {
-            promise.fail(it)
-        })
-        return promise.future()
+        }
     }
 
     fun <T> inTransaction(execution: (session: Mutiny.Session) -> Uni<T>): Future<T> {
         val promise = PromiseImpl<T>()
         sessionFactory.withTransaction { session, _ ->
             execution(session)
-        }.subscribe().with({ it ->
-            promise.onSuccess(it)
-        },{
-            promise.fail(it)
-        })
+        }.subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
         return promise.future()
     }
 
+    fun <T> inQuery(execution: (session: Mutiny.Session) -> Uni<T>): Future<T> {
+        val promise = PromiseImpl<T>()
+        sessionFactory.withSession{ session ->
+            execution(session)
+        }.subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
+        return promise.future()
+    }
 }

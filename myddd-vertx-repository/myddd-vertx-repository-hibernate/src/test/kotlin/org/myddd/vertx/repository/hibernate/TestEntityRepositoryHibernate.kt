@@ -39,7 +39,6 @@ import kotlin.collections.ArrayList
 class TestEntityRepositoryHibernate {
 
 
-
     private val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
 
     init {
