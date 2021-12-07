@@ -9,9 +9,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
+import org.myddd.vertx.querychannel.AbstractTest
 import org.myddd.vertx.querychannel.api.DocumentQueryChannel
 import org.myddd.vertx.querychannel.mock.MockUser
-import org.myddd.vertx.querychannel.AbstractTest
 import org.myddd.vertx.repository.api.DocumentEntityRepository
 
 class TestDocumentQueryChannel: AbstractTest() {

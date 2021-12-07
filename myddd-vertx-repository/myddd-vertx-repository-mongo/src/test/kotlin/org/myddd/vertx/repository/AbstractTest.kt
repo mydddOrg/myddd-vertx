@@ -11,7 +11,7 @@ import org.myddd.vertx.repository.mongo.mock.MockDocumentEntity
 import org.myddd.vertx.repository.mongo.mock.MockMedia
 import java.util.*
 
-@ExtendWith(VertxExtension::class,IOCInitExtension::class)
+@ExtendWith(VertxExtension::class, IOCInitExtension::class)
 abstract class AbstractTest {
 
     val logger by lazy { LoggerFactory.getLogger(AbstractTest::class.java) }
@@ -36,7 +36,7 @@ abstract class AbstractTest {
         return random
     }
 
-    protected fun randomMockMedia():MockMedia {
+    protected fun randomMockMedia(): MockMedia {
         val random = MockMedia()
         random.digest = randomString()
         random.name = randomString()

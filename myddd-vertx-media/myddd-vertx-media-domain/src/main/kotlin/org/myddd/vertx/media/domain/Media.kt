@@ -3,13 +3,10 @@ package org.myddd.vertx.media.domain
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSetter
 import io.vertx.core.Future
 import io.vertx.core.Vertx
-import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.Document
-import org.myddd.vertx.domain.DocumentEntity
 import org.myddd.vertx.file.FileDigest
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.media.MediaNotFoundException

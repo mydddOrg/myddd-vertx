@@ -1,7 +1,6 @@
 package org.myddd.vertx.junit
 
 import io.vertx.core.Future
-import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await

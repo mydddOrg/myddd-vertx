@@ -5,7 +5,6 @@ import io.vertx.core.Vertx
 import io.vertx.core.impl.future.PromiseImpl
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.hibernate.reactive.mutiny.Mutiny

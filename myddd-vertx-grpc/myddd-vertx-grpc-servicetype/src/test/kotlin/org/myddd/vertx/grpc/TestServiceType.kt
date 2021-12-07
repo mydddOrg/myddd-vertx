@@ -1,20 +1,13 @@
 package org.myddd.vertx.grpc
 
-import io.vertx.core.Vertx
-import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
-import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
 import io.vertx.servicediscovery.Record
 import io.vertx.servicediscovery.ServiceDiscovery
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.junit.execute
 
 class TestServiceType:AbstractTest() {

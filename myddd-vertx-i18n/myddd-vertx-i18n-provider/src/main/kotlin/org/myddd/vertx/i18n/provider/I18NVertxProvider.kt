@@ -11,7 +11,6 @@ import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.i18n.I18N
-import java.util.*
 import javax.inject.Inject
 
 class I18NVertxProvider @Inject constructor(vertx:Vertx) : I18N {

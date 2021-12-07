@@ -1,8 +1,5 @@
 package org.myddd.vertx.id
 
-import java.lang.RuntimeException
-import java.lang.IllegalArgumentException
-
 /**
  * Twitter_Snowflake<br></br>
  * SnowFlake的结构如下(每部分用-分开):<br></br>

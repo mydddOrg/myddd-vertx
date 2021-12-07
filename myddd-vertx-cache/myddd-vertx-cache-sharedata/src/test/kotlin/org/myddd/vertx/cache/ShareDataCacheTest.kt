@@ -1,19 +1,14 @@
 package org.myddd.vertx.cache
 
 import io.vertx.core.Future
-import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.myddd.vertx.junit.execute
-import java.lang.RuntimeException
 import java.util.*
 import java.util.stream.Stream
 import kotlin.random.Random

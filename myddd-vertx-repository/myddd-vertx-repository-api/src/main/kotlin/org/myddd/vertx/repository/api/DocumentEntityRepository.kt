@@ -1,12 +1,8 @@
 package org.myddd.vertx.repository.api
 
 import io.vertx.core.Future
-import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 import org.myddd.vertx.domain.Document
-import org.myddd.vertx.domain.Entity
-import javax.persistence.Index
-import javax.persistence.UniqueConstraint
 
 interface DocumentEntityRepository {
 

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
-import kotlin.random.Random
 
 @ExtendWith(VertxExtension::class,IOCInitExtension::class)
 open class AbstractWebTest {

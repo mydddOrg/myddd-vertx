@@ -2,7 +2,6 @@ package org.myddd.vertx.querychannel.hibernate
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
-import com.google.inject.name.Names
 import io.vertx.core.Vertx
 import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.extension.BeforeAllCallback

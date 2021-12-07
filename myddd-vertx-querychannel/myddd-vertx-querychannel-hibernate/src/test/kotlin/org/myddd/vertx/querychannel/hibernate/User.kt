@@ -1,7 +1,8 @@
 package org.myddd.vertx.querychannel.hibernate
 
 import org.myddd.vertx.domain.BaseEntity
-import javax.persistence.*
+import javax.persistence.Entity
+import javax.persistence.Table
 
 @Entity
 @Table(name = "\"User\"")

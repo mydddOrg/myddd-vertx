@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2UserDTO
-import java.lang.RuntimeException
 import java.util.*
 
 class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {

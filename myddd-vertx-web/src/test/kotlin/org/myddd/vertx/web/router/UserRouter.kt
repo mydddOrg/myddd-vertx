@@ -3,10 +3,8 @@ package org.myddd.vertx.web.router
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
-import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.web.SomethingErrorException
 import org.myddd.vertx.web.SomethingErrorWithParamException
-import org.myddd.vertx.web.WebErrorCode
 import org.myddd.vertx.web.router.ext.jsonFormatEnd
 import org.myddd.vertx.web.router.ext.singleQueryParam
 import org.myddd.vertx.web.router.handler.AccessTokenAuthorizationHandler

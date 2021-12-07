@@ -1,10 +1,6 @@
 package org.myddd.vertx.grpc
 
-import com.google.inject.AbstractModule
-import com.google.inject.Guice
-import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
-import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
@@ -15,10 +11,6 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.myddd.vertx.grpc.health.HealthCheckApplication
-import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.junit.execute
 
 

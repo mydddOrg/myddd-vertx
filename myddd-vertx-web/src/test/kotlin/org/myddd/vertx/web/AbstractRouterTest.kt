@@ -11,21 +11,16 @@ import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
-import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.oauth2.api.OAuth2Application
+import org.mockito.Mockito.mock
 import org.myddd.vertx.config.Config
+import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.junit.execute
+import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.web.router.handler.IPFilterHandler
 import java.util.*
-import kotlin.Exception
-import org.mockito.Mockito.mock
-import org.myddd.vertx.junit.execute
-import java.lang.RuntimeException
 
 @ExtendWith(VertxExtension::class,IOCInitExtension::class)
 class AbstractRouterTest {

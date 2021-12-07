@@ -16,7 +16,6 @@ import org.myddd.vertx.string.RandomIDString
 import java.util.*
 import java.util.stream.Stream
 import javax.persistence.PersistenceException
-import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 @ExtendWith(VertxExtension::class,IOCInitExtension::class)

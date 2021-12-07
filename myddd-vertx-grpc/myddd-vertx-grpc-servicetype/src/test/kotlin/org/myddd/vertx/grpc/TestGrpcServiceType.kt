@@ -2,24 +2,18 @@ package org.myddd.vertx.grpc
 
 import com.google.protobuf.BoolValue
 import com.google.protobuf.Empty
-import io.grpc.ManagedChannel
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.grpc.VertxServer
 import io.vertx.grpc.VertxServerBuilder
-import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
 import io.vertx.servicediscovery.ServiceDiscovery
 import io.vertx.servicediscovery.ServiceReference
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.junit.execute
 import kotlin.random.Random
 

@@ -1,7 +1,5 @@
 package org.myddd.vertx.web.router
 
-import com.google.inject.AbstractModule
-import com.google.inject.Guice
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpServer
@@ -10,8 +8,6 @@ import io.vertx.core.spi.resolver.ResolverProvider.DISABLE_DNS_RESOLVER_PROP_NAM
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
-import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
 import org.myddd.vertx.config.Config
 
 abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticle() {

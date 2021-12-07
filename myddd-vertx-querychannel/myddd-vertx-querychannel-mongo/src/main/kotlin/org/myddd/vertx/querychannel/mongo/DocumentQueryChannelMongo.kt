@@ -6,11 +6,10 @@ import io.vertx.ext.mongo.FindOptions
 import io.vertx.ext.mongo.MongoClient
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.Document
-import org.myddd.vertx.domain.Entity
+import org.myddd.vertx.domain.ext.collectionName
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.querychannel.api.DocumentQueryChannel
 import org.myddd.vertx.querychannel.api.Page
-import org.myddd.vertx.domain.ext.collectionName
 import kotlin.streams.toList
 
 class DocumentQueryChannelMongo:DocumentQueryChannel {

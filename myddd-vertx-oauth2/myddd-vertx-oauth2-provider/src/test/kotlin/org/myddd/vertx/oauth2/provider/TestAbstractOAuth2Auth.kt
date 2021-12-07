@@ -2,7 +2,6 @@ package org.myddd.vertx.oauth2.provider
 
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.auth.oauth2.OAuth2Auth
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import org.junit.jupiter.api.Assertions

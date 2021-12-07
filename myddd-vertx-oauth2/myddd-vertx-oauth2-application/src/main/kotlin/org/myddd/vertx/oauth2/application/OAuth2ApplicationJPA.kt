@@ -2,14 +2,12 @@ package org.myddd.vertx.oauth2.application
 
 import io.vertx.core.Future
 import io.vertx.kotlin.coroutines.await
-import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.*
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.api.OAuth2UserDTO
 import org.myddd.vertx.oauth2.domain.OAuth2ClientService
 import org.myddd.vertx.oauth2.domain.OAuth2Token
-import java.lang.Exception
 import java.util.*
 
 class OAuth2ApplicationJPA : OAuth2Application {

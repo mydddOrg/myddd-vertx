@@ -3,14 +3,10 @@ package org.myddd.vertx.oauth2.domain
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.junit.assertThrow
 import org.myddd.vertx.junit.execute
-import java.lang.IllegalArgumentException
 import java.util.*
 
 class TestOAuth2Client : AbstractTest() {

@@ -4,17 +4,13 @@ import com.qcloud.cos.COSClient
 import com.qcloud.cos.ClientConfig
 import com.qcloud.cos.auth.BasicCOSCredentials
 import com.qcloud.cos.http.HttpProtocol
+import com.qcloud.cos.model.GetObjectRequest
+import com.qcloud.cos.model.PutObjectRequest
 import com.qcloud.cos.region.Region
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
-import com.qcloud.cos.model.PutObjectRequest
-import java.io.File
-import com.qcloud.cos.model.COSObjectInputStream
-
-import com.qcloud.cos.model.COSObject
-
-import com.qcloud.cos.model.GetObjectRequest
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
+import java.io.File
 
 
 @Disabled

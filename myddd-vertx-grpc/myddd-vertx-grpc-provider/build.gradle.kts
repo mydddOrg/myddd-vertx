@@ -1,5 +1,3 @@
-import com.google.protobuf.gradle.*
-
 plugins {
     java
     kotlin("jvm")

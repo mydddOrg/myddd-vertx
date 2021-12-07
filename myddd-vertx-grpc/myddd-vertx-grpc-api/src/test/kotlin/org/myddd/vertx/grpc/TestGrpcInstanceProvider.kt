@@ -2,8 +2,6 @@ package org.myddd.vertx.grpc
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
-import com.google.protobuf.Empty
-import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.junit5.VertxExtension

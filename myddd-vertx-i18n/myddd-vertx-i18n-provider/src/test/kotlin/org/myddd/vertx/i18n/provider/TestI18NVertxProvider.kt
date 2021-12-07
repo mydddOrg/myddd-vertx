@@ -1,15 +1,10 @@
 package org.myddd.vertx.i18n.provider
 
 import io.vertx.core.Vertx
-import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.junit.execute
 

@@ -9,12 +9,12 @@ import io.vertx.ext.mongo.IndexOptions
 import io.vertx.ext.mongo.MongoClient
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.Document
-import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.repository.api.DocumentEntityRepository
-import org.myddd.vertx.repository.api.QueryOptions
 import org.myddd.vertx.domain.ext.collectionName
 import org.myddd.vertx.domain.ext.indexes
 import org.myddd.vertx.domain.ext.uniqueConstraints
+import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.repository.api.DocumentEntityRepository
+import org.myddd.vertx.repository.api.QueryOptions
 import java.util.*
 import kotlin.streams.toList
 

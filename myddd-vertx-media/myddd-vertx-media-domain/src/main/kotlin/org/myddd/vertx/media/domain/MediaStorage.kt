@@ -1,7 +1,6 @@
 package org.myddd.vertx.media.domain
 
 import io.vertx.core.Future
-import java.io.InputStream
 
 interface MediaStorage {
 

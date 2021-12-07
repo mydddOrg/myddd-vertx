@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
-import java.lang.Exception
 import java.util.*
 
 class TestOAuth2ClientService : AbstractTest() {

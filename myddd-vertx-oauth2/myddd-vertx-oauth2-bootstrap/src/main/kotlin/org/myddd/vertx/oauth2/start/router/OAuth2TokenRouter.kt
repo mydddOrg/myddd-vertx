@@ -7,13 +7,10 @@ import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.oauth2.start.NotSupportOAuth2GrantTypeException
-import org.myddd.vertx.oauth2.start.OAuth2WebErrorCode
 import org.myddd.vertx.web.router.AbstractRouter
-import kotlin.Exception
 
 class OAuth2TokenRouter(vertx: Vertx,router: Router) : AbstractRouter(vertx = vertx, router = router) {
 

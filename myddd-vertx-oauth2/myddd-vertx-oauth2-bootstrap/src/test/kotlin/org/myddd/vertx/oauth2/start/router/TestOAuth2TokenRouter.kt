@@ -5,7 +5,8 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import org.myddd.vertx.junit.execute
 import org.myddd.vertx.oauth2.api.OAuth2ClientDTO
 import org.myddd.vertx.oauth2.start.AbstractWebTest

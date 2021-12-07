@@ -4,7 +4,9 @@ package org.myddd.vertx.domain
 import org.myddd.vertx.id.IDGenerator
 import org.myddd.vertx.ioc.InstanceFactory
 import java.io.Serializable
-import javax.persistence.*
+import javax.persistence.Id
+import javax.persistence.MappedSuperclass
+import javax.persistence.Version
 
 /**
  * 基于ID的一个基类

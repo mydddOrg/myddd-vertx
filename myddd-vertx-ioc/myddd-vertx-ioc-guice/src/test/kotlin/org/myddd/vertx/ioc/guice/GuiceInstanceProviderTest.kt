@@ -2,7 +2,6 @@ package org.myddd.vertx.ioc.guice
 
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
-import com.google.inject.Injector
 import com.google.inject.name.Names
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
