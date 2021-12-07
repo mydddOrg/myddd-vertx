@@ -26,8 +26,8 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
     }
     override suspend fun start() {
         super.start()
-        initIOC(vertx)
         initGlobalConfig().await()
+        initIOC(vertx)
         //禁用Vert.x的DNS解析逻辑
         System.getProperties().setProperty(DISABLE_DNS_RESOLVER_PROP_NAME,"true")
 
