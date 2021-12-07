@@ -1,34 +1,22 @@
 package org.myddd.vertx.querychannel.hibernate
 
-import com.google.inject.AbstractModule
-import com.google.inject.Guice
-import com.google.inject.name.Names
-import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import org.hibernate.reactive.mutiny.Mutiny
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.myddd.vertx.id.IDGenerator
-import org.myddd.vertx.id.SnowflakeDistributeId
-import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.junit.execute
 import org.myddd.vertx.querychannel.api.PageParam
 import org.myddd.vertx.querychannel.api.QueryChannel
 import org.myddd.vertx.querychannel.api.QueryParam
 import org.myddd.vertx.repository.api.EntityRepository
 import org.myddd.vertx.repository.hibernate.EntityRepositoryHibernate
 import java.util.stream.Stream
-import javax.persistence.Persistence
 
-@ExtendWith(VertxExtension::class)
+@ExtendWith(VertxExtension::class,IOCInitExtension::class)
 class TestQueryChannelHibernate {
 
     private val repositories:Array<EntityRepository> = arrayOf(EntityRepositoryHibernate())
@@ -40,111 +28,64 @@ class TestQueryChannelHibernate {
                 QueryChannelHibernate(),
             )
         }
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                try {
-                    vertx.executeBlocking<Void> {
-                        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
-                            override fun configure() {
-                                bind(Vertx::class.java).toInstance(vertx)
-
-                                bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
-                                bind(Mutiny.SessionFactory::class.java).toInstance(Persistence.createEntityManagerFactory("default")
-                                    .unwrap(Mutiny.SessionFactory::class.java))
-                                bind(Mutiny.SessionFactory::class.java).annotatedWith(Names.named("pg")).toInstance(Persistence.createEntityManagerFactory("pg")
-                                    .unwrap(Mutiny.SessionFactory::class.java))
-                            }
-                        })))
-                        it.complete()
-                    }.await()
-                }catch (t:Throwable){
-                    testContext.failNow(t)
-                }
-                testContext.completeNow()
-            }
-        }
     }
 
     @ParameterizedTest
     @MethodSource("parametersQueryChannel")
-    fun testPageQuery(queryChannel:QueryChannel,vertx: Vertx,testContext: VertxTestContext) {
-        GlobalScope.launch(vertx.dispatcher()) {
-            try{
-                prepareData(testContext)
+    fun testPageQuery(queryChannel:QueryChannel,testContext: VertxTestContext) {
+        testContext.execute {
+            val pageResult = queryChannel.pageQuery(
+                QueryParam(clazz = User::class.java,sql = "from User where username like :username",params = mapOf("username" to "%lingen%")),
+                PageParam(limit = 10)
+            ).await()
 
-                val pageResult = queryChannel.pageQuery(
-                    QueryParam(clazz = User::class.java,sql = "from User where username like :username",params = mapOf("username" to "%lingen%")),
-                    PageParam(limit = 10)
-                ).await()
-
-                testContext.verify {
-                    Assertions.assertTrue(pageResult.totalCount > 0)
-                    Assertions.assertTrue(pageResult.dataList.isNotEmpty())
-                }
-                testContext.completeNow()
-            }catch (e:Exception){
-                testContext.failNow(e)
+            testContext.verify {
+                Assertions.assertTrue(pageResult.totalCount > 0)
+                Assertions.assertTrue(pageResult.dataList.isNotEmpty())
             }
-
         }
     }
 
 
     @ParameterizedTest
     @MethodSource("parametersQueryChannel")
-    fun testListQuery(queryChannel:QueryChannel,vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            prepareData(testContext)
-
+    fun testListQuery(queryChannel:QueryChannel,testContext: VertxTestContext){
+        testContext.execute {
             val list = queryChannel.queryList(QueryParam(clazz = User::class.java,sql ="from User")).await()
             testContext.verify {
                 Assertions.assertTrue(list.isNotEmpty())
             }
-            testContext.completeNow()
         }
     }
 
     @ParameterizedTest
     @MethodSource("parametersQueryChannel")
-    fun testLimitQueryList(queryChannel: QueryChannel,vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                prepareData(testContext)
+    fun testLimitQueryList(queryChannel: QueryChannel,testContext: VertxTestContext){
+        testContext.execute {
+            val limitQuery = queryChannel.limitQueryList(QueryParam(clazz = User::class.java,sql ="from User"),5).await()
+            testContext.verify {
+                Assertions.assertTrue(limitQuery.isNotEmpty())
+                Assertions.assertEquals(5,limitQuery.size)
+            }
+        }
+    }
 
-                val limitQuery = queryChannel.limitQueryList(QueryParam(clazz = User::class.java,sql ="from User"),5).await()
-                testContext.verify {
-                    Assertions.assertTrue(limitQuery.isNotEmpty())
-                    Assertions.assertEquals(5,limitQuery.size)
+    @BeforeEach
+    fun beforeEach(testContext: VertxTestContext){
+        testContext.execute {
+            repositories.forEach { repository ->
+                val users = ArrayList<User>()
+                for (i in 1..10){
+                    users.add(User(username = "lingen_${i}",age = 35 + i))
                 }
 
-            }catch (t:Throwable){
-                testContext.failNow(t)
-            }
-            testContext.completeNow()
-        }
-    }
-
-    private suspend fun prepareData(testContext: VertxTestContext){
-
-        repositories.forEach { repository ->
-            val users = ArrayList<User>()
-            for (i in 1..10){
-                users.add(User(username = "lingen_${i}",age = 35 + i))
-            }
-
-            val userArray:Array<User> = users.toTypedArray()
-            val success = repository.batchSave(userArray).await()
-            testContext.verify {
-                Assertions.assertTrue(success)
+                val userArray:Array<User> = users.toTypedArray()
+                val success = repository.batchSave(userArray).await()
+                testContext.verify {
+                    Assertions.assertTrue(success)
+                }
             }
         }
-
     }
-
-
-
 
 }

@@ -1,9 +1,15 @@
 package org.myddd.vertx.junit
 
+import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions
+import org.myddd.vertx.ioc.InstanceFactory
+
+
+private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
 
 suspend fun VertxTestContext.assertNotThrow(execution:suspend () -> Unit){
     try {
@@ -27,7 +33,7 @@ suspend fun <T:Throwable> VertxTestContext.assertThrow(clazz: Class<T>,execution
 
 fun VertxTestContext.execute(execution:suspend () -> Unit){
     val vertxTestContext = this
-    GlobalScope.launch {
+    GlobalScope.launch(vertx.dispatcher()) {
         try {
             execution()
         }catch (t:Throwable){

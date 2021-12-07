@@ -72,23 +72,19 @@ class OAuth2Client:BaseEntity() {
     }
 
     suspend fun disable():Future<OAuth2Client>{
-        return try {
-            this.disabled = true
-            val disabled  = repository.save(this).await()
-            Future.succeededFuture(disabled)
-        }catch (e:Exception){
-            Future.failedFuture(e)
-        }
+        val exists = repository.get(OAuth2Client::class.java,id).await()
+        requireNotNull(exists)
+        exists.disabled = true
+        val disabled  = repository.save(exists).await()
+        return Future.succeededFuture(disabled)
     }
 
     suspend fun enable():Future<OAuth2Client>{
-        return try {
-            this.disabled = false
-            val enabled = repository.save(this).await()
-            Future.succeededFuture(enabled)
-        }catch (e:Exception){
-            Future.failedFuture(e)
-        }
+        val exists = repository.get(OAuth2Client::class.java,id).await()
+        requireNotNull(exists)
+        exists.disabled = false
+        val disabled  = repository.save(exists).await()
+        return Future.succeededFuture(disabled)
     }
 
 }

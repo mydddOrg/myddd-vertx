@@ -1,14 +1,11 @@
 package org.myddd.vertx.oauth2.domain
 
-import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.junit.execute
 import java.lang.Exception
 import java.util.*
 
@@ -18,120 +15,103 @@ class TestOAuth2ClientService : AbstractTest() {
 
     private val tokenRepository by lazy { InstanceFactory.getInstance(OAuth2TokenRepository::class.java) }
     @Test
-    fun testQueryClientByClientId(vertx: Vertx,testContext: VertxTestContext){
-        executeWithTryCatch(testContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                val client = OAuth2Client()
-                client.clientId = UUID.randomUUID().toString()
-                client.name = UUID.randomUUID().toString()
-                val created = client.createClient().await()
-                var query = oAuth2ClientService.queryClientByClientId(created.clientId).await()
-                testContext.verify {
-                    Assertions.assertNotNull(query)
-                }
-                query = oAuth2ClientService.queryClientByClientId(UUID.randomUUID().toString()).await()
-                testContext.verify {
-                    Assertions.assertNull(query)
-                }
-                testContext.completeNow()
+    fun testQueryClientByClientId(testContext: VertxTestContext){
+        testContext.execute {
+            val client = OAuth2Client()
+            client.clientId = UUID.randomUUID().toString()
+            client.name = UUID.randomUUID().toString()
+            val created = client.createClient().await()
+            var query = oAuth2ClientService.queryClientByClientId(created.clientId).await()
+            testContext.verify {
+                Assertions.assertNotNull(query)
+            }
+            query = oAuth2ClientService.queryClientByClientId(UUID.randomUUID().toString()).await()
+            testContext.verify {
+                Assertions.assertNull(query)
             }
         }
     }
 
     @Test
-    fun testGenerateClientToken(vertx: Vertx,testContext: VertxTestContext){
-        executeWithTryCatch(testContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                val client = OAuth2Client()
-                client.clientId = UUID.randomUUID().toString()
-                client.name = UUID.randomUUID().toString()
-                val created = client.createClient().await()
+    fun testGenerateClientToken(testContext: VertxTestContext){
+        testContext.execute {
+            val client = OAuth2Client()
+            client.clientId = UUID.randomUUID().toString()
+            client.name = UUID.randomUUID().toString()
+            val created = client.createClient().await()
 
-                val token = oAuth2ClientService.generateClientToken(created).await()
-                testContext.verify {
-                    Assertions.assertNotNull(token)
-                }
-
-                testContext.completeNow()
+            val token = oAuth2ClientService.generateClientToken(created).await()
+            testContext.verify {
+                Assertions.assertNotNull(token)
             }
         }
     }
 
     @Test
-    fun testRefreshUserToken(vertx: Vertx,testContext: VertxTestContext){
-        executeWithTryCatch(testContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                val client = OAuth2Client()
-                client.clientId = UUID.randomUUID().toString()
-                client.name = UUID.randomUUID().toString()
-                val created = client.createClient().await()
+    fun testRefreshUserToken(testContext: VertxTestContext){
+        testContext.execute {
+            val client = OAuth2Client()
+            client.clientId = UUID.randomUUID().toString()
+            client.name = UUID.randomUUID().toString()
+            val created = client.createClient().await()
 
-                try{
-                    oAuth2ClientService.refreshUserToken(created,UUID.randomUUID().toString()).await()
-                    testContext.failNow("没有申请过token")
-                }catch (e:Exception){
-                }
+            try{
+                oAuth2ClientService.refreshUserToken(created,UUID.randomUUID().toString()).await()
+                testContext.failNow("没有申请过token")
+            }catch (e:Exception){
+            }
 
-                try{
-                    oAuth2ClientService.refreshUserToken(created,UUID.randomUUID().toString()).await()
-                    testContext.failNow("refresh token不对，应该不能刷新TOKEN 才对")
-                }catch (e:Exception){
+            try{
+                oAuth2ClientService.refreshUserToken(created,UUID.randomUUID().toString()).await()
+                testContext.failNow("refresh token不对，应该不能刷新TOKEN 才对")
+            }catch (e:Exception){
 
-                }
+            }
 
-                val token = oAuth2ClientService.generateClientToken(created).await()
+            val token = oAuth2ClientService.generateClientToken(created).await()
 
-                val refreshToken = oAuth2ClientService.refreshUserToken(created,token.refreshToken).await()
-                testContext.verify {
-                    Assertions.assertNotNull(refreshToken)
-                    Assertions.assertTrue(refreshToken.updated > 0)
-                }
-                testContext.completeNow()
+            val refreshToken = oAuth2ClientService.refreshUserToken(created,token.refreshToken).await()
+            testContext.verify {
+                Assertions.assertNotNull(refreshToken)
+                Assertions.assertTrue(refreshToken.updated > 0)
             }
         }
     }
 
     @Test
-    fun testRevokeUserToken(vertx: Vertx,testContext: VertxTestContext){
-        executeWithTryCatch(testContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                val client = OAuth2Client()
-                client.clientId = UUID.randomUUID().toString()
-                client.name = UUID.randomUUID().toString()
-                val created = client.createClient().await()
-                val token = oAuth2ClientService.generateClientToken(created).await()
-                val success = oAuth2ClientService.revokeUserToken(created).await()
-                testContext.verify {
-                    Assertions.assertTrue(success)
-                }
+    fun testRevokeUserToken(testContext: VertxTestContext){
+        testContext.execute {
+            val client = OAuth2Client()
+            client.clientId = UUID.randomUUID().toString()
+            client.name = UUID.randomUUID().toString()
+            val created = client.createClient().await()
+            val token = oAuth2ClientService.generateClientToken(created).await()
+            val success = oAuth2ClientService.revokeUserToken(created).await()
+            testContext.verify {
+                Assertions.assertTrue(success)
+            }
 
-                val exists = tokenRepository.exists(OAuth2Token::class.java,token.id).await()
-                testContext.verify {
-                    Assertions.assertFalse(exists)
-                }
-
-                testContext.completeNow()
+            val exists = tokenRepository.exists(OAuth2Token::class.java,token.id).await()
+            testContext.verify {
+                Assertions.assertFalse(exists)
             }
         }
     }
 
     @Test
-    fun testQueryUserToken(vertx: Vertx,testContext: VertxTestContext){
-        executeWithTryCatch(testContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                val client = OAuth2Client()
-                client.clientId = UUID.randomUUID().toString()
-                client.name = UUID.randomUUID().toString()
-                val created = client.createClient().await()
-                val token = oAuth2ClientService.generateClientToken(created).await()
+    fun testQueryUserToken(testContext: VertxTestContext){
+        testContext.execute {
+            val client = OAuth2Client()
+            client.clientId = UUID.randomUUID().toString()
+            client.name = UUID.randomUUID().toString()
+            val created = client.createClient().await()
+            val token = oAuth2ClientService.generateClientToken(created).await()
 
-                val queryToken = oAuth2ClientService.queryUserToken(client.clientId).await()
+            val queryToken = oAuth2ClientService.queryUserToken(client.clientId).await()
 
-                testContext.verify {
-                    Assertions.assertNotNull(queryToken)
-                    Assertions.assertEquals(token.accessToken,queryToken!!.accessToken)
-                }
-                testContext.completeNow()
+            testContext.verify {
+                Assertions.assertNotNull(queryToken)
+                Assertions.assertEquals(token.accessToken,queryToken!!.accessToken)
             }
         }
     }

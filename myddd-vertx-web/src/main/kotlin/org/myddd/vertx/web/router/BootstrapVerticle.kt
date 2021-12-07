@@ -26,12 +26,8 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
     }
     override suspend fun start() {
         super.start()
+        initIOC(vertx)
         initGlobalConfig().await()
-        vertx.executeBlocking<Unit> {
-            initIOC()
-            it.complete()
-        }.await()
-
         //禁用Vert.x的DNS解析逻辑
         System.getProperties().setProperty(DISABLE_DNS_RESOLVER_PROP_NAME,"true")
 
@@ -47,15 +43,11 @@ abstract class BootstrapVerticle(private val port:Int = 8080) : CoroutineVerticl
         return server.requestHandler(router).listen(startedPort)
     }
 
-    private fun initIOC(){
-        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(abstractModules(vertx))))
-    }
+    abstract suspend fun initIOC(vertx: Vertx)
 
     private suspend fun initGlobalConfig(): Future<Unit> {
         return Config.loadGlobalConfig(vertx)
     }
-
-    abstract fun abstractModules(vertx: Vertx):AbstractModule
 
     abstract fun routers(vertx: Vertx,router: Router):()->Unit
 

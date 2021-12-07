@@ -9,6 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.myddd.vertx.junit.execute
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.storage.LocalMediaExtra
 
@@ -18,8 +19,8 @@ class LocalMediaStorageTest:AbstractTest() {
     private val mediaStorage = LocalMediaStorage()
 
     @Test
-    fun testConvert(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testConvert(testContext: VertxTestContext){
+        testContext.execute {
             try {
 
                 val absolutePath = LocalMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
@@ -42,8 +43,8 @@ class LocalMediaStorageTest:AbstractTest() {
     }
 
     @Test
-    fun testDownloadMedia(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testDownloadMedia(testContext: VertxTestContext){
+        testContext.execute {
             try {
                 try {
                     mediaStorage.downloadFromStorage(extra = LocalMediaExtra(path = randomIDString.randomString())).await()
@@ -72,8 +73,8 @@ class LocalMediaStorageTest:AbstractTest() {
     }
 
     @Test
-    fun testUploadFileByCustomStoragePath(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testUploadFileByCustomStoragePath(testContext: VertxTestContext){
+        testContext.execute {
             try {
                 val customMediaStorage = LocalMediaStorage(storagePath = "${System.getProperty("user.home")}/Downloads")
 
@@ -94,8 +95,8 @@ class LocalMediaStorageTest:AbstractTest() {
     }
 
     @Test
-    fun testUploadFile(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testUploadFile(testContext: VertxTestContext){
+        testContext.execute {
             try {
 
                 val absolutePath = LocalMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
@@ -114,8 +115,8 @@ class LocalMediaStorageTest:AbstractTest() {
     }
 
     @Test
-    fun testRandomPath(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testRandomPath(testContext: VertxTestContext){
+        testContext.execute {
             try {
                 val randomPath = mediaStorage.randomFilePath().await()
                 testContext.verify {

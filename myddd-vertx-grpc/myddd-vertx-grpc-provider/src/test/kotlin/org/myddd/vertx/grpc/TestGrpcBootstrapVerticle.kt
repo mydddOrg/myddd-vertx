@@ -19,10 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.grpc.health.HealthCheckApplication
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.junit.execute
 
 
-@ExtendWith(VertxExtension::class)
-class TestGrpcBootstrapVerticle {
+class TestGrpcBootstrapVerticle:AbstractTest() {
 
     companion object {
 
@@ -31,19 +31,9 @@ class TestGrpcBootstrapVerticle {
 
         @BeforeAll
         @JvmStatic
-        fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
+        fun beforeAll(testContext: VertxTestContext){
             GlobalScope.launch(vertx.dispatcher()) {
                 try {
-
-                    InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
-                        override fun configure() {
-                            bind(Vertx::class.java).toInstance(vertx)
-                            bind(GrpcInstanceProvider::class.java).to(ServiceDiscoveryGrpcInstanceProvider::class.java)
-
-                            bind(HealthCheckApplication::class.java)
-                        }
-                    })))
-
                     deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
                     Assertions.assertNotNull(deployId)
                 }catch (t:Throwable){
@@ -55,14 +45,13 @@ class TestGrpcBootstrapVerticle {
 
         @AfterAll
         @JvmStatic
-        fun afterAll(vertx: Vertx,testContext: VertxTestContext){
-            GlobalScope.launch(vertx.dispatcher()) {
+        fun afterAll(testContext: VertxTestContext){
+            testContext.execute {
                 try {
                     vertx.undeploy(deployId).await()
                 }catch (t:Throwable){
                     testContext.failNow(t)
                 }
-                testContext.completeNow()
             }
         }
     }
@@ -70,24 +59,18 @@ class TestGrpcBootstrapVerticle {
 
 
     @Test
-    fun testGrpcBootstrapVerticle(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val discovery = ServiceDiscovery.create(vertx)
+    fun testGrpcBootstrapVerticle(testContext: VertxTestContext){
+        testContext.execute {
+            val discovery = ServiceDiscovery.create(vertx)
 
-                val records = discovery.getRecords{
-                    it.type.equals("grpc")
-                }.await()
+            val records = discovery.getRecords{
+                it.type.equals("grpc")
+            }.await()
 
-                testContext.verify {
-                    Assertions.assertTrue(records.isNotEmpty())
-                    Assertions.assertEquals(1,records.size)
-                }
-
-            }catch (t:Throwable){
-                testContext.failNow(t)
+            testContext.verify {
+                Assertions.assertTrue(records.isNotEmpty())
+                Assertions.assertEquals(1,records.size)
             }
-            testContext.completeNow()
         }
     }
 

@@ -11,6 +11,7 @@ class GuiceInstanceProvider(injector: Injector?): InstanceProvider {
 
     init {
         this.injector = injector
+        this.injector
     }
 
     override fun <T> getInstance(beanType: Class<T>?): T {

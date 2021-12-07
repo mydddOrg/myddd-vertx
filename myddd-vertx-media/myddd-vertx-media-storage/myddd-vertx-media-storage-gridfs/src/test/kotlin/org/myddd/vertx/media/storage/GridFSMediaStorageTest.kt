@@ -1,18 +1,15 @@
 package org.myddd.vertx.media.storage
 
-import io.vertx.core.Vertx
 import io.vertx.ext.mongo.MongoClient
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.junit.execute
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
 
@@ -25,8 +22,8 @@ class GridFSMediaStorageTest : AbstractTest() {
     }
 
     @Test
-    fun testCreateMongodbClient(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testCreateMongodbClient(testContext: VertxTestContext){
+        testContext.execute {
             try {
                 val config = json {
                     obj(
@@ -45,8 +42,8 @@ class GridFSMediaStorageTest : AbstractTest() {
     }
 
     @Test
-    fun testUploadFile(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testUploadFile(testContext: VertxTestContext){
+        testContext.execute {
             try {
                 val absolutePath = GridFSMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
                 val mediaFile = MediaFile.of(absolutePath).await()
@@ -66,8 +63,8 @@ class GridFSMediaStorageTest : AbstractTest() {
     }
 
     @Test
-    fun testDownloadFile(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testDownloadFile(testContext: VertxTestContext){
+        testContext.execute {
             try {
                 val absolutePath = GridFSMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
                 val mediaFile = MediaFile.of(absolutePath).await()

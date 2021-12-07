@@ -131,13 +131,10 @@ subprojects {
 
         implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.0")
 
-
         implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
         implementation("io.vertx:vertx-lang-kotlin:${rootProject.extra["vertx_version"]}")
         implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.extra["vertx_version"]}")
-
         testImplementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-guice"))
-
         testImplementation(project(":myddd-vertx-junit"))
         testImplementation("org.apache.logging.log4j:log4j-core:${rootProject.extra["log4j_version"]}")
     }

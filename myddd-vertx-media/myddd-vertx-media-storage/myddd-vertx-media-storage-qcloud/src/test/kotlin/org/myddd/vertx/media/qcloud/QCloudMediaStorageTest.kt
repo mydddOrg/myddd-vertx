@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.junit.execute
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
 import org.myddd.vertx.media.storage.QCloudMediaExtra
@@ -21,8 +22,8 @@ class QCloudMediaStorageTest:AbstractTest() {
     private val mediaStorage by lazy { InstanceFactory.getInstance(MediaStorage::class.java) }
 
     @Test
-    fun testKeyForFilePath(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testKeyForFilePath(testContext: VertxTestContext){
+        testContext.execute{
             try {
                 val qCloudMediaStorage = mediaStorage as QCloudMediaStorage
                 try {
@@ -44,8 +45,8 @@ class QCloudMediaStorageTest:AbstractTest() {
     }
 
     @Test
-    fun testUploadFile(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testUploadFile(testContext: VertxTestContext){
+        testContext.execute {
             try {
 
                 val absolutePath = QCloudMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
@@ -63,8 +64,8 @@ class QCloudMediaStorageTest:AbstractTest() {
     }
 
     @Test
-    fun testDownloadMedia(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testDownloadMedia(testContext: VertxTestContext){
+        testContext.execute {
             try {
                 try {
                     mediaStorage.downloadFromStorage(extra = QCloudMediaExtra(key = randomIDString.randomString())).await()

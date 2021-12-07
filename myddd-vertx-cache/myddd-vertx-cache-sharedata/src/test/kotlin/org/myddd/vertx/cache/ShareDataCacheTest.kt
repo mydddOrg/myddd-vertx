@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
+import org.myddd.vertx.junit.execute
 import java.lang.RuntimeException
 import java.util.*
 import java.util.stream.Stream
@@ -50,8 +51,6 @@ class ShareDataCacheTest:AbstractTest() {
         private val disturbedCache:Cache<Entity> = ShareDataCache(name = "AsyncCache",localCache = false)
         private val anotherCache:Cache<Entity> = ShareDataCache(name = "AnotherCache")
 
-
-
         @JvmStatic
         fun parameterCache():Stream<Cache<Entity>>{
             return Stream.of(localCache,disturbedCache)
@@ -60,287 +59,225 @@ class ShareDataCacheTest:AbstractTest() {
 
     @ParameterizedTest
     @MethodSource("parameterCache")
-    fun testContainsKey(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val key = UUID.randomUUID().toString()
-                val entity = randomEntity()
-                cache.set(key,entity).await()
+    fun testContainsKey(cache:Cache<Entity>,testContext: VertxTestContext){
+        testContext.execute {
+            val key = UUID.randomUUID().toString()
+            val entity = randomEntity()
+            cache.set(key,entity).await()
 
-                val contains = cache.containsKey(key).await()
-                testContext.verify {
-                    Assertions.assertTrue(contains)
-                }
-
-                val notContains = cache.containsKey(UUID.randomUUID().toString()).await()
-                testContext.verify {
-                    Assertions.assertFalse(notContains)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+            val contains = cache.containsKey(key).await()
+            testContext.verify {
+                Assertions.assertTrue(contains)
             }
-            testContext.completeNow()
+
+            val notContains = cache.containsKey(UUID.randomUUID().toString()).await()
+            testContext.verify {
+                Assertions.assertFalse(notContains)
+            }
         }
     }
 
     @Test
-    fun testContainsKeyError(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val future = successFuture(true)
-                Mockito.`when`(errorCache.containsKey(any())).thenReturn(future as Future<Boolean>)
-                val contains = errorCache.containsKey(UUID.randomUUID().toString()).await()
+    fun testContainsKeyError(testContext: VertxTestContext){
+        testContext.execute {
+            val future = successFuture(true)
+            Mockito.`when`(errorCache.containsKey(any())).thenReturn(future as Future<Boolean>)
+            val contains = errorCache.containsKey(UUID.randomUUID().toString()).await()
 
-                testContext.verify {
-                    Assertions.assertTrue(contains)
-                }
-
-                val errorFuture = failedFuture()
-                Mockito.`when`(errorCache.containsKey(any())).thenReturn(errorFuture as Future<Boolean>)
-                try {
-                    errorCache.containsKey(UUID.randomUUID().toString()).await()
-                    testContext.failNow("不可能到这")
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+            testContext.verify {
+                Assertions.assertTrue(contains)
             }
-            testContext.completeNow()
+
+            val errorFuture = failedFuture()
+            Mockito.`when`(errorCache.containsKey(any())).thenReturn(errorFuture as Future<Boolean>)
+            try {
+                errorCache.containsKey(UUID.randomUUID().toString()).await()
+                testContext.failNow("不可能到这")
+            }catch (t:Throwable){
+                testContext.verify { Assertions.assertNotNull(t) }
+            }
         }
     }
 
     @ParameterizedTest
     @MethodSource("parameterCache")
-    fun testSetCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val key = UUID.randomUUID().toString()
-                val entity = randomEntity()
-                cache.set(key,entity).await()
+    fun testSetCache(cache:Cache<Entity>,testContext: VertxTestContext){
+        testContext.execute {
+            val key = UUID.randomUUID().toString()
+            val entity = randomEntity()
+            cache.set(key,entity).await()
 
-                val getValue = cache.get(key).await()
-                testContext.verify {
-                    Assertions.assertNotNull(getValue)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+            val getValue = cache.get(key).await()
+            testContext.verify {
+                Assertions.assertNotNull(getValue)
             }
-            testContext.completeNow()
         }
     }
 
     @Test
-    fun testSetCacheError(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val future = successFuture(Unit)
-                Mockito.`when`(errorCache.set(any(),any())).thenReturn(future as Future<Unit>)
+    fun testSetCacheError(testContext: VertxTestContext){
+        testContext.execute {
+            val future = successFuture(Unit)
+            Mockito.`when`(errorCache.set(any(),any())).thenReturn(future as Future<Unit>)
 
-                val key = UUID.randomUUID().toString()
-                val entity = randomEntity()
+            val key = UUID.randomUUID().toString()
+            val entity = randomEntity()
+            errorCache.set(key, entity).await()
+
+
+            val errorFuture = failedFuture()
+            Mockito.`when`(errorCache.set(any(),any())).thenReturn(errorFuture as Future<Unit>)
+            try {
                 errorCache.set(key, entity).await()
-
-
-                val errorFuture = failedFuture()
-                Mockito.`when`(errorCache.set(any(),any())).thenReturn(errorFuture as Future<Unit>)
-                try {
-                    errorCache.set(key, entity).await()
-                    testContext.failNow("不可能到这")
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
-
+                testContext.failNow("不可能到这")
             }catch (t:Throwable){
-                testContext.failNow(t)
+                testContext.verify { Assertions.assertNotNull(t) }
             }
-            testContext.completeNow()
         }
     }
 
     @ParameterizedTest
     @MethodSource("parameterCache")
-    fun testGetCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val key = UUID.randomUUID().toString()
+    fun testGetCache(cache:Cache<Entity>,testContext: VertxTestContext){
+        testContext.execute {
+            val key = UUID.randomUUID().toString()
 
 
-                val entity = randomEntity()
-                cache.set(key,entity).await()
+            val entity = randomEntity()
+            cache.set(key,entity).await()
 
-                val getValue = cache.get(key).await()
-                testContext.verify {
-                    Assertions.assertNotNull(getValue)
-                }
-
-                val notExists = cache.get(UUID.randomUUID().toString()).await()
-                testContext.verify {
-                    Assertions.assertNull(notExists)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+            val getValue = cache.get(key).await()
+            testContext.verify {
+                Assertions.assertNotNull(getValue)
             }
-            testContext.completeNow()
+
+            val notExists = cache.get(UUID.randomUUID().toString()).await()
+            testContext.verify {
+                Assertions.assertNull(notExists)
+            }
         }
     }
 
     @Test
-    fun testGetCacheError(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testGetCacheError(testContext: VertxTestContext){
+        testContext.execute {
+            val entity = randomEntity()
+
+
+            val future = successFuture(entity)
+            Mockito.`when`(errorCache.get(any())).thenReturn(future as Future<Entity?>)
+
+            val key = UUID.randomUUID().toString()
+            errorCache.get(key).await()
+
+            val errorFuture = failedFuture()
+            Mockito.`when`(errorCache.get(any())).thenReturn(errorFuture as Future<Entity?>)
             try {
-                val entity = randomEntity()
-
-
-                val future = successFuture(entity)
-                Mockito.`when`(errorCache.get(any())).thenReturn(future as Future<Entity?>)
-
-                val key = UUID.randomUUID().toString()
                 errorCache.get(key).await()
-
-                val errorFuture = failedFuture()
-                Mockito.`when`(errorCache.get(any())).thenReturn(errorFuture as Future<Entity?>)
-                try {
-                    errorCache.get(key).await()
-                    testContext.failNow("不可能到这")
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
-
+                testContext.failNow("不可能到这")
             }catch (t:Throwable){
-                testContext.failNow(t)
+                testContext.verify { Assertions.assertNotNull(t) }
             }
-            testContext.completeNow()
         }
     }
 
 
     @ParameterizedTest
     @MethodSource("parameterCache")
-    fun testClearCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val key = UUID.randomUUID().toString()
+    fun testClearCache(cache:Cache<Entity>,testContext: VertxTestContext){
+        testContext.execute {
+            val key = UUID.randomUUID().toString()
 
 
-                val entity = randomEntity()
-                cache.set(key,entity).await()
+            val entity = randomEntity()
+            cache.set(key,entity).await()
 
-                var getValue = cache.get(key).await()
-                testContext.verify {
-                    Assertions.assertNotNull(getValue)
-                }
-
-                cache.clear().await()
-                getValue = cache.get(key).await()
-                testContext.verify {
-                    Assertions.assertNull(getValue)
-                }
-
-            }catch (t:Throwable){
-                testContext.failNow(t)
+            var getValue = cache.get(key).await()
+            testContext.verify {
+                Assertions.assertNotNull(getValue)
             }
-            testContext.completeNow()
+
+            cache.clear().await()
+            getValue = cache.get(key).await()
+            testContext.verify {
+                Assertions.assertNull(getValue)
+            }
         }
     }
 
     @Test
-    fun testClearCacheError(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testClearCacheError(testContext: VertxTestContext){
+        testContext.execute {
+            val future = successFuture(Unit)
+            Mockito.`when`(errorCache.clear()).thenReturn(future as Future<Unit>)
+
+            errorCache.clear().await()
+
+            val errorFuture = failedFuture()
+            Mockito.`when`(errorCache.clear()).thenReturn(errorFuture as Future<Unit>)
             try {
-
-                val future = successFuture(Unit)
-                Mockito.`when`(errorCache.clear()).thenReturn(future as Future<Unit>)
-
                 errorCache.clear().await()
-
-                val errorFuture = failedFuture()
-                Mockito.`when`(errorCache.clear()).thenReturn(errorFuture as Future<Unit>)
-                try {
-                    errorCache.clear().await()
-                    testContext.failNow("不可能到这")
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
-
+                testContext.failNow("不可能到这")
             }catch (t:Throwable){
-                testContext.failNow(t)
+                testContext.verify { Assertions.assertNotNull(t) }
             }
-            testContext.completeNow()
         }
     }
 
     @ParameterizedTest
     @MethodSource("parameterCache")
-    fun testRemoveCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val key = UUID.randomUUID().toString()
+    fun testRemoveCache(cache:Cache<Entity>,testContext: VertxTestContext){
+        testContext.execute {
+            val key = UUID.randomUUID().toString()
 
-                val anotherKey = UUID.randomUUID().toString()
+            val anotherKey = UUID.randomUUID().toString()
 
-                val entity = randomEntity()
-                cache.set(key,entity).await()
-                cache.set(anotherKey,randomEntity()).await()
+            val entity = randomEntity()
+            cache.set(key,entity).await()
+            cache.set(anotherKey,randomEntity()).await()
 
-                var getValue = cache.get(key).await()
-                testContext.verify {
-                    Assertions.assertNotNull(getValue)
-                }
-
-                cache.remove(key).await()
-                getValue = cache.get(key).await()
-
-                val exist = cache.get(anotherKey).await()
-                testContext.verify {
-                    Assertions.assertNull(getValue)
-                    Assertions.assertNotNull(exist)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+            var getValue = cache.get(key).await()
+            testContext.verify {
+                Assertions.assertNotNull(getValue)
             }
-            testContext.completeNow()
+
+            cache.remove(key).await()
+            getValue = cache.get(key).await()
+
+            val exist = cache.get(anotherKey).await()
+            testContext.verify {
+                Assertions.assertNull(getValue)
+                Assertions.assertNotNull(exist)
+            }
         }
     }
 
     @Test
-    fun testRemoveCacheError(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
+    fun testRemoveCacheError(testContext: VertxTestContext){
+        testContext.execute {
+            val future = successFuture(randomEntity())
+            Mockito.`when`(errorCache.remove(any())).thenReturn(future as Future<Entity?>)
+
+            errorCache.remove(UUID.randomUUID().toString())
+
+            val errorFuture = failedFuture()
+            Mockito.`when`(errorCache.remove(any())).thenReturn(errorFuture as Future<Entity?>)
             try {
-
-                val future = successFuture(randomEntity())
-                Mockito.`when`(errorCache.remove(any())).thenReturn(future as Future<Entity?>)
-
-                errorCache.remove(UUID.randomUUID().toString())
-
-                val errorFuture = failedFuture()
-                Mockito.`when`(errorCache.remove(any())).thenReturn(errorFuture as Future<Entity?>)
-                try {
-                    errorCache.remove(UUID.randomUUID().toString()).await()
-                    testContext.failNow("不可能到这")
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
-
+                errorCache.remove(UUID.randomUUID().toString()).await()
+                testContext.failNow("不可能到这")
             }catch (t:Throwable){
-                testContext.failNow(t)
+                testContext.verify { Assertions.assertNotNull(t) }
             }
-            testContext.completeNow()
         }
     }
 
     @ParameterizedTest
     @MethodSource("parameterCache")
-    fun testNotSomeCache(cache:Cache<Entity>,vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                testContext.verify {
-                    Assertions.assertNotEquals(cache,anotherCache)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+    fun testNotSomeCache(cache:Cache<Entity>,testContext: VertxTestContext){
+        testContext.execute {
+            testContext.verify {
+                Assertions.assertNotEquals(cache,anotherCache)
             }
-            testContext.completeNow()
         }
     }
 

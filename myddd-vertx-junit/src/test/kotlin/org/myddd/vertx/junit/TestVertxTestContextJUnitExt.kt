@@ -9,18 +9,18 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(VertxExtension::class)
+@ExtendWith(VertxExtension::class,IOCInitExtension::class)
 class TestVertxTestContextJUnitExt {
 
     @Test
-    fun testExecute(vertx: Vertx,testContext: VertxTestContext){
+    fun testExecute(testContext: VertxTestContext){
         testContext.execute {
             Assertions.assertThat(1).isEqualTo(1)
         }
     }
 
     @Test
-    fun testThrown(vertx: Vertx,testContext: VertxTestContext){
+    fun testThrown(testContext: VertxTestContext){
         testContext.execute {
             testContext.assertThrow(RuntimeException::class.java){
                 doSomething().await()
@@ -28,7 +28,7 @@ class TestVertxTestContextJUnitExt {
         }
     }
 
-    private suspend fun doSomething():Future<Void>{
+    private fun doSomething():Future<Void>{
         throw RuntimeException("ERROR")
     }
 }

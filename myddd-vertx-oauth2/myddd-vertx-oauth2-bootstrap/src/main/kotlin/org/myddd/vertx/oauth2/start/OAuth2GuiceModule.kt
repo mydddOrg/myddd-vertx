@@ -24,9 +24,8 @@ import org.myddd.vertx.string.RandomIDString
 import org.myddd.vertx.string.RandomIDStringProvider
 import javax.persistence.Persistence
 
-class OAuth2GuiceModule(vertx: Vertx) : AbstractModule() {
+class OAuth2GuiceModule(private val vertx: Vertx) : AbstractModule() {
 
-    private var vertx:Vertx = vertx
 
     override fun configure() {
         bind(Vertx::class.java).toInstance(vertx)

@@ -1,48 +1,17 @@
 package org.myddd.vertx.media.qcloud
 
-import com.google.inject.AbstractModule
-import com.google.inject.Guice
-import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.junit5.VertxExtension
-import io.vertx.junit5.VertxTestContext
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
-import org.myddd.vertx.file.FileDigest
-import org.myddd.vertx.file.FileDigestProvider
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
-import org.myddd.vertx.media.domain.MediaStorage
 import org.myddd.vertx.string.RandomIDString
-import org.myddd.vertx.string.RandomIDStringProvider
 
-@ExtendWith(VertxExtension::class)
+@ExtendWith(VertxExtension::class,IOCInitExtension::class)
 abstract class AbstractTest {
+
     companion object {
-
         val logger by lazy { LoggerFactory.getLogger(AbstractTest::class.java) }
-
         val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll(vertx: Vertx, testContext: VertxTestContext){
-            InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
-                override fun configure() {
-                    bind(Vertx::class.java).toInstance(vertx)
-                    bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
-                    bind(FileDigest::class.java).to(FileDigestProvider::class.java)
-
-                    bind(MediaStorage::class.java).toInstance(QCloudMediaStorage(
-                        secretId = "AKIDXopZ5LR2pa5JHEJ4fz2EAuOcaHgrhkH3",
-                        secretKey = "aNtFPKxIONPAez5uTlxTklZtymIOFrBD",
-                        bucketName = "isv-gateway-test-1258930758"
-                    ))
-                }
-            })))
-            testContext.completeNow()
-        }
     }
-
 
 }
