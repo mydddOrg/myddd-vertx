@@ -1,10 +1,9 @@
 package org.myddd.vertx.domain.mock
 
-import org.myddd.vertx.domain.BaseEntity
+import org.myddd.vertx.domain.BaseAutoIDEntity
 import javax.persistence.Entity
 
 @Entity
-class MockBaseEntity : BaseEntity() {
-
+class MockBaseAutoIDEntity:BaseAutoIDEntity() {
     lateinit var username:String
 }
