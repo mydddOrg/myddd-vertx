@@ -22,7 +22,5 @@ dependencies {
     implementation("commons-codec:commons-codec:1.15")
     //ulid kotlin库
     implementation("com.github.guepardoapps:kulid:2.0.0.0")
-    //reflections类库
-    implementation("org.reflections:reflections:0.10.2")
 
 }
