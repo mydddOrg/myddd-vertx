@@ -27,20 +27,18 @@ extra["kotlin_version"] = "1.6.0"
 extra["vertx_version"] = "4.2.1"
 extra["hibernate_reactive_version"] = "1.1.0.Final"
 
-extra["log4j_version"] = "2.14.1"
+extra["log4j_version"] = "2.15.0"
 extra["jackson_version"] = "2.13.0"
 extra["javax_persistence_version"] = "2.2.1"
-extra["mockito_version"] = "4.0.0"
+extra["mockito_version"] = "4.1.0"
 extra["commons_lang3_version"] = "3.12.0"
-extra["junit5_version"] = "5.8.1"
+extra["junit5_version"] = "5.8.2"
 
 extra["protobuf-java"] = "3.17.3"
 extra["annotation-api"] = "1.3.2"
 extra["assertj-core-version"] = "3.21.0"
 group = "org.myddd.vertx"
 version = projectVersion
-
-
 
 subprojects {
     apply(plugin = "java")
