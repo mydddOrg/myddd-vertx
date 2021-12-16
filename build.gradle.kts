@@ -27,7 +27,7 @@ extra["kotlin_version"] = "1.6.0"
 extra["vertx_version"] = "4.2.1"
 extra["hibernate_reactive_version"] = "1.1.0.Final"
 
-extra["log4j_version"] = "2.15.0"
+extra["log4j_version"] = "2.16.0"
 extra["jackson_version"] = "2.13.0"
 extra["javax_persistence_version"] = "2.2.1"
 extra["mockito_version"] = "4.1.0"
