@@ -13,7 +13,6 @@ dependencies {
     implementation(project(":myddd-vertx-domain"))
     api(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
     implementation(project(":myddd-vertx-ioc:myddd-vertx-ioc-api"))
-
     implementation(project(":myddd-vertx-base:myddd-vertx-base-api"))
 
     api("org.hibernate.reactive:hibernate-reactive-core:${rootProject.extra["hibernate_reactive_version"]}")

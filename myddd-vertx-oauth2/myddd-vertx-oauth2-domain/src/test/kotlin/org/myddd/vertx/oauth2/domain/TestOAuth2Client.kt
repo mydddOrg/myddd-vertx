@@ -74,7 +74,7 @@ class TestOAuth2Client : AbstractTest() {
     }
 
     @Test
-    fun testEnable(vertx: Vertx,testContext: VertxTestContext){
+    fun testEnable(testContext: VertxTestContext){
         testContext.execute {
             val client = createClient()
             val created = client.createClient().await()

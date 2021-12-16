@@ -24,14 +24,9 @@ class TestGrpcBootstrapVerticle:AbstractTest() {
         @BeforeAll
         @JvmStatic
         fun beforeAll(testContext: VertxTestContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                try {
-                    deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
-                    Assertions.assertNotNull(deployId)
-                }catch (t:Throwable){
-                    testContext.failNow(t)
-                }
-                testContext.completeNow()
+            testContext.execute {
+                deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
+                Assertions.assertNotNull(deployId)
             }
         }
 

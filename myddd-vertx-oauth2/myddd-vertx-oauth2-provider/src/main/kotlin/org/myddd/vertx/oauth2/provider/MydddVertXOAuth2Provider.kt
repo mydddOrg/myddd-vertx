@@ -59,7 +59,7 @@ class MydddVertXOAuth2Provider : AbstractOAuth2Auth() {
     }
 
     override fun revoke(user: User?, tokenType: String?, handler: Handler<AsyncResult<Void>>?): OAuth2Auth {
-        check(Objects.nonNull(user) && Objects.nonNull((user as OAuth2UserDTO).clientId) && Objects.nonNull((user as OAuth2UserDTO).tokenDTO)){
+        check(Objects.nonNull(user) && Objects.nonNull((user as OAuth2UserDTO).clientId) && Objects.nonNull(user.tokenDTO)){
             "CLIENT_ID_NULL"
         }
         GlobalScope.launch(vertx.dispatcher()) {

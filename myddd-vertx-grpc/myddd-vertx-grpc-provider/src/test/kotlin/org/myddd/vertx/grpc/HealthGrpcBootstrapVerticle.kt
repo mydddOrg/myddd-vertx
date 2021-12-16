@@ -8,7 +8,7 @@ class HealthGrpcBootstrapVerticle: GrpcBootstrapVerticle() {
 
     override fun services(): List<BindableService> {
         return arrayListOf(
-            InstanceFactory.getInstance(HealthCheckApplication::class.java)
+            HealthCheckApplication()
         )
     }
 }

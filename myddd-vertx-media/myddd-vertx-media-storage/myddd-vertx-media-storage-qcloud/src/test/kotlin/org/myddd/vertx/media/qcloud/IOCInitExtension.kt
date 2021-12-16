@@ -18,7 +18,6 @@ class IOCInitExtension:BeforeAllCallback {
         InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object :
             AbstractModule() {
             override fun configure() {
-                val vertx = Vertx.vertx()
                 bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
                 bind(FileDigest::class.java).to(FileDigestProvider::class.java)
 

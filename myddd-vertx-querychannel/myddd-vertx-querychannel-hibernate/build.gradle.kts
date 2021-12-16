@@ -21,9 +21,6 @@ dependencies {
     testImplementation("javax.inject:javax.inject:1")
     testImplementation("org.eclipse.persistence:javax.persistence:${rootProject.extra["javax_persistence_version"]}")
 
-    implementation("io.smallrye.reactive:mutiny:0.14.0")
-    implementation("com.ibm.async:asyncutil:0.1.0")
-
     testImplementation(project(":myddd-vertx-domain"))
     testImplementation(project(":myddd-vertx-repository:myddd-vertx-repository-api"))
     testImplementation(project(":myddd-vertx-repository:myddd-vertx-repository-hibernate"))

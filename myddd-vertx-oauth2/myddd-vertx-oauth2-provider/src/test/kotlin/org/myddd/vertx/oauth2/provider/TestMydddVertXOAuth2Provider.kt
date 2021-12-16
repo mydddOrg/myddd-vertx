@@ -21,7 +21,7 @@ class TestMydddVertXOAuth2Provider : AbstractTest() {
 
         @BeforeAll
         @JvmStatic
-        fun beforeAll(vertx: Vertx,testContext: VertxTestContext){
+        fun beforeAll(testContext: VertxTestContext){
             oAuth2Auth = MydddVertXOAuth2Provider()
             testContext.completeNow()
         }

@@ -9,7 +9,7 @@ import org.myddd.vertx.oauth2.start.AbstractWebTest
 class TestOAuth2ClientRouter:AbstractWebTest(){
 
     @Test
-    fun emptyTest(vertx: Vertx,testContext: VertxTestContext){
+    fun emptyTest(testContext: VertxTestContext){
         testContext.verify { Assertions.assertEquals(1,1) }
         testContext.completeNow()
     }

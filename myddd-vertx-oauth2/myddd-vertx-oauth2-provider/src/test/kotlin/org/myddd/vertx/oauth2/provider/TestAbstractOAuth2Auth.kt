@@ -18,7 +18,7 @@ class TestAbstractOAuth2Auth {
 
         @BeforeAll
         @JvmStatic
-        fun beforeAll(vertx: Vertx, testContext: VertxTestContext){
+        fun beforeAll(testContext: VertxTestContext){
             oauth2Auth = MydddVertXOAuth2Provider()
             testContext.completeNow()
         }
