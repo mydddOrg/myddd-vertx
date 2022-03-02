@@ -11,15 +11,15 @@
 
         <properties>
 
-            <!-- MySQL -->
+            <!-- Postgres -->
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mariadb://127.0.0.1:3306/test"/>
+                      value="jdbc:postgres://127.0.0.1:5432/lingen"/>
 
             <!-- Credentials -->
             <property name="javax.persistence.jdbc.user"
-                      value="root"/>
+                      value="lingen"/>
             <property name="javax.persistence.jdbc.password"
-                      value="admin1234"/>
+                      value=""/>
 
             <!-- The Vert.x SQL Client connection pool size -->
             <property name="hibernate.connection.pool_size"
@@ -35,7 +35,7 @@
             <property name="hibernate.highlight_sql" value="true"/>
 
         </properties>
-
+:q
     </persistence-unit>
 
 </persistence>

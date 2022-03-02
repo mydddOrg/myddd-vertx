@@ -19,13 +19,13 @@ plugins {
     id("org.sonarqube") version "3.3"
 }
 
-val projectVersion = "1.3.0-SNAPSHOT"
+val projectVersion = "1.3.1-SNAPSHOT"
 
 extra["version"] = projectVersion
 
 extra["kotlin_version"] = "1.6.0"
-extra["vertx_version"] = "4.2.1"
-extra["hibernate_reactive_version"] = "1.1.0.Final"
+extra["vertx_version"] = "4.2.4"
+extra["hibernate_reactive_version"] = "1.1.3.Final"
 
 extra["log4j_version"] = "2.16.0"
 extra["jackson_version"] = "2.13.0"
@@ -37,6 +37,8 @@ extra["junit5_version"] = "5.8.2"
 extra["protobuf-java"] = "3.17.3"
 extra["annotation-api"] = "1.3.2"
 extra["assertj-core-version"] = "3.21.0"
+extra["protoc-gen-version"] = "1.44.1"
+
 group = "org.myddd.vertx"
 version = projectVersion
 

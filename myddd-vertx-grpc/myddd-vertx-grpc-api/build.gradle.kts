@@ -33,7 +33,7 @@ protobuf {
     }
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.39.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:${rootProject.extra["protoc-gen-version"]}"
         }
 
         id("vertx") {
