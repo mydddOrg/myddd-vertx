@@ -3,11 +3,13 @@ package org.myddd.vertx.repository.hibernate
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
+import org.hibernate.UnknownEntityTypeException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.junit.assertExactlyThrow
 import org.myddd.vertx.junit.assertNotThrow
 import org.myddd.vertx.junit.assertThrow
 import org.myddd.vertx.junit.execute
@@ -47,11 +49,8 @@ class TestEntityRepositoryHibernate {
 
 
             val errorUser =  User(username = randomIDString.randomString(64),age = 35)
-            try {
+            testContext.assertThrow(PersistenceException::class.java){
                 repository.save(errorUser).await()
-                testContext.failNow("不可能到这")
-            }catch (t:Throwable){
-                testContext.verify { Assertions.assertNotNull(t) }
             }
         }
     }
@@ -89,14 +88,6 @@ class TestEntityRepositoryHibernate {
             testContext.verify {
                 Assertions.assertEquals(queryUser?.age,36)
             }
-
-
-            val notExistsUser = User(username = randomIDString.randomUUID(),age = 1000)
-            try {
-                repository.save(notExistsUser).await()
-            }catch (t:Throwable){
-                testContext.verify { Assertions.assertNotNull(t) }
-            }
         }
     }
 
@@ -116,11 +107,8 @@ class TestEntityRepositoryHibernate {
                 Assertions.assertFalse(notExistsUser != null)
             }
 
-            try {
+            testContext.assertThrow(PersistenceException::class.java){
                 repository.get(NotExistsEntity::class.java,0).await()
-                testContext.failNow("不可能到这")
-            }catch (t:Throwable){
-                testContext.verify { Assertions.assertNotNull(t) }
             }
         }
     }
@@ -136,11 +124,8 @@ class TestEntityRepositoryHibernate {
                 Assertions.assertTrue(exists)
             }
 
-            try {
+            testContext.assertThrow(PersistenceException::class.java){
                 repository.exists(NotExistsEntity::class.java,0).await()
-                testContext.failNow("不可能到这")
-            }catch (t:Throwable){
-                testContext.verify { Assertions.assertNotNull(t) }
             }
         }
     }
@@ -160,12 +145,9 @@ class TestEntityRepositoryHibernate {
                 Assertions.assertTrue(success)
             }
 
-            try {
-                val errorEntities = arrayOf(NotExistsEntity())
+            val errorEntities = arrayOf(NotExistsEntity())
+            testContext.assertThrow(PersistenceException::class.java){
                 repository.batchSave(errorEntities).await()
-                testContext.failNow("不可能到这")
-            }catch (t:Throwable){
-                testContext.verify { Assertions.assertNotNull(t) }
             }
         }
     }
@@ -187,11 +169,8 @@ class TestEntityRepositoryHibernate {
                 Assertions.assertFalse(exists)
             }
 
-            try {
+            testContext.assertThrow(PersistenceException::class.java){
                 repository.delete(NotExistsEntity::class.java,0).await()
-                testContext.failNow("不可能到这")
-            }catch (t:Throwable){
-                testContext.verify { Assertions.assertNotNull(t) }
             }
         }
     }
@@ -218,11 +197,8 @@ class TestEntityRepositoryHibernate {
                 Assertions.assertTrue(list.isEmpty())
             }
 
-            try {
+            testContext.assertThrow(PersistenceException::class.java){
                 repository.listQuery(NotExistsEntity::class.java,"from NotExistsEntity where username = :username",).await()
-                testContext.failNow("不可能到这")
-            }catch (t:Throwable){
-                testContext.verify { Assertions.assertNotNull(t) }
             }
         }
     }
@@ -244,11 +220,8 @@ class TestEntityRepositoryHibernate {
                 Assertions.assertNull(query)
             }
 
-            try {
+            testContext.assertThrow(PersistenceException::class.java){
                 repository.singleQuery(NotExistsEntity::class.java,"from NotExistsEntity where username = :username",).await()
-                testContext.failNow("不可能到这")
-            }catch (t:Throwable){
-                testContext.verify { Assertions.assertNotNull(t) }
             }
         }
     }
@@ -284,11 +257,9 @@ class TestEntityRepositoryHibernate {
                 Assertions.assertEquals(queryUser!!.age,40)
             }
 
-            try {
+
+            testContext.assertThrow(Exception::class.java){
                 repository.executeUpdate("update NotExistsEntity set age = :age", mapOf("age" to 40)).await()
-                testContext.failNow("不可能到这")
-            }catch (t:Throwable){
-                testContext.verify { Assertions.assertNotNull(t) }
             }
         }
     }

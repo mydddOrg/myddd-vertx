@@ -26,6 +26,16 @@ suspend fun <T:Throwable> VertxTestContext.assertThrow(clazz: Class<T>,execution
         execution()
     }catch (t:Throwable){
         this.verify {
+            Assertions.assertThat(t).isInstanceOf(clazz)
+        }
+    }
+}
+
+suspend fun <T:Throwable> VertxTestContext.assertExactlyThrow(clazz: Class<T>,execution:suspend () -> Unit){
+    try {
+        execution()
+    }catch (t:Throwable){
+        this.verify {
             Assertions.assertThat(t).isExactlyInstanceOf(clazz)
         }
     }
