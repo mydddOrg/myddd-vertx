@@ -19,7 +19,7 @@ plugins {
     id("org.sonarqube") version "3.3"
 }
 
-val projectVersion = "1.3.1-SNAPSHOT"
+val projectVersion = "1.3.2-SNAPSHOT"
 
 extra["version"] = projectVersion
 
