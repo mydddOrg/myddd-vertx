@@ -39,6 +39,8 @@ extra["annotation-api"] = "1.3.2"
 extra["assertj-core-version"] = "3.21.0"
 extra["protoc-gen-version"] = "1.44.1"
 
+extra["mutiny-version"] = "1.4.0"
+
 group = "org.myddd.vertx"
 version = projectVersion
 

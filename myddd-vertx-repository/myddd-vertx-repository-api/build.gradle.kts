@@ -10,5 +10,6 @@ extra["publishJar"] = true
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(project(":myddd-vertx-domain"))
+    api(project(":myddd-vertx-domain"))
+    implementation("io.smallrye.reactive:mutiny:${rootProject.extra["mutiny-version"]}")
 }
