@@ -7,6 +7,10 @@ import java.io.Serializable
 
 interface EntityRepositoryUni {
 
+    fun <T : Entity> persist(sessionObject: SessionObject,entity: T): Uni<T>
+
+    fun <T : Entity> merge(sessionObject: SessionObject,entity: T): Uni<T>
+
     fun <T : Entity> save(sessionObject: SessionObject,entity: T): Uni<T>
 
     fun <T : Entity> exists(sessionObject: SessionObject,clazz: Class<T>, id: Serializable): Uni<Boolean>

@@ -120,6 +120,21 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
 
     //======= EntityRepositoryUni的实现
 
+    override fun <T : Entity> persist(sessionObject: SessionObject,entity: T): Uni<T> {
+        return (sessionObject as MutinySessionObject).execute { session ->
+            entity.created = System.currentTimeMillis()
+            session.persist(entity).map { entity }
+        }
+    }
+
+    override fun <T : Entity> merge(sessionObject: SessionObject,entity: T): Uni<T> {
+        return (sessionObject as MutinySessionObject).execute { session ->
+            entity.updated = System.currentTimeMillis()
+            session.merge(entity)
+                .map { entity }
+        }
+    }
+
     override fun <T : Entity> save(sessionObject: SessionObject,entity: T): Uni<T> {
         return (sessionObject as MutinySessionObject).execute { session ->
             session.find(entity::class.java, entity.getId())
@@ -200,6 +215,7 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
         val promise = PromiseImpl<T>()
         sessionFactory.withTransaction { session, _ ->
             work.apply(MutinySessionObject.wrapper(session))
+                .invoke { _ -> session.clear() }
         }.subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
         return promise.future()
     }

@@ -36,6 +36,7 @@ object EntityRepositoryTransaction {
         val sessionFactory = getSessionFactory(null)
         sessionFactory.withTransaction { session, _ ->
             work.apply(MutinySessionObject.wrapper(session))
+                .call { _ -> session.flush() }
         }.subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
         return promise.future()
     }
@@ -45,6 +46,7 @@ object EntityRepositoryTransaction {
         val sessionFactory = getSessionFactory(dataSource)
         sessionFactory.withTransaction { session, _ ->
             work.apply(MutinySessionObject.wrapper(session))
+                .call { _ -> session.flush() }
         }.subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
         return promise.future()
     }
