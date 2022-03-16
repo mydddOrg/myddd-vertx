@@ -25,4 +25,6 @@ interface EntityRepositoryUni {
 
     fun executeUpdate(sessionObject: SessionObject,sql:String,params:Map<String,Any> = HashMap()):Uni<Int>
 
+    fun <T> withTransaction(work: java.util.function.Function<SessionObject, Uni<T>>): Future<T>
+
 }

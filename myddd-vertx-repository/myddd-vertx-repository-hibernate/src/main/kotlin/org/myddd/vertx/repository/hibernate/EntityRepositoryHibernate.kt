@@ -12,6 +12,7 @@ import org.myddd.vertx.repository.api.EntityRepositoryUni
 import org.myddd.vertx.repository.api.SessionObject
 import java.io.Serializable
 import java.util.*
+import java.util.function.Function
 
 open class EntityRepositoryHibernate(private val dataSource: String? = null) : EntityRepository,EntityRepositoryUni {
 
@@ -193,6 +194,14 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
             params.forEach { (key, value) -> query.setParameter(key, value) }
             query.executeUpdate()
         }
+    }
+
+    override fun <T> withTransaction(work: Function<SessionObject, Uni<T>>): Future<T> {
+        val promise = PromiseImpl<T>()
+        sessionFactory.withTransaction { session, _ ->
+            work.apply(MutinySessionObject.wrapper(session))
+        }.subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
+        return promise.future()
     }
 
 

@@ -1,9 +1,11 @@
 package org.myddd.vertx.repository.hibernate
 
+import io.smallrye.mutiny.Uni
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -13,6 +15,7 @@ import org.myddd.vertx.junit.assertThrow
 import org.myddd.vertx.junit.execute
 import org.myddd.vertx.repository.api.EntityRepository
 import org.myddd.vertx.repository.api.EntityRepositoryUni
+import org.myddd.vertx.repository.api.SessionObject
 import org.myddd.vertx.repository.hibernate.EntityRepositoryTransaction.withTransaction
 import org.myddd.vertx.string.RandomIDString
 import java.util.*
@@ -262,6 +265,11 @@ class TestEntityRepositoryUni {
                 withTransaction {repository.executeUpdate(it,"update NotExistsEntity set age = :age", mapOf("age" to 40)) }.await()
             }
         }
+    }
+
+    private fun createUser(sessionObject: SessionObject,repository: EntityRepositoryUni):Uni<User>{
+        val user =  randomUser()
+        return repository.save(sessionObject,user)
     }
 
 
