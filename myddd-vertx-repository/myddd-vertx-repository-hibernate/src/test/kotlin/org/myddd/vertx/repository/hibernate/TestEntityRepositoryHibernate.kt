@@ -221,7 +221,7 @@ class TestEntityRepositoryHibernate {
             }
 
             testContext.assertThrow(PersistenceException::class.java){
-                repository.singleQuery(NotExistsEntity::class.java,"from NotExistsEntity where username = :username",).await()
+                repository.singleQuery(NotExistsEntity::class.java,"from NotExistsEntity where username = :username").await()
             }
         }
     }

@@ -5,7 +5,6 @@ import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -13,7 +12,6 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.assertNotThrow
 import org.myddd.vertx.junit.assertThrow
 import org.myddd.vertx.junit.execute
-import org.myddd.vertx.repository.api.EntityRepository
 import org.myddd.vertx.repository.api.EntityRepositoryUni
 import org.myddd.vertx.repository.api.SessionObject
 import org.myddd.vertx.repository.hibernate.EntityRepositoryTransaction.withTransaction
@@ -31,7 +29,7 @@ class TestEntityRepositoryUni {
     companion object {
 
         @JvmStatic
-        fun parametersRepository(): Stream<EntityRepositoryUni> {
+        fun parametersRepository(): Stream<EntityRepositoryHibernate> {
             return Stream.of(
                 EntityRepositoryHibernate()
             )
@@ -90,20 +88,27 @@ class TestEntityRepositoryUni {
 
     @ParameterizedTest
     @MethodSource("parametersRepository")
-    fun testUpdate(repository:EntityRepositoryUni,testContext: VertxTestContext){
+    fun testUpdate(repository:EntityRepositoryHibernate,testContext: VertxTestContext){
         testContext.execute {
             val user =  randomUser()
-            val createdUser = withTransaction { repository.save(it,user) }.await()
+            val createdUser = withTransaction { repository.persist(it,user) }.await()
 
-            createdUser.age = 36
+            val queryUser = repository.get(User::class.java,createdUser.id).await()
+            testContext.verify {
+                Assertions.assertNotNull(queryUser)
+            }
 
-            withTransaction { repository.save(it,createdUser) }.await()
-
-            val queryUser = withTransaction { repository.get(it,User::class.java,createdUser.id) }.await()
+            val updatedUser = repository.withTransaction {
+                repository.get(it,User::class.java,createdUser.id).chain { user ->
+                    user!!.age = 37
+                    repository.merge(it,user)
+                }
+            }.await()
 
             testContext.verify {
-                Assertions.assertEquals(queryUser?.age,36)
+                Assertions.assertEquals(37,updatedUser.age)
             }
+
         }
     }
 

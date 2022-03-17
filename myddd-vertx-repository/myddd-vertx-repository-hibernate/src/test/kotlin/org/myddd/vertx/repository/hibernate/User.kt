@@ -1,6 +1,7 @@
 package org.myddd.vertx.repository.hibernate
 
 import org.myddd.vertx.domain.BaseEntity
+import java.util.Objects
 import javax.persistence.*
 
 @Entity
@@ -19,6 +20,15 @@ class User(): BaseEntity() {
     constructor(username:String,age:Int) : this() {
         this.username = username
         this.age = age
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if(other !is User)return false
+        return Objects.equals(getId(),other.getId())
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hashCode(getId())
     }
 
 }

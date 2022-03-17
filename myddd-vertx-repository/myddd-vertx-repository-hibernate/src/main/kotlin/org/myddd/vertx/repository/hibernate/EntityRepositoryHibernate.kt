@@ -121,21 +121,24 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
     //======= EntityRepositoryUni的实现
 
     override fun <T : Entity> persist(sessionObject: SessionObject,entity: T): Uni<T> {
+        println("PERSIST:${entity.javaClass.name},${entity.getId()}")
+
         return (sessionObject as MutinySessionObject).execute { session ->
             entity.created = System.currentTimeMillis()
-            session.persist(entity).map { entity }
+            session.persist(entity).chain { it -> session.find(entity::class.java,entity.getId()) }
         }
     }
 
     override fun <T : Entity> merge(sessionObject: SessionObject,entity: T): Uni<T> {
+        println("MERGE:${entity.javaClass.name},${entity.getId()}")
         return (sessionObject as MutinySessionObject).execute { session ->
             entity.updated = System.currentTimeMillis()
-            session.merge(entity)
-                .map { entity }
+            session.merge(entity).chain { it -> session.find(entity::class.java,it.getId()) }
         }
     }
 
     override fun <T : Entity> save(sessionObject: SessionObject,entity: T): Uni<T> {
+        println("SAVE:${entity.javaClass.name},${entity.getId()}")
         return (sessionObject as MutinySessionObject).execute { session ->
             session.find(entity::class.java, entity.getId())
                 .chain { t ->
@@ -215,8 +218,9 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
         val promise = PromiseImpl<T>()
         sessionFactory.withTransaction { session, _ ->
             work.apply(MutinySessionObject.wrapper(session))
-                .invoke { _ -> session.clear() }
-        }.subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
+                .invoke { it -> promise.onSuccess(it) }
+        }.await().indefinitely()
+//        subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
         return promise.future()
     }
 

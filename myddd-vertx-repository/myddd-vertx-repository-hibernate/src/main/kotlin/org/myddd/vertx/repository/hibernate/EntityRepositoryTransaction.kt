@@ -4,9 +4,6 @@ import io.smallrye.mutiny.Uni
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.impl.future.PromiseImpl
-import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.hibernate.reactive.mutiny.Mutiny.SessionFactory
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.SessionObject
