@@ -2,11 +2,9 @@ package org.myddd.vertx.repository.hibernate
 
 import io.smallrye.mutiny.Uni
 import io.vertx.core.Future
-import io.vertx.core.Vertx
 import io.vertx.core.impl.future.PromiseImpl
 import org.hibernate.reactive.mutiny.Mutiny.SessionFactory
 import org.myddd.vertx.ioc.InstanceFactory
-import org.myddd.vertx.repository.api.SessionObject
 
 object EntityRepositoryTransaction {
 

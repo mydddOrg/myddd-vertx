@@ -18,4 +18,8 @@ object SessionThreadLocal {
         return session
     }
 
+    fun remote(){
+        threadLocalSession.remove()
+    }
+
 }
