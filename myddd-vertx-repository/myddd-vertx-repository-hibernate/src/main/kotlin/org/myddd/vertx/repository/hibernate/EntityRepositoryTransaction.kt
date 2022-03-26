@@ -14,8 +14,6 @@ object EntityRepositoryTransaction {
         InstanceFactory.getInstance(SessionFactory::class.java)
     }
 
-    private val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
-
     private val sessionFactoryMap:MutableMap<String,SessionFactory> = mutableMapOf()
 
     private fun getSessionFactory(dataSource: String? = null): SessionFactory{
@@ -28,23 +26,13 @@ object EntityRepositoryTransaction {
         }
     }
 
-    fun <T> withTransaction(work: java.util.function.Function<SessionObject, Uni<T>>): Future<T> {
+    fun <T> withTransaction(execution: () -> Uni<T>): Future<T> {
         val promise = PromiseImpl<T>()
-        val sessionFactory = getSessionFactory(null)
-        sessionFactory.withTransaction { session, _ ->
-            work.apply(MutinySessionObject.wrapper(session))
-                .call { _ -> session.flush() }
-        }.subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
-        return promise.future()
-    }
-
-    fun <T> withTransaction(dataSource: String,work: java.util.function.Function<SessionObject, Uni<T>>): Future<T> {
-        val promise = PromiseImpl<T>()
-        val sessionFactory = getSessionFactory(dataSource)
-        sessionFactory.withTransaction { session, _ ->
-            work.apply(MutinySessionObject.wrapper(session))
-                .call { _ -> session.flush() }
-        }.subscribe().with({ promise.onSuccess(it) },{ promise.fail(it) })
+        getSessionFactory().withTransaction { session, _ ->
+            SessionThreadLocal.set(session)
+            execution()
+                .invoke { it -> promise.onSuccess(it) }
+        }.await().indefinitely()
         return promise.future()
     }
 }

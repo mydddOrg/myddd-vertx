@@ -7,28 +7,28 @@ import java.io.Serializable
 
 interface EntityRepositoryUni {
 
-    fun <T : Entity> persist(sessionObject: SessionObject,entity: T): Uni<T>
+    fun <T : Entity> persist(entity: T): Uni<T>
 
-    fun <T : Entity> merge(sessionObject: SessionObject,entity: T): Uni<T>
+    fun <T : Entity> merge(entity: T): Uni<T>
 
-    fun <T : Entity> save(sessionObject: SessionObject,entity: T): Uni<T>
+    fun <T : Entity> save(entity: T): Uni<T>
 
-    fun <T : Entity> exists(sessionObject: SessionObject,clazz: Class<T>, id: Serializable): Uni<Boolean>
+    fun <T : Entity> exists(clazz: Class<T>, id: Serializable): Uni<Boolean>
 
-    fun <T : Entity> remove(sessionObject: SessionObject,entity:T):Uni<Unit>
+    fun <T : Entity> remove(entity:T):Uni<Unit>
 
-    fun <T : Entity> get(sessionObject: SessionObject,clazz: Class<T>, id: Serializable): Uni<T?>
+    fun <T : Entity> get(clazz: Class<T>, id: Serializable): Uni<T?>
 
-    fun <T : Entity> batchSave(sessionObject: SessionObject,entityList:Array<T>): Uni<Boolean>
+    fun <T : Entity> batchSave(entityList:Array<T>): Uni<Boolean>
 
-    fun <T : Entity> delete(sessionObject: SessionObject,clazz: Class<T>?, id: Serializable?): Uni<Boolean>
+    fun <T : Entity> delete(clazz: Class<T>?, id: Serializable?): Uni<Boolean>
 
-    fun <T> singleQuery(sessionObject: SessionObject,clazz: Class<T>?,sql:String,params:Map<String,Any> = HashMap()):Uni<T?>
+    fun <T> singleQuery(clazz: Class<T>?,sql:String,params:Map<String,Any> = HashMap()):Uni<T?>
 
-    fun <T> listQuery(sessionObject: SessionObject,clazz: Class<T>?,sql:String,params:Map<String,Any> = HashMap()):Uni<List<T>>
+    fun <T> listQuery(clazz: Class<T>?,sql:String,params:Map<String,Any> = HashMap()):Uni<List<T>>
 
-    fun executeUpdate(sessionObject: SessionObject,sql:String,params:Map<String,Any> = HashMap()):Uni<Int>
+    fun executeUpdate(sql:String,params:Map<String,Any> = HashMap()):Uni<Int>
 
-    fun <T> withTransaction(work: java.util.function.Function<SessionObject, Uni<T>>): Future<T>
+    fun <T> withTransaction(execution: () -> Uni<T>): Future<T>
 
 }

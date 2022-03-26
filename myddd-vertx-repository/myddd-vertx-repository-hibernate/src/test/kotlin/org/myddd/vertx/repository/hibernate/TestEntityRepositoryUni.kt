@@ -13,7 +13,6 @@ import org.myddd.vertx.junit.assertNotThrow
 import org.myddd.vertx.junit.assertThrow
 import org.myddd.vertx.junit.execute
 import org.myddd.vertx.repository.api.EntityRepositoryUni
-import org.myddd.vertx.repository.api.SessionObject
 import org.myddd.vertx.repository.hibernate.EntityRepositoryTransaction.withTransaction
 import org.myddd.vertx.string.RandomIDString
 import java.util.*
@@ -29,9 +28,9 @@ class TestEntityRepositoryUni {
     companion object {
 
         @JvmStatic
-        fun parametersRepository(): Stream<EntityRepositoryHibernate> {
+        fun parametersRepository(): Stream<EntityRepositoryUni> {
             return Stream.of(
-                EntityRepositoryHibernate()
+                EntityRepositoryHibernateUni()
             )
         }
 
@@ -41,27 +40,26 @@ class TestEntityRepositoryUni {
     @MethodSource("parametersRepository")
     fun testAdd(repository: EntityRepositoryUni, testContext: VertxTestContext){
         testContext.execute {
-            val user =  randomUser()
-            val created = withTransaction {
-                repository.save(it,user)
-            }.await()
-
-            testContext.verify {
-                Assertions.assertTrue(created.id > 0)
-            }
-
-            created.age = 36
 
             withTransaction {
-                repository.save(it,created)
-            }.await()
+                val createdUserUni = createRandomUser(repository)
+                val nextUni = createdUserUni.invoke { created ->
+                    testContext.verify {
+                        Assertions.assertTrue(created.id > 0)
+                    }
+                }
 
-            val errorUser =  User(username = randomIDString.randomString(64),age = 35)
+                nextUni.chain {created ->
+                    created.age = 36
+                    repository.save(created)
+                }
+            }.await()
 
             testContext.assertThrow(PersistenceException::class.java){
                 withTransaction {
-                    repository.save(it,errorUser)
-                }.await()
+                    val errorUser =  User(username = randomIDString.randomString(64),age = 35)
+                    repository.save(errorUser)
+                }
             }
         }
     }
@@ -72,36 +70,36 @@ class TestEntityRepositoryUni {
         testContext.execute {
 
             testContext.assertThrow(PersistenceException::class.java){
-                withTransaction { repository.remove(it,User()) }.await()
+                withTransaction { repository.remove(User()) }.await()
             }
 
             val user =  randomUser()
             val created = withTransaction {
-                repository.save(it,user)
+                repository.save(user)
             }.await()
 
             testContext.assertNotThrow{
-                withTransaction { repository.delete(it,User::class.java,created.id) }.await()
+                withTransaction { repository.delete(User::class.java,created.id) }.await()
             }
         }
     }
 
     @ParameterizedTest
     @MethodSource("parametersRepository")
-    fun testUpdate(repository:EntityRepositoryHibernate,testContext: VertxTestContext){
+    fun testUpdate(repository:EntityRepositoryUni,testContext: VertxTestContext){
         testContext.execute {
             val user =  randomUser()
-            val createdUser = withTransaction { repository.persist(it,user) }.await()
+            val createdUser = withTransaction { repository.persist(user) }.await()
 
-            val queryUser = repository.get(User::class.java,createdUser.id).await()
+            val queryUser = withTransaction{ repository.get(User::class.java,createdUser.id) }.await()
             testContext.verify {
                 Assertions.assertNotNull(queryUser)
             }
 
-            val updatedUser = repository.withTransaction {
-                repository.get(it,User::class.java,createdUser.id).chain { user ->
+            val updatedUser = withTransaction {
+                repository.get(User::class.java,createdUser.id).chain { user ->
                     user!!.age = 37
-                    repository.merge(it,user)
+                    repository.merge(user)
                 }
             }.await()
 
@@ -118,15 +116,15 @@ class TestEntityRepositoryUni {
 
         testContext.execute {
             val user =  randomUser()
-            val createdUser = withTransaction { repository.save(it,user) }.await()
-            val queryUser = withTransaction { repository.get(it,User::class.java,createdUser.id)}.await()
+            val createdUser = withTransaction { repository.save(user) }.await()
+            val queryUser = withTransaction { repository.get(User::class.java,createdUser.id)}.await()
             if(queryUser == null)testContext.failed()
-            val notExistsUser = withTransaction {repository.get(it,User::class.java,Long.MAX_VALUE)}.await()
+            val notExistsUser = withTransaction {repository.get(User::class.java,Long.MAX_VALUE)}.await()
             testContext.verify {
                 Assertions.assertFalse(notExistsUser != null)
             }
             testContext.assertThrow(PersistenceException::class.java){
-                withTransaction { repository.get(it,NotExistsEntity::class.java,0) }.await()
+                withTransaction { repository.get(NotExistsEntity::class.java,0) }.await()
             }
         }
     }
@@ -136,14 +134,14 @@ class TestEntityRepositoryUni {
     fun testExists(repository: EntityRepositoryUni, testContext: VertxTestContext){
         testContext.execute {
             val user =  randomUser()
-            val createdUser = withTransaction { repository.save(it,user) }.await()
-            val exists = withTransaction { repository.exists(it,User::class.java,createdUser.id) }.await()
+            val createdUser = withTransaction { repository.save(user) }.await()
+            val exists = withTransaction { repository.exists(User::class.java,createdUser.id) }.await()
             testContext.verify {
                 Assertions.assertTrue(exists)
             }
 
             testContext.assertThrow(PersistenceException::class.java){
-                withTransaction {repository.exists(it,NotExistsEntity::class.java,0)}.await()
+                withTransaction {repository.exists(NotExistsEntity::class.java,0)}.await()
             }
         }
     }
@@ -158,7 +156,7 @@ class TestEntityRepositoryUni {
             }
 
             val userArray:Array<User> = users.toTypedArray()
-            val success = withTransaction { repository.batchSave(it,userArray) }.await()
+            val success = withTransaction { repository.batchSave(userArray) }.await()
             testContext.verify {
                 Assertions.assertTrue(success)
             }
@@ -166,7 +164,7 @@ class TestEntityRepositoryUni {
             val errorEntities = arrayOf(NotExistsEntity())
 
             testContext.assertThrow(PersistenceException::class.java){
-                withTransaction {repository.batchSave(it,errorEntities)}.await()
+                withTransaction {repository.batchSave(errorEntities)}.await()
             }
         }
     }
@@ -175,23 +173,23 @@ class TestEntityRepositoryUni {
     @MethodSource("parametersRepository")
     fun testDelete(repository:EntityRepositoryUni,testContext: VertxTestContext){
         testContext.execute {
-            withTransaction {repository.delete(it,User::class.java,Long.MAX_VALUE)}.await()
+            withTransaction {repository.delete(User::class.java,Long.MAX_VALUE)}.await()
 
             val user =  randomUser()
-            val createdUser = withTransaction {repository.save(it,user) }.await()
+            val createdUser = withTransaction {repository.save(user) }.await()
 
-            var exists = withTransaction { repository.exists(it,User::class.java,createdUser.id) }.await()
+            var exists = withTransaction { repository.exists(User::class.java,createdUser.id) }.await()
             testContext.verify { Assertions.assertTrue(exists) }
 
-            withTransaction {repository.delete(it,User::class.java,createdUser.id) }.await()
+            withTransaction {repository.delete(User::class.java,createdUser.id) }.await()
 
-            exists = withTransaction { repository.exists(it,User::class.java,createdUser.id) }.await()
+            exists = withTransaction { repository.exists(User::class.java,createdUser.id) }.await()
             testContext.verify {
                 Assertions.assertFalse(exists)
             }
 
             testContext.assertThrow(PersistenceException::class.java){
-                withTransaction {repository.delete(it,NotExistsEntity::class.java,0)}.await()
+                withTransaction {repository.delete(NotExistsEntity::class.java,0)}.await()
             }
         }
     }
@@ -201,25 +199,25 @@ class TestEntityRepositoryUni {
     fun testQueryList(repository:EntityRepositoryUni,testContext: VertxTestContext){
         testContext.execute {
             val user =  randomUser()
-            withTransaction { repository.save(it,user) }.await()
+            withTransaction { repository.save(user) }.await()
 
-            var list = withTransaction { repository.listQuery(it,User::class.java,"from User") }.await()
+            var list = withTransaction { repository.listQuery(User::class.java,"from User") }.await()
             testContext.verify {
                 Assertions.assertTrue(list.isNotEmpty())
             }
 
-            list = withTransaction { repository.listQuery(it,User::class.java,"from User where username = :username", mapOf("username" to user.username)) }.await()
+            list = withTransaction { repository.listQuery(User::class.java,"from User where username = :username", mapOf("username" to user.username)) }.await()
             testContext.verify {
                 Assertions.assertTrue(list.isNotEmpty())
             }
 
-            list = withTransaction { repository.listQuery(it,User::class.java,"from User where username = :username", mapOf("username" to UUID.randomUUID().toString())) }.await()
+            list = withTransaction { repository.listQuery(User::class.java,"from User where username = :username", mapOf("username" to UUID.randomUUID().toString())) }.await()
             testContext.verify {
                 Assertions.assertTrue(list.isEmpty())
             }
 
             testContext.assertThrow(PersistenceException::class.java){
-                withTransaction {repository.listQuery(it,NotExistsEntity::class.java,"from NotExistsEntity where username = :username")}.await()
+                withTransaction {repository.listQuery(NotExistsEntity::class.java,"from NotExistsEntity where username = :username")}.await()
             }
         }
     }
@@ -229,21 +227,22 @@ class TestEntityRepositoryUni {
     fun testSingleQuery(repository:EntityRepositoryUni,testContext: VertxTestContext){
         testContext.execute {
             val user =  randomUser()
-            withTransaction { repository.save(it,user) }.await()
+            withTransaction {
+                repository.save(user).chain { _ ->
+                    repository.singleQuery(User::class.java,"from User where username = :username", mapOf("username" to user.username)).invoke { query ->
+                        testContext.verify {
+                            Assertions.assertNotNull(query)
+                        }
+                    }.chain { _ ->
+                        repository.singleQuery(User::class.java,"from User where username = :username", mapOf("username" to UUID.randomUUID().toString())).invoke { query ->
+                            testContext.verify {
+                                Assertions.assertNull(query)
+                            }
+                        }
+                    }
 
-            var query = withTransaction { repository.singleQuery(it,User::class.java,"from User where username = :username", mapOf("username" to user.username)) }.await()
-            testContext.verify {
-                Assertions.assertNotNull(query)
-            }
-
-            query = withTransaction { repository.singleQuery(it,User::class.java,"from User where username = :username", mapOf("username" to UUID.randomUUID().toString())) }.await()
-            testContext.verify {
-                Assertions.assertNull(query)
-            }
-
-            testContext.assertThrow(PersistenceException::class.java){
-                withTransaction { repository.singleQuery(it,NotExistsEntity::class.java,"from NotExistsEntity where username = :username") }.await()
-            }
+                }
+            }.await()
         }
     }
 
@@ -252,14 +251,14 @@ class TestEntityRepositoryUni {
     fun testExecuteUpdate(repository:EntityRepositoryUni,testContext: VertxTestContext){
         testContext.execute {
             val user =  randomUser()
-            withTransaction{repository.save(it,user)}.await()
+            withTransaction{repository.save(user)}.await()
 
-            val updated = withTransaction { repository.executeUpdate(it,"update User set age = :age", mapOf("age" to 40)) }.await()
+            val updated = withTransaction { repository.executeUpdate("update User set age = :age", mapOf("age" to 40)) }.await()
             testContext.verify {
                 Assertions.assertTrue(updated > 0L)
             }
 
-            val queryUser = withTransaction { repository.singleQuery(it,User::class.java,"from User where username = :username", mapOf("username" to user.username)) }.await()
+            val queryUser = withTransaction { repository.singleQuery(User::class.java,"from User where username = :username", mapOf("username" to user.username)) }.await()
             testContext.verify {
                 Assertions.assertNotNull(queryUser)
                 Assertions.assertEquals(queryUser!!.age,40)
@@ -267,19 +266,18 @@ class TestEntityRepositoryUni {
 
 
             testContext.assertThrow(Exception::class.java){
-                withTransaction {repository.executeUpdate(it,"update NotExistsEntity set age = :age", mapOf("age" to 40)) }.await()
+                withTransaction {repository.executeUpdate("update NotExistsEntity set age = :age", mapOf("age" to 40)) }.await()
             }
         }
-    }
-
-    private fun createUser(sessionObject: SessionObject,repository: EntityRepositoryUni):Uni<User>{
-        val user =  randomUser()
-        return repository.save(sessionObject,user)
     }
 
 
     private fun randomUser():User {
         return User(username = randomIDString.randomString(),age = Random.nextInt(10,50))
+    }
+
+    private fun createRandomUser(repository: EntityRepositoryUni):Uni<User> {
+        return repository.persist(randomUser())
     }
 
 }
