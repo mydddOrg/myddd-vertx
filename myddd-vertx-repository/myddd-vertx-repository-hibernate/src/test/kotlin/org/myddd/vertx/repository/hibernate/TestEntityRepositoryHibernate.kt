@@ -187,7 +187,7 @@ class TestEntityRepositoryHibernate {
                 Assertions.assertTrue(list.isNotEmpty())
             }
 
-            list = repository.listQuery(User::class.java,"from User where username = :username", mapOf("username" to user.username)).await()
+             list = repository.listQuery(User::class.java,"from User where username = :username", mapOf("username" to user.username)).await()
             testContext.verify {
                 Assertions.assertTrue(list.isNotEmpty())
             }

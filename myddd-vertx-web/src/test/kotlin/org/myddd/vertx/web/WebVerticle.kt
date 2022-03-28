@@ -12,7 +12,7 @@ class WebVerticle(port:Int = 8080) : BootstrapVerticle(port = port) {
 
     override fun routers(vertx: Vertx, router: Router): () -> Unit {
         return  {
-            UserRouter(vertx,router)
+            UserRouter(vertx,router,this)
         }
     }
 }

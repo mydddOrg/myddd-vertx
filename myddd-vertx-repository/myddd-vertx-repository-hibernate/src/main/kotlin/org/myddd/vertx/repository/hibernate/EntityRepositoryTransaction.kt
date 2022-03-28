@@ -29,8 +29,7 @@ object EntityRepositoryTransaction {
         getSessionFactory().withTransaction { session, _ ->
             SessionThreadLocal.set(session)
             execution()
-                .invoke { it -> promise.onSuccess(it) }
-        }.await().indefinitely()
+        }.subscribe().with({ promise.onSuccess(it)},{ promise.fail(it)})
         return promise.future()
     }
 }

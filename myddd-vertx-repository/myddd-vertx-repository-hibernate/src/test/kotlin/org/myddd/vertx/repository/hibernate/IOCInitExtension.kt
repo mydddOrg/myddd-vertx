@@ -18,7 +18,9 @@ class IOCInitExtension:BeforeAllCallback {
     override fun beforeAll(context: ExtensionContext?) {
         InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
             override fun configure() {
-                bind(Vertx::class.java).toInstance(Vertx.vertx())
+                val vertx = Vertx.vertx()
+                bind(Vertx::class.java).toInstance(vertx)
+                MydddServiceContributor.vertx = vertx
                 bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
                 bind(Mutiny.SessionFactory::class.java).toInstance(
                     Persistence.createEntityManagerFactory("default")

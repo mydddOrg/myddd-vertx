@@ -106,7 +106,7 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
     fun <T> inTransaction(execution: (session: Session) -> Uni<T>): Future<T> {
         val promise = PromiseImpl<T>()
         sessionFactory.withTransaction { session, _ ->
-            execution(session).call { _ -> session.flush() }.eventually { session.close() }
+            execution(session).call { _ -> session.flush() }
         }.subscribe().with({ promise.onSuccess(it)},{ promise.fail(it)})
         return promise.future()
     }
@@ -115,7 +115,7 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
         val promise = PromiseImpl<T>()
 
         sessionFactory.withSession{ session ->
-            execution(session).invoke { it -> promise.onSuccess(it) }.eventually { session.close() }
+            execution(session)
         }.subscribe().with({ promise.onSuccess(it)},{ promise.fail(it)})
         return promise.future()
     }
@@ -201,10 +201,7 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
         sessionFactory.withTransaction { session, _ ->
             SessionThreadLocal.set(session)
             execution()
-                .invoke { it -> promise.onSuccess(it) }.eventually {
-                    SessionThreadLocal.remote()
-                    session.close() }
-        }.await().indefinitely()
+        }.subscribe().with({ promise.onSuccess(it)},{ promise.fail(it)})
         return promise.future()
     }
 }

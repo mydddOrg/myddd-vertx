@@ -10,6 +10,7 @@ import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.validation.BadRequestException
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.base.BadAuthorizationException
@@ -18,7 +19,10 @@ import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.web.router.handler.IPFilterHandler
 
-abstract class AbstractRouter constructor(protected val vertx: Vertx,protected val router:Router,protected val version:String = "v1") {
+abstract class AbstractRouter constructor(protected val vertx: Vertx,
+                                          protected val router:Router,
+                                          protected val coroutineScope: CoroutineScope,
+                                          protected val version:String = "v1") {
 
     private val errorI18n: I18N by lazy { InstanceFactory.getInstance(I18N::class.java) }
 
