@@ -36,8 +36,7 @@ abstract class AbstractTest {
     companion object {
 
         private val guiceInstanceProvider by lazy {
-            GuiceInstanceProvider(Guice.createInjector(object :
-                AbstractModule() {
+            GuiceInstanceProvider(Guice.createInjector(object : AbstractModule() {
                 override fun configure() {
                     val vertx = Vertx.vertx()
                     bind(Vertx::class.java).toInstance(vertx)

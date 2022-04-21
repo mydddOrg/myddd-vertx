@@ -116,7 +116,9 @@ class TestEntityRepositoryUni:AbstractRepositoryTest() {
             val user =  randomUser()
             val createdUser = withTransaction { repository.saveUni(user) }.await()
             val queryUser = withTransaction { repository.getUni(User::class.java,createdUser.id)}.await()
-            if(queryUser == null)testContext.failed()
+            testContext.verify {
+                Assertions.assertNotNull(queryUser)
+            }
             val notExistsUser = withTransaction {repository.getUni(User::class.java,Long.MAX_VALUE)}.await()
             testContext.verify {
                 Assertions.assertFalse(notExistsUser != null)

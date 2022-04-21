@@ -146,9 +146,6 @@ class TestOAuth2TokenRouter:AbstractWebTest() {
                 .sendJsonObject(JsonObject("{\"clientId\":\"${created.clientId}\",\"name\":\"${created.name}\"}")).await()
             testContext.verify { Assertions.assertEquals(400,errorResponse.statusCode()) }
 
-
-            var errorBody = errorResponse.bodyAsString()
-
             errorResponse = webClient.post(
                 port,
                 host,"/v1/oauth2/clients")

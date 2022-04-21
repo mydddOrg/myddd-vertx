@@ -19,6 +19,7 @@ import org.myddd.vertx.grpc.health.HealthCheckApplication
 import org.myddd.vertx.grpc.health.HealthGrpcService
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.ioc.guice.GuiceInstanceProvider
+import org.myddd.vertx.junit.execute
 
 @ExtendWith(VertxExtension::class)
 class TestGrpcInstanceProvider {
@@ -32,55 +33,44 @@ class TestGrpcInstanceProvider {
             GrpcInstanceFactory.getInstance<VertxHealthCheckGrpc.HealthCheckVertxStub>(HealthGrpcService.HealthCheck)
         }
 
+        private val vertx by lazy { Vertx.vertx() }
+
+        private val guiceInstanceProvider by lazy {
+                GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
+                    override fun configure() {
+                        bind(Vertx::class.java).toInstance(vertx)
+                        bind(GrpcInstanceProvider::class.java).to(ServiceDiscoveryGrpcInstanceProvider::class.java)
+
+                        bind(HealthCheckApplication::class.java)
+                    }
+                }))
+        }
+
         @BeforeAll
         @JvmStatic
-        fun beforeAll(vertx: Vertx, testContext: VertxTestContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                try {
-
-                    InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object : AbstractModule(){
-                        override fun configure() {
-                            bind(Vertx::class.java).toInstance(vertx)
-                            bind(GrpcInstanceProvider::class.java).to(ServiceDiscoveryGrpcInstanceProvider::class.java)
-
-                            bind(HealthCheckApplication::class.java)
-                        }
-                    })))
-
-                    deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
-                    Assertions.assertNotNull(deployId)
-                }catch (t:Throwable){
-                    testContext.failNow(t)
-                }
-                testContext.completeNow()
+        fun beforeAll(testContext: VertxTestContext){
+            InstanceFactory.setInstanceProvider(guiceInstanceProvider)
+            testContext.execute {
+                deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
+                Assertions.assertNotNull(deployId)
             }
         }
 
         @AfterAll
         @JvmStatic
-        fun afterAll(vertx: Vertx, testContext: VertxTestContext){
-            GlobalScope.launch(vertx.dispatcher()) {
-                try {
-                    vertx.undeploy(deployId).await()
-                }catch (t:Throwable){
-                    testContext.failNow(t)
-                }
-                testContext.completeNow()
+        fun afterAll(testContext: VertxTestContext){
+            testContext.execute {
+                vertx.undeploy(deployId).await()
             }
         }
     }
 
     @Test
     fun testHealthApplicationNotNull(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                testContext.verify {
-                    Assertions.assertNotNull(healthApplicationProxy)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+        testContext.execute {
+            testContext.verify {
+                Assertions.assertNotNull(healthApplicationProxy)
             }
-            testContext.completeNow()
         }
     }
 }

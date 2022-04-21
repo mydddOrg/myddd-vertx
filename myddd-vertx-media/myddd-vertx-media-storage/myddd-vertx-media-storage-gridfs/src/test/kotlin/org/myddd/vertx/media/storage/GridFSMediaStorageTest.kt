@@ -27,7 +27,7 @@ class GridFSMediaStorageTest : AbstractTest() {
             try {
                 val config = json {
                     obj(
-                        "connection_string" to "mongodb://172.16.1.248:27017/I7e"
+                        "connection_string" to "mongodb://127.0.0.1:27017/test"
                     )
                 }
                 val client = MongoClient.create(vertx,config)
@@ -69,8 +69,6 @@ class GridFSMediaStorageTest : AbstractTest() {
                 val absolutePath = GridFSMediaStorageTest::class.java.classLoader.getResource("my_avatar.png")!!.path
                 val mediaFile = MediaFile.of(absolutePath).await()
 
-                val fs = vertx.fileSystem()
-                val destFile = fs.createTempFile("gridFs",".png").await()
                 val extra = mediaStorage.uploadToStorage(mediaFile).await()
                 val downloadPath = mediaStorage.downloadFromStorage(extra).await()
 

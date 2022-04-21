@@ -9,6 +9,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.myddd.vertx.junit.assertThrow
+import org.myddd.vertx.junit.execute
 import org.myddd.vertx.junit.randomString
 import org.myddd.vertx.media.domain.AbstractTest
 import org.myddd.vertx.media.domain.MediaFile
@@ -20,30 +22,22 @@ class TestMediaFile:AbstractTest() {
     }
 
     @Test
-    fun testMediaFile(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                try {
-                    MediaFile.of(randomString()).await()
-                    testContext.failNow("应该抛出异常，不会执行到这")
-                }catch (t:Throwable){
-                    testContext.verify { Assertions.assertNotNull(t) }
-                }
-
-                val path = TestMediaFile::class.java.classLoader.getResource("META-INF/my_avatar.png")!!.path
-                val mediaFile = MediaFile.of(path).await()
-                testContext.verify {
-                    Assertions.assertNotNull(mediaFile)
-                }
-
-                val buffer = mediaFile.toBuffer()
-                testContext.verify {
-                    Assertions.assertNotNull(buffer)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+    fun testMediaFile(testContext: VertxTestContext){
+        testContext.execute {
+            testContext.assertThrow(Exception::class.java){
+                MediaFile.of(randomString()).await()
             }
-            testContext.completeNow()
+
+            val path = TestMediaFile::class.java.classLoader.getResource("META-INF/my_avatar.png")!!.path
+            val mediaFile = MediaFile.of(path).await()
+            testContext.verify {
+                Assertions.assertNotNull(mediaFile)
+            }
+
+            val buffer = mediaFile.toBuffer()
+            testContext.verify {
+                Assertions.assertNotNull(buffer)
+            }
         }
     }
 

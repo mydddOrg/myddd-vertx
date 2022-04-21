@@ -24,50 +24,40 @@ class MediaTest:AbstractTest() {
     }
 
     @Test
-    fun testQueryByDigest(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val notExistMedia = Media.queryMediaByDigest(randomString()).await()
-                testContext.verify { Assertions.assertNull(notExistMedia) }
+    fun testQueryByDigest(testContext: VertxTestContext){
+        testContext.execute {
+            val notExistMedia = Media.queryMediaByDigest(randomString()).await()
+            testContext.verify { Assertions.assertNull(notExistMedia) }
 
-                val created = createMedia().await()
-                testContext.verify {
-                    Assertions.assertNotNull(created)
-                    Assertions.assertNotNull(created.getId())
-                }
-
-                val query = Media.queryMediaByDigest(digest = created.digest).await()
-                testContext.verify {
-                    Assertions.assertNotNull(query)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+            val created = createMedia().await()
+            testContext.verify {
+                Assertions.assertNotNull(created)
+                Assertions.assertNotNull(created.getId())
             }
-            testContext.completeNow()
+
+            val query = Media.queryMediaByDigest(digest = created.digest).await()
+            testContext.verify {
+                Assertions.assertNotNull(query)
+            }
         }
     }
 
     @Test
-    fun testQueryByMediaId(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val notExistMedia = Media.queryMediaById(randomString()).await()
-                testContext.verify { Assertions.assertNull(notExistMedia) }
+    fun testQueryByMediaId(testContext: VertxTestContext){
+        testContext.execute {
+            val notExistMedia = Media.queryMediaById(randomString()).await()
+            testContext.verify { Assertions.assertNull(notExistMedia) }
 
-                val created = createMedia().await()
-                testContext.verify {
-                    Assertions.assertNotNull(created)
-                    Assertions.assertNotNull(created.getId())
-                }
-
-                val query = Media.queryMediaById(mediaId = created.id!!).await()
-                testContext.verify {
-                    Assertions.assertNotNull(query)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+            val created = createMedia().await()
+            testContext.verify {
+                Assertions.assertNotNull(created)
+                Assertions.assertNotNull(created.getId())
             }
-            testContext.completeNow()
+
+            val query = Media.queryMediaById(mediaId = created.id!!).await()
+            testContext.verify {
+                Assertions.assertNotNull(query)
+            }
         }
     }
 
@@ -88,17 +78,12 @@ class MediaTest:AbstractTest() {
     }
 
     @Test
-    fun testCreateMedia(vertx: Vertx,testContext: VertxTestContext){
-        GlobalScope.launch(vertx.dispatcher()) {
-            try {
-                val created = createMedia().await()
-                testContext.verify {
-                    Assertions.assertNotNull(created)
-                }
-            }catch (t:Throwable){
-                testContext.failNow(t)
+    fun testCreateMedia(testContext: VertxTestContext){
+        testContext.execute {
+            val created = createMedia().await()
+            testContext.verify {
+                Assertions.assertNotNull(created)
             }
-            testContext.completeNow()
         }
     }
 
