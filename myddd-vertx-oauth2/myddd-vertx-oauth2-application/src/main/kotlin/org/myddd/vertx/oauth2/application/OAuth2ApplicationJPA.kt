@@ -2,6 +2,7 @@ package org.myddd.vertx.oauth2.application
 
 import io.vertx.core.Future
 import io.vertx.kotlin.coroutines.await
+import org.myddd.vertx.base.BadAuthorizationException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.*
 import org.myddd.vertx.oauth2.api.OAuth2Application
@@ -83,7 +84,7 @@ class OAuth2ApplicationJPA : OAuth2Application {
         return try {
             Future.succeededFuture(OAuth2Token.queryValidClientIdByAccessToken(accessToken).await())
         }catch (t:Throwable){
-            Future.failedFuture(t)
+            throw BadAuthorizationException()
         }
     }
 }

@@ -36,7 +36,7 @@ class UserRouter(vertx: Vertx,router: Router,coroutineScope:CoroutineScope) : Ab
 
     private fun createUserGetWithAuthorization(){
         createGetRoute("/$version/authorization/users"){ route ->
-            route.handler(AccessTokenAuthorizationHandler(vertx))
+            route.handler(AccessTokenAuthorizationHandler(vertx,coroutineScope))
 
             route.handler {
                 val error = it.queryParam("error")

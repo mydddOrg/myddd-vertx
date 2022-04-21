@@ -24,7 +24,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
     }
 
     @Test
-    fun testCreateClient(vertx: Vertx,testContext: VertxTestContext){
+    fun testCreateClient(testContext: VertxTestContext){
         testContext.execute {
             val clientId = UUID.randomUUID().toString()
             val clientDto = OAuth2ClientDTO(clientId = clientId,name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
@@ -44,7 +44,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
 
 
     @Test
-    fun testQueryClient(vertx: Vertx,testContext: VertxTestContext){
+    fun testQueryClient(testContext: VertxTestContext){
         testContext.execute {
             val clientDto = OAuth2ClientDTO(clientId = UUID.randomUUID().toString(),name = "测试应用",description = "这是一个测试应用，没有任何其它意义")
             val created = oAuth2ClientApplication.createClient(clientDto).await()
@@ -66,7 +66,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
     }
 
     @Test
-    fun testResetClientSecret(vertx: Vertx,testContext: VertxTestContext){
+    fun testResetClientSecret(testContext: VertxTestContext){
         testContext.execute {
             try {
                 oAuth2ClientApplication.resetClientSecret(UUID.randomUUID().toString()).await()
@@ -95,7 +95,7 @@ class TestOAuth2ClientApplicationJPA : AbstractTest() {
     }
 
     @Test
-    fun testEnableAndDisableClient(vertx: Vertx,testContext: VertxTestContext){
+    fun testEnableAndDisableClient(testContext: VertxTestContext){
         testContext.execute {
             testContext.assertThrow(Exception::class.java){
                 oAuth2ClientApplication.enableClient(UUID.randomUUID().toString()).await()

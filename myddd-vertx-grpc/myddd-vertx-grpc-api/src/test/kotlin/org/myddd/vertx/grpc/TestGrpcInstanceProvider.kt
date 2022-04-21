@@ -66,7 +66,7 @@ class TestGrpcInstanceProvider {
     }
 
     @Test
-    fun testHealthApplicationNotNull(vertx: Vertx,testContext: VertxTestContext){
+    fun testHealthApplicationNotNull(testContext: VertxTestContext){
         testContext.execute {
             testContext.verify {
                 Assertions.assertNotNull(healthApplicationProxy)

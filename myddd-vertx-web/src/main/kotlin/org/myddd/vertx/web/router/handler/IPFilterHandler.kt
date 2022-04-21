@@ -6,14 +6,16 @@ import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.net.SocketAddress
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.dispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.config.Config
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.web.router.ext.execute
 import java.util.*
 
 
-class IPFilterHandler : Handler<RoutingContext> {
+class IPFilterHandler(val coroutineScope: CoroutineScope) : Handler<RoutingContext> {
 
     private val logger by lazy { LoggerFactory.getLogger(IPFilterHandler::class.java) }
 
@@ -49,13 +51,13 @@ class IPFilterHandler : Handler<RoutingContext> {
     }
 
     override fun handle(rc: RoutingContext?) {
-        GlobalScope.launch(vertx.dispatcher()) {
-            val address = rc?.request()?.remoteAddress()
+        rc?.execute(coroutineScope){
+            val address = rc.request().remoteAddress()
 
             when {
                 enableWhiteList -> filterWithWhiteList(address, rc)
                 enableBlackList -> filterWithBlackList(address, rc)
-                else -> rc?.next()
+                else -> rc.next()
             }
         }
     }

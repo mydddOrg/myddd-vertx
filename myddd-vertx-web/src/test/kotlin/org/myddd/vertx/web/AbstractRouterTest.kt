@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
+import org.myddd.vertx.base.BadAuthorizationException
 import org.myddd.vertx.config.Config
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
@@ -121,7 +122,7 @@ class AbstractRouterTest {
             val future = mock(Future::class.java)
             Mockito.`when`(future.succeeded()).thenReturn(false)
             Mockito.`when`(future.failed()).thenReturn(true)
-            Mockito.`when`(future.cause()).thenReturn(RuntimeException())
+            Mockito.`when`(future.cause()).thenReturn(BadAuthorizationException())
             Mockito.`when`(oAuth2Application.queryValidClientIdByAccessToken(any())).thenReturn(future as Future<String>?)
 
             var response = webClient.get(port, host,"/v1/authorization/users").send().await()

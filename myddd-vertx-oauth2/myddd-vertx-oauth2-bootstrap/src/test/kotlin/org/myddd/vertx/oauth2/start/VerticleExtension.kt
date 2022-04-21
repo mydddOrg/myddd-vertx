@@ -32,7 +32,7 @@ class VerticleExtension : BeforeAllCallback {
     override fun beforeAll(context: ExtensionContext?) {
         runBlocking {
             if (ONCE.getAndSet(false)) {
-                val job = GlobalScope.launch {
+                val job = launch {
                     startVerticle(vertx).await()
                 }
                 job.join()

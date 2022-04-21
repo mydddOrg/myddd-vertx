@@ -17,6 +17,7 @@ import org.myddd.vertx.base.BadAuthorizationException
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.i18n.I18N
 import org.myddd.vertx.ioc.InstanceFactory
+import org.myddd.vertx.web.router.ext.execute
 import org.myddd.vertx.web.router.handler.IPFilterHandler
 
 abstract class AbstractRouter constructor(protected val vertx: Vertx,
@@ -84,7 +85,7 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,
         }
         route.produces(CONTENT_TYPE_JSON)
 
-        route.handler(IPFilterHandler())
+        route.handler(IPFilterHandler(coroutineScope))
 
         handlers(route)
 
@@ -95,7 +96,7 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,
 
     private fun failureHandler(route: Route) {
         route.failureHandler {
-            GlobalScope.launch(vertx.dispatcher()) {
+            it.execute(coroutineScope){
                 val failure = it.failure()
 
                 logger.error(failure.message,failure)
@@ -140,7 +141,6 @@ abstract class AbstractRouter constructor(protected val vertx: Vertx,
 
                 it.response().putHeader("Content-Type",CONTENT_TYPE_JSON)
                 it.response().setStatusCode(statusCode).end(responseJson.toBuffer())
-
             }
         }
     }
