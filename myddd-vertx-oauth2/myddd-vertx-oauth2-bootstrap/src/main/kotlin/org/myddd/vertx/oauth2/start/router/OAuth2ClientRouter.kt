@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.ioc.InstanceFactory
@@ -14,7 +15,7 @@ import org.myddd.vertx.oauth2.api.OAuth2ClientApplication
 import org.myddd.vertx.oauth2.api.OAuth2ClientDTO
 import org.myddd.vertx.web.router.AbstractRouter
 
-class OAuth2ClientRouter constructor(router:Router,vertx:Vertx) : AbstractRouter(vertx = vertx,router = router) {
+class OAuth2ClientRouter constructor(router:Router,vertx:Vertx,coroutineScope: CoroutineScope) : AbstractRouter(vertx = vertx,router = router,coroutineScope = coroutineScope) {
 
     private val oAuth2ClientApplication:OAuth2ClientApplication by lazy { InstanceFactory.getInstance(OAuth2ClientApplication::class.java) }
 

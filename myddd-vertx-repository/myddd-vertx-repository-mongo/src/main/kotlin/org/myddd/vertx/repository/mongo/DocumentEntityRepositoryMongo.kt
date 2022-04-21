@@ -3,10 +3,7 @@ package org.myddd.vertx.repository.mongo
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.mongo.BulkOperation
-import io.vertx.ext.mongo.FindOptions
-import io.vertx.ext.mongo.IndexOptions
-import io.vertx.ext.mongo.MongoClient
+import io.vertx.ext.mongo.*
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.Document
 import org.myddd.vertx.domain.ext.collectionName
@@ -16,7 +13,6 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.repository.api.DocumentEntityRepository
 import org.myddd.vertx.repository.api.QueryOptions
 import java.util.*
-import kotlin.streams.toList
 
 open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
 
@@ -112,7 +108,7 @@ open class DocumentEntityRepositoryMongo:DocumentEntityRepository {
                 jsonObject.put(name,1)
             }
             if(!existsIndexes.contains(jsonObject.fieldNames().toString())){
-                mongoClient.createIndexWithOptions(clazz.collectionName(),jsonObject,IndexOptions(JsonObject().put("unique",true))).await()
+                mongoClient.createIndexWithOptions(clazz.collectionName(),jsonObject,IndexOptions().unique(true)).await()
             }
         }
         return Future.succeededFuture()

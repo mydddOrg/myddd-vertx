@@ -1,6 +1,5 @@
 package org.myddd.vertx.oauth2.start.router
 
-import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

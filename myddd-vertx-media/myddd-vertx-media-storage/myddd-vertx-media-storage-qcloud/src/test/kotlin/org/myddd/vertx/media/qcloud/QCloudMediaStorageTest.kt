@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
+import org.myddd.vertx.junit.randomString
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.domain.MediaStorage
 import org.myddd.vertx.media.storage.QCloudMediaExtra
@@ -23,7 +24,7 @@ class QCloudMediaStorageTest:AbstractTest() {
             try {
                 val qCloudMediaStorage = mediaStorage as QCloudMediaStorage
                 try {
-                    qCloudMediaStorage.keyForFilePath(randomIDString.randomUUID())
+                    qCloudMediaStorage.keyForFilePath(randomString())
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }
                 }
@@ -64,7 +65,7 @@ class QCloudMediaStorageTest:AbstractTest() {
         testContext.execute {
             try {
                 try {
-                    mediaStorage.downloadFromStorage(extra = QCloudMediaExtra(key = randomIDString.randomString())).await()
+                    mediaStorage.downloadFromStorage(extra = QCloudMediaExtra(key = randomString())).await()
                     testContext.failNow("不可能到这")
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }

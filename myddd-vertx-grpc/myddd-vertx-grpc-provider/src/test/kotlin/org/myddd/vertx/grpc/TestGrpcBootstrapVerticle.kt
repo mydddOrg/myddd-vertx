@@ -3,10 +3,7 @@ package org.myddd.vertx.grpc
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
 import io.vertx.servicediscovery.ServiceDiscovery
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
@@ -23,7 +20,7 @@ class TestGrpcBootstrapVerticle:AbstractTest() {
 
         @BeforeAll
         @JvmStatic
-        fun beforeAll(testContext: VertxTestContext){
+        fun startVerticle(testContext: VertxTestContext){
             testContext.execute {
                 deployId = vertx.deployVerticle(HealthGrpcBootstrapVerticle()).await()
                 Assertions.assertNotNull(deployId)
@@ -32,7 +29,7 @@ class TestGrpcBootstrapVerticle:AbstractTest() {
 
         @AfterAll
         @JvmStatic
-        fun afterAll(testContext: VertxTestContext){
+        fun stopVerticle(testContext: VertxTestContext){
             testContext.execute {
                 try {
                     vertx.undeploy(deployId).await()

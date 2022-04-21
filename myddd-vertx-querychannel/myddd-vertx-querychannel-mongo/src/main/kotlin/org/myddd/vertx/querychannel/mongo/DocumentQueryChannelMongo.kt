@@ -10,7 +10,6 @@ import org.myddd.vertx.domain.ext.collectionName
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.querychannel.api.DocumentQueryChannel
 import org.myddd.vertx.querychannel.api.Page
-import kotlin.streams.toList
 
 class DocumentQueryChannelMongo:DocumentQueryChannel {
 

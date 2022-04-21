@@ -12,7 +12,7 @@ import org.myddd.vertx.oauth2.api.OAuth2ClientDTO
 import org.myddd.vertx.oauth2.start.AbstractWebTest
 import java.util.*
 
-open class TestOAuth2TokenRouter:AbstractWebTest() {
+class TestOAuth2TokenRouter:AbstractWebTest() {
 
     @Test
     fun testRequestClientToken(testContext: VertxTestContext){

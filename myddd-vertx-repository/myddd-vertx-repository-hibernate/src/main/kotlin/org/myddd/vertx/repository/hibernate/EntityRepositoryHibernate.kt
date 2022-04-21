@@ -3,7 +3,6 @@ package org.myddd.vertx.repository.hibernate
 import io.smallrye.mutiny.Uni
 import io.vertx.core.Future
 import io.vertx.core.impl.future.PromiseImpl
-import io.vertx.core.impl.logging.Logger
 import io.vertx.core.impl.logging.LoggerFactory
 import org.hibernate.reactive.mutiny.Mutiny
 import org.hibernate.reactive.mutiny.Mutiny.Session
@@ -25,7 +24,6 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
 
     override suspend fun <T : Entity> save(entity: T): Future<T> {
         return inTransaction { session ->
-            logger.debug("SAVE:" + Thread.currentThread().name)
             session.find(entity::class.java, entity.getId())
                 .chain { t ->
                     if (Objects.isNull(t)) {
@@ -42,7 +40,6 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
 
     override suspend fun <T : Entity> get(clazz: Class<T>?, id: Serializable?): Future<T?> {
         return inQuery { session ->
-            logger.debug("GET:" + Thread.currentThread().name)
             session.find(clazz, id)
         }
     }

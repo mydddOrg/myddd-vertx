@@ -2,7 +2,6 @@ package org.myddd.vertx.grpc
 
 import io.grpc.BindableService
 import org.myddd.vertx.grpc.health.HealthCheckApplication
-import org.myddd.vertx.ioc.InstanceFactory
 
 class HealthGrpcBootstrapVerticle: GrpcBootstrapVerticle() {
 

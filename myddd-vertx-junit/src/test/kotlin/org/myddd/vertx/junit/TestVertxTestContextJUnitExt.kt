@@ -1,12 +1,10 @@
 package org.myddd.vertx.junit
 
 import io.vertx.core.Future
-import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 
 class TestVertxTestContextJUnitExt:AbstractJunitTest() {
 

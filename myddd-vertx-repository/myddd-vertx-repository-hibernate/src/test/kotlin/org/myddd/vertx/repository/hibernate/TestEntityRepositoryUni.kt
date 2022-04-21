@@ -1,17 +1,16 @@
 package org.myddd.vertx.repository.hibernate
 
 import io.smallrye.mutiny.Uni
-import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.assertNotThrow
 import org.myddd.vertx.junit.assertThrow
 import org.myddd.vertx.junit.execute
+import org.myddd.vertx.junit.randomString
 import org.myddd.vertx.repository.api.EntityRepositoryUni
 import org.myddd.vertx.repository.hibernate.EntityRepositoryTransaction.withTransaction
 import org.myddd.vertx.string.RandomIDString
@@ -20,8 +19,7 @@ import java.util.stream.Stream
 import javax.persistence.PersistenceException
 import kotlin.random.Random
 
-@ExtendWith(VertxExtension::class,IOCInitExtension::class)
-class TestEntityRepositoryUni {
+class TestEntityRepositoryUni:AbstractRepositoryTest() {
 
     private val randomIDString by lazy { InstanceFactory.getInstance(RandomIDString::class.java) }
 
@@ -152,7 +150,7 @@ class TestEntityRepositoryUni {
         testContext.execute {
             val users = ArrayList<User>()
             for (i in 1..10){
-                users.add(User(username = "lingen_${i}",age = 35 + i))
+                users.add(User(username = "lingen_" + randomString(),age = 35 + i))
             }
 
             val userArray:Array<User> = users.toTypedArray()

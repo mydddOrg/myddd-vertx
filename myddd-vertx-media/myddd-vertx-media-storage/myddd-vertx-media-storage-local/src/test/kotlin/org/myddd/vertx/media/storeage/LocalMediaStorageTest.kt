@@ -6,6 +6,7 @@ import io.vertx.kotlin.coroutines.await
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.junit.execute
+import org.myddd.vertx.junit.randomString
 import org.myddd.vertx.media.domain.MediaFile
 import org.myddd.vertx.media.storage.LocalMediaExtra
 
@@ -43,7 +44,7 @@ class LocalMediaStorageTest:AbstractTest() {
         testContext.execute {
             try {
                 try {
-                    mediaStorage.downloadFromStorage(extra = LocalMediaExtra(path = randomIDString.randomString())).await()
+                    mediaStorage.downloadFromStorage(extra = LocalMediaExtra(path = randomString())).await()
                     testContext.failNow("不可能到这")
                 }catch (t:Throwable){
                     testContext.verify { Assertions.assertNotNull(t) }

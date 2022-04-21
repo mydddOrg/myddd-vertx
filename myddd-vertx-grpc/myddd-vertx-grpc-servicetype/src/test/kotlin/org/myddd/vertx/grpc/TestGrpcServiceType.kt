@@ -36,7 +36,7 @@ class TestGrpcServiceType:AbstractTest() {
 
         @JvmStatic
         @BeforeAll
-        fun beforeAll(testContext: VertxTestContext){
+        fun startService(testContext: VertxTestContext){
             testContext.execute {
                 discovery = ServiceDiscovery.create(vertx)
                 testContext.verify {

@@ -36,7 +36,7 @@ class TestGreeterGrpc:AbstractTest() {
 
         @JvmStatic
         @BeforeAll
-        fun beforeAll(testContext: VertxTestContext){
+        fun startRpcService(testContext: VertxTestContext){
             testContext.execute {
                 val rpcServer: VertxServer = VertxServerBuilder
                     .forAddress(vertx, "localhost", randomPort)

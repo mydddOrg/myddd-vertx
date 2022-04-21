@@ -11,6 +11,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.assertNotThrow
 import org.myddd.vertx.junit.assertThrow
 import org.myddd.vertx.junit.execute
+import org.myddd.vertx.junit.randomString
 import org.myddd.vertx.repository.AbstractTest
 import org.myddd.vertx.repository.api.DocumentEntityRepository
 import org.myddd.vertx.repository.api.QueryOptions

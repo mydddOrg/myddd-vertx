@@ -1,6 +1,5 @@
 package org.myddd.vertx.oauth2.provider
 
-import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
@@ -21,7 +20,7 @@ class TestMydddVertXOAuth2Provider : AbstractTest() {
 
         @BeforeAll
         @JvmStatic
-        fun beforeAll(testContext: VertxTestContext){
+        fun startProvider(testContext: VertxTestContext){
             oAuth2Auth = MydddVertXOAuth2Provider()
             testContext.completeNow()
         }

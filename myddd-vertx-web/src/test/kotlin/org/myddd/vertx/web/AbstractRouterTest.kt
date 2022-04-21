@@ -11,7 +11,9 @@ import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
@@ -22,7 +24,7 @@ import org.myddd.vertx.oauth2.api.OAuth2Application
 import org.myddd.vertx.web.router.handler.IPFilterHandler
 import java.util.*
 
-@ExtendWith(VertxExtension::class,IOCInitExtension::class)
+@ExtendWith(VertxExtension::class,VerticleExtension::class)
 class AbstractRouterTest {
 
     private val jsonConfig = mock(JsonObject::class.java)
@@ -35,38 +37,17 @@ class AbstractRouterTest {
 
     companion object{
 
-
         private val logger = LoggerFactory.getLogger(AbstractRouterTest::class.java)
 
         private var port = 8080
 
         private const val host = "127.0.0.1"
 
-        private lateinit var deployId:String
-
         private val webClient:WebClient by lazy { InstanceFactory.getInstance(WebClient::class.java) }
 
         private val oAuth2Application:OAuth2Application by lazy { InstanceFactory.getInstance(OAuth2Application::class.java) }
 
         val vertx by lazy { InstanceFactory.getInstance(Vertx::class.java) }
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll(testContext: VertxTestContext){
-            testContext.execute {
-                port = 10000 + Random().nextInt(1000)
-                deployId = vertx.deployVerticle(WebVerticle(port = port)).await()
-                testContext.completeNow()
-            }
-        }
-
-        @AfterAll
-        @JvmStatic
-        fun afterClass(testContext: VertxTestContext){
-            testContext.execute {
-                vertx.undeploy(deployId).await()
-            }
-        }
     }
 
 

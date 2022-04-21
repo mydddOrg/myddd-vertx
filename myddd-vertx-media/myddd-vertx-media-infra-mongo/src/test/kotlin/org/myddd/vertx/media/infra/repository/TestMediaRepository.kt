@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
+import org.myddd.vertx.junit.randomString
 import org.myddd.vertx.media.domain.MediaRepository
 import org.myddd.vertx.media.infra.AbstractTest
 

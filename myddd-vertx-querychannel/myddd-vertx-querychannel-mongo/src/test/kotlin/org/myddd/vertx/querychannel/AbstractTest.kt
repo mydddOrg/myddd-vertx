@@ -8,10 +8,6 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.mongo.MongoClient
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
-import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
 import org.myddd.vertx.id.IDGenerator
@@ -36,35 +32,28 @@ abstract class AbstractTest {
 
     companion object {
 
-        private val idGenerate by lazy { InstanceFactory.getInstance(StringIDGenerator::class.java) }
+        private val guiceInstanceProvider by lazy {
+            GuiceInstanceProvider(Guice.createInjector(object :
+                AbstractModule() {
+                override fun configure() {
+                    val vertx = Vertx.vertx()
+                    bind(Vertx::class.java).toInstance(vertx)
+                    bind(MongoClient::class.java).toInstance(MongoClient.create(vertx, JsonObject()))
+                    bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
+                    bind(StringIDGenerator::class.java).to(ULIDStringGenerator::class.java)
+                    bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
+
+                    bind(DocumentEntityRepository::class.java).to(DocumentEntityRepositoryMongo::class.java)
+                    bind(DocumentQueryChannel::class.java).to(DocumentQueryChannelMongo::class.java)
+                }
+            }))
+        }
 
         @BeforeAll
         @JvmStatic
-        fun beforeAll(vertx: Vertx, testContext: VertxTestContext) {
-            GlobalScope.launch(vertx.dispatcher()) {
-                try {
-                    vertx.executeBlocking<Void> {
-                        InstanceFactory.setInstanceProvider(GuiceInstanceProvider(Guice.createInjector(object :
-                            AbstractModule() {
-                            override fun configure() {
-                                bind(Vertx::class.java).toInstance(vertx)
-                                bind(MongoClient::class.java).toInstance(MongoClient.create(vertx, JsonObject()))
-                                bind(IDGenerator::class.java).toInstance(SnowflakeDistributeId())
-                                bind(StringIDGenerator::class.java).to(ULIDStringGenerator::class.java)
-                                bind(RandomIDString::class.java).to(RandomIDStringProvider::class.java)
-
-                                bind(DocumentEntityRepository::class.java).to(DocumentEntityRepositoryMongo::class.java)
-                                bind(DocumentQueryChannel::class.java).to(DocumentQueryChannelMongo::class.java)
-                            }
-                        })))
-                        it.complete()
-                    }.await()
-
-                } catch (t: Throwable) {
-                    testContext.failNow(t)
-                }
-                testContext.completeNow()
-            }
+        fun beforeAll(testContext: VertxTestContext) {
+            InstanceFactory.setInstanceProvider(guiceInstanceProvider)
+            testContext.completeNow()
         }
     }
 
@@ -72,7 +61,7 @@ abstract class AbstractTest {
         return UUID.randomUUID().toString().replace("-", "")
     }
 
-    protected fun randomMockUser():MockUser {
+    protected fun randomMockUser(): MockUser {
         val user = MockUser()
         user.name = randomString()
         return user

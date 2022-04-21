@@ -17,8 +17,8 @@ class OAuth2Verticle(private val port:Int = 8080) : BootstrapVerticle() {
 
     override fun routers(vertx: Vertx, router: Router): () -> Unit {
         return {
-            OAuth2ClientRouter(router = router,vertx = vertx)
-            OAuth2TokenRouter(router = router,vertx = vertx)
+            OAuth2ClientRouter(router = router,vertx = vertx, coroutineScope = this)
+            OAuth2TokenRouter(router = router,vertx = vertx, coroutineScope = this)
         }
     }
 }
