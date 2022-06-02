@@ -19,18 +19,18 @@ plugins {
     id("org.sonarqube") version "3.3"
 }
 
-val projectVersion = "0.3.2-SNAPSHOT"
+val projectVersion = "0.3.3-SNAPSHOT"
 
 extra["version"] = projectVersion
 
 extra["kotlin_version"] = "1.6.0"
-extra["vertx_version"] = "4.2.4"
-extra["hibernate_reactive_version"] = "1.1.3.Final"
+extra["vertx_version"] = "4.2.7"
+extra["hibernate_reactive_version"] = "1.1.6.Final"
 
-extra["log4j_version"] = "2.16.0"
-extra["jackson_version"] = "2.13.0"
+extra["log4j_version"] = "2.17.2"
+extra["jackson_version"] = "2.13.3"
 extra["javax_persistence_version"] = "2.2.1"
-extra["mockito_version"] = "4.1.0"
+extra["mockito_version"] = "4.6.0"
 extra["commons_lang3_version"] = "3.12.0"
 extra["junit5_version"] = "5.8.2"
 
