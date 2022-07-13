@@ -3,7 +3,10 @@ package org.myddd.vertx.repository.mongo
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.mongo.*
+import io.vertx.ext.mongo.BulkOperation
+import io.vertx.ext.mongo.FindOptions
+import io.vertx.ext.mongo.IndexOptions
+import io.vertx.ext.mongo.MongoClient
 import io.vertx.kotlin.coroutines.await
 import org.myddd.vertx.domain.Document
 import org.myddd.vertx.domain.ext.collectionName

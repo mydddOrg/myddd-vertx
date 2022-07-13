@@ -8,6 +8,7 @@ import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.myddd.vertx.config.Config
@@ -15,7 +16,7 @@ import org.myddd.vertx.ioc.InstanceFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class GrpcServiceProxy<T>(private val grpcService: GrpcService,private var signature:String = ""): ServiceProxy<T> {
+class GrpcServiceProxy<T>(private val grpcService: GrpcService, private var signature:String = ""): ServiceProxy<T> {
 
     private var service:T? = null
 
@@ -33,14 +34,14 @@ class GrpcServiceProxy<T>(private val grpcService: GrpcService,private var signa
     }
 
     init {
+        @OptIn(DelicateCoroutinesApi::class)
         vertx.setPeriodic(heartbeat){
             GlobalScope.launch(vertx.dispatcher()) {
                 heartBeat()
             }
         }
-    }
 
-    init {
+        @OptIn(DelicateCoroutinesApi::class)
         consumer.handler{
             GlobalScope.launch(vertx.dispatcher()) {
                 val body = it.body()

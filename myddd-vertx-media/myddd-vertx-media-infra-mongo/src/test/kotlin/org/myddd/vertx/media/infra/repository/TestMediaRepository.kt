@@ -3,6 +3,7 @@ package org.myddd.vertx.media.infra.repository
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.await
 import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.junit.execute
@@ -10,6 +11,7 @@ import org.myddd.vertx.junit.randomString
 import org.myddd.vertx.media.domain.MediaRepository
 import org.myddd.vertx.media.infra.AbstractTest
 
+@Disabled("需要mongo服务器")
 class TestMediaRepository:AbstractTest() {
 
     private val mediaRepository by lazy { InstanceFactory.getInstance(MediaRepository::class.java) }

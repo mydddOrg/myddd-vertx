@@ -5,10 +5,7 @@ import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.net.SocketAddress
 import io.vertx.ext.web.RoutingContext
-import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.myddd.vertx.config.Config
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.web.router.ext.execute

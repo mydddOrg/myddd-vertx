@@ -4,10 +4,7 @@ import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.myddd.vertx.base.BadAuthorizationException
 import org.myddd.vertx.ioc.InstanceFactory
 import org.myddd.vertx.oauth2.api.OAuth2Application
@@ -24,7 +21,6 @@ class AccessTokenAuthorizationHandler(private val vertx: Vertx,val coroutineScop
             val accessToken = rc.singleQueryParam("accessToken")
             if(Objects.isNull(accessToken)) {
                 throw BadAuthorizationException()
-                return@execute
             }else{
                 val clientId = oAuth2Application.queryValidClientIdByAccessToken(accessToken!!).await()
                 clientId.also {

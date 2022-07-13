@@ -24,6 +24,7 @@ class OAuth2UserDTO : User {
         throw UnsupportedOperationException()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun isAuthorized(authority: Authorization?, resultHandler: Handler<AsyncResult<Boolean>>?): User {
         throw UnsupportedOperationException()
     }
@@ -32,6 +33,7 @@ class OAuth2UserDTO : User {
         throw UnsupportedOperationException()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun setAuthProvider(authProvider: AuthProvider?) {
         throw UnsupportedOperationException()
     }

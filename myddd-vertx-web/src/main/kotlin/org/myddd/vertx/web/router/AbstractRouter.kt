@@ -9,10 +9,7 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.validation.BadRequestException
 import io.vertx.kotlin.coroutines.await
-import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.myddd.vertx.base.BadAuthorizationException
 import org.myddd.vertx.base.BusinessLogicException
 import org.myddd.vertx.i18n.I18N

@@ -3,8 +3,7 @@ package org.myddd.vertx.media.infra.repository
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.await
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.myddd.vertx.media.domain.Media
 import org.myddd.vertx.media.domain.MediaRepository
 import org.myddd.vertx.repository.mongo.DocumentEntityRepositoryMongo
@@ -12,7 +11,7 @@ import org.myddd.vertx.repository.mongo.DocumentEntityRepositoryMongo
 class MediaRepositoryMongo:DocumentEntityRepositoryMongo(),MediaRepository {
 
     init {
-        GlobalScope.launch {
+        runBlocking {
             createDocument(Media::class.java).await()
         }
     }

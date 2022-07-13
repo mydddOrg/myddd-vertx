@@ -3,6 +3,7 @@ package org.myddd.vertx.junit
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.coroutines.dispatcher
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions
@@ -41,6 +42,7 @@ suspend fun <T:Throwable> VertxTestContext.assertExactlyThrow(clazz: Class<T>,ex
     }
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 fun VertxTestContext.execute(execution:suspend () -> Unit){
     val vertxTestContext = this
     GlobalScope.launch(vertx.dispatcher()) {

@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 buildscript {
-    extra["kotlinVersion"] = "1.6.0"
+    extra["kotlinVersion"] = "1.7.0"
 
     repositories {
         gradlePluginPortal()
@@ -14,23 +14,23 @@ buildscript {
 plugins {
     java
     `maven-publish`
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.7.0"
     id("jacoco")
-    id("org.sonarqube") version "3.3"
+    id("org.sonarqube") version "3.4.0.2513"
 }
 
-val projectVersion = "0.3.3-SNAPSHOT"
+val projectVersion = "0.3.5-SNAPSHOT"
 
 extra["version"] = projectVersion
 
-extra["kotlin_version"] = "1.6.0"
-extra["vertx_version"] = "4.2.7"
-extra["hibernate_reactive_version"] = "1.1.6.Final"
+extra["kotlin_version"] = "1.7.0"
+extra["vertx_version"] = "4.3.1"
+extra["hibernate_reactive_version"] = "1.1.7.Final"
 
 extra["log4j_version"] = "2.17.2"
 extra["jackson_version"] = "2.13.3"
 extra["javax_persistence_version"] = "2.2.1"
-extra["mockito_version"] = "4.6.0"
+extra["mockito_version"] = "4.6.1"
 extra["commons_lang3_version"] = "3.12.0"
 extra["junit5_version"] = "5.8.2"
 
@@ -39,7 +39,7 @@ extra["annotation-api"] = "1.3.2"
 extra["assertj-core-version"] = "3.21.0"
 extra["protoc-gen-version"] = "1.44.1"
 
-extra["mutiny-version"] = "1.4.0"
+extra["mutiny-version"] = "1.6.0"
 
 group = "org.myddd.vertx"
 version = projectVersion
@@ -131,7 +131,7 @@ subprojects {
 
     dependencies{
 
-        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.0")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
 
         implementation("io.vertx:vertx-core:${rootProject.extra["vertx_version"]}")
         implementation("io.vertx:vertx-lang-kotlin:${rootProject.extra["vertx_version"]}")

@@ -3,7 +3,6 @@ package org.myddd.vertx.oauth2.start
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.kotlin.coroutines.await
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.extension.BeforeAllCallback
