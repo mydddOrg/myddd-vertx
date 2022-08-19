@@ -13,11 +13,11 @@ myddd-vertx是myddd在后端的大胆尝试 ，myddd-vertx遵循以下宗旨：
 * 以响应式编程为核心。在响应式框架中，选择Vert.x做为核心依赖框架。
 * 以Kotlin取代Java，Kotlin比Java更简洁与优雅。
 
-基于myddd-vertx的代码，无论在代码的简洁与优雅，还是在其性能上，都是传统的Java以及Spring Boot无法相比的。除了需要学习一门新的语言Kotlin，熟悉一门新的框架Vert.x以外，想像不出为什么还要继续使用Java以及Spring Boot。
+基于myddd-vertx的代码，无论在代码的简洁与优雅，还是在其性能上，都比甚至Java + Spring Boot的组合更甚一筹。
 
-如果你愿意尝试新的模式，对自己及团队有信心，myddd建议你在后端毫不犹豫的使用myddd-vertx。
+如果你愿意尝试新的模式，你可以尝试`myddd-vertx`
 
-当然，myddd仍然提供了基于Java及Spring Boot的领域驱动实现**myddd-java**，你仍然可以使用你最熟悉的Java语言及Spring来编码代码。
+当然，myddd仍然提供了基于Java及Spring Boot的领域驱动实现**[myddd-spring-boot](https://github.com/mydddOrg/myddd-spring-boot)**，你仍然可以使用你最熟悉的Java语言及Spring来编码代码。
 
 ## SonarQube质量管控
 
