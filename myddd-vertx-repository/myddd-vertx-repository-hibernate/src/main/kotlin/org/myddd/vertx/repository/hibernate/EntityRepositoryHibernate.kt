@@ -110,7 +110,6 @@ open class EntityRepositoryHibernate(private val dataSource: String? = null) : E
 
     fun <T> inQuery(execution: (session: Session) -> Uni<T>): Future<T> {
         val promise = PromiseImpl<T>()
-
         sessionFactory.withSession{ session ->
             execution(session)
         }.subscribe().with({ promise.onSuccess(it)},{ promise.fail(it)})
