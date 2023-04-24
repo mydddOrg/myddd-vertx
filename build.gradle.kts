@@ -14,23 +14,23 @@ buildscript {
 plugins {
     java
     `maven-publish`
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm") version "1.8.10"
     id("jacoco")
     id("org.sonarqube") version "3.4.0.2513"
 }
 
-val projectVersion = "0.3.5-SNAPSHOT"
+val projectVersion = "0.3.6-SNAPSHOT"
 
 extra["version"] = projectVersion
 
-extra["kotlin_version"] = "1.7.0"
-extra["vertx_version"] = "4.3.1"
-extra["hibernate_reactive_version"] = "1.1.7.Final"
+extra["kotlin_version"] = "1.8.10"
+extra["vertx_version"] = "4.4.1"
+extra["hibernate_reactive_version"] = "1.1.9.Final"
 
-extra["log4j_version"] = "2.17.2"
-extra["jackson_version"] = "2.13.3"
+extra["log4j_version"] = "2.20.0"
+extra["jackson_version"] = "2.14.2"
 extra["javax_persistence_version"] = "2.2.1"
-extra["mockito_version"] = "4.6.1"
+extra["mockito_version"] = "5.2.0"
 extra["commons_lang3_version"] = "3.12.0"
 extra["junit5_version"] = "5.8.2"
 

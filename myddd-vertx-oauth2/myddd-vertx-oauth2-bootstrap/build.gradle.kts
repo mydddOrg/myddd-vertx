@@ -4,7 +4,7 @@ plugins {
     java
     application
     kotlin("jvm")
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 
@@ -15,7 +15,7 @@ val mainVerticleName = "org.myddd.vertx.oauth2.start."
 val launcherClassName = "io.vertx.core.Launcher"
 
 application {
-    mainClassName = launcherClassName
+    mainClass.set(launcherClassName)
 }
 
 tasks.withType<ShadowJar> {

@@ -7,11 +7,11 @@ group = "org.myddd.vertx"
 version = rootProject.extra["version"]!!
 extra["publishJar"] = true
 
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-    }
-}
+//tasks.jacocoTestReport {
+//    reports {
+//        xml.isEnabled = true
+//    }
+//}
 
 dependencies {
     implementation(kotlin("stdlib"))
